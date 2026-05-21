@@ -1,5 +1,5 @@
 import type { StateDatabase } from "./db.js";
-import { openDatabase } from "./db.js";
+import { withStateDb } from "./db.js";
 import { getActiveSession } from "./session.js";
 import { getCurrentPhaseRow } from "./phase.js";
 
@@ -15,8 +15,7 @@ export function querySlice(
   targetDir: string,
   slice: QuerySlice
 ): string | null {
-  const db = openDatabase(targetDir);
-  try {
+  return withStateDb(targetDir, (db) => {
     const session = getActiveSession(db);
     if (!session) return null;
 
@@ -89,9 +88,7 @@ export function querySlice(
       default:
         return null;
     }
-  } finally {
-    db.close();
-  }
+  });
 }
 
 export function syncTaskStatus(
@@ -99,8 +96,7 @@ export function syncTaskStatus(
   code: string,
   status: "pending" | "in_progress" | "done"
 ): boolean {
-  const db = openDatabase(targetDir);
-  try {
+  return withStateDb(targetDir, (db) => {
     const session = getActiveSession(db);
     if (!session) return false;
     const result = db
@@ -109,9 +105,7 @@ export function syncTaskStatus(
       )
       .run(status, session.id, code);
     return result.changes > 0;
-  } finally {
-    db.close();
-  }
+  });
 }
 
 export function getStateCounts(db: StateDatabase, sessionId: string) {

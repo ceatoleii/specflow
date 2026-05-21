@@ -1,44 +1,37 @@
-import { SpecflowCliError } from "../errors.js";
 import { copyAdapter, removeAdapterFiles, printCopyResult } from "../lib/copy.js";
 import { loadManifest } from "../lib/manifest.js";
 import {
   readProjectTools,
   writeProjectTools,
-  detectLegacyTools,
+  resolveInstalledTools,
 } from "../lib/tools-config.js";
-import { readProjectVersion } from "../lib/version.js";
+import { assertProjectInstalled } from "../lib/project-guard.js";
 import { resolveTargetDir } from "../lib/paths.js";
 import {
   runToolsAddPrompts,
   runToolsRemovePrompts,
 } from "../lib/prompts.js";
+import { SpecflowCliError } from "../errors.js";
 
 export interface ToolsOptions {
   cwd?: string;
 }
 
-async function ensureInstalled(targetDir: string): Promise<string[]> {
-  const version = await readProjectVersion(targetDir);
-  if (!version) {
-    throw new SpecflowCliError(
-      "NOT_INSTALLED",
-      "SpecFlow no está instalado. Ejecuta: specflow init"
-    );
-  }
+async function ensureInstalledTools(targetDir: string): Promise<string[]> {
+  await assertProjectInstalled(targetDir);
   const config = await readProjectTools(targetDir);
   if (config?.tools.length) return config.tools;
-  const legacy = await detectLegacyTools(targetDir);
-  if (legacy.length) {
-    await writeProjectTools(targetDir, legacy, 2);
-    return legacy;
+  const tools = await resolveInstalledTools(targetDir);
+  if (tools.length) {
+    await writeProjectTools(targetDir, tools, 2);
   }
-  return [];
+  return tools;
 }
 
 export async function runToolsList(options: ToolsOptions): Promise<void> {
   const targetDir = resolveTargetDir(options.cwd);
   const manifest = await loadManifest();
-  const installed = await ensureInstalled(targetDir);
+  const installed = await ensureInstalledTools(targetDir);
 
   console.log("\n  Adaptadores instalados:");
   if (!installed.length) {
@@ -71,7 +64,7 @@ export interface ToolsModifyOptions extends ToolsOptions {
 export async function runToolsAdd(options: ToolsModifyOptions): Promise<void> {
   const targetDir = resolveTargetDir(options.cwd);
   const manifest = await loadManifest();
-  const installed = await ensureInstalled(targetDir);
+  const installed = await ensureInstalledTools(targetDir);
 
   let toAdd = options.toolIds ?? [];
   if (!toAdd.length) {
@@ -112,7 +105,7 @@ export async function runToolsRemove(
 ): Promise<void> {
   const targetDir = resolveTargetDir(options.cwd);
   const manifest = await loadManifest();
-  const installed = await ensureInstalled(targetDir);
+  const installed = await ensureInstalledTools(targetDir);
 
   let toRemove = options.toolIds ?? [];
   if (!toRemove.length) {

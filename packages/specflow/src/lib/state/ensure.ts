@@ -1,5 +1,5 @@
 import { isStateDbEnabled } from "../project-config.js";
-import { openDatabase, setMeta } from "./db.js";
+import { withStateDb, setMeta } from "./db.js";
 import { maybeMigrateLegacyState } from "./maybe-migrate.js";
 import { createActiveSession } from "./session.js";
 
@@ -19,15 +19,11 @@ export async function ensureStateForProject(
     return { enabled: false, bootstrapped: false, migrated: false };
   }
 
-  const db = openDatabase(targetDir);
-  let sessionId: string;
-  try {
+  const sessionId = withStateDb(targetDir, (db) => {
     const session = createActiveSession(db);
-    sessionId = session.id;
     setMeta(db, "state_db_enabled", "1");
-  } finally {
-    db.close();
-  }
+    return session.id;
+  });
 
   const migrated = await maybeMigrateLegacyState(targetDir);
 

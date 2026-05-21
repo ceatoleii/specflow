@@ -80,3 +80,29 @@ export function openDatabase(
 export function stateDbExists(targetDir: string): boolean {
   return fs.existsSync(resolveStateDbPath(targetDir));
 }
+
+export function withStateDb<T>(
+  targetDir: string,
+  fn: (db: StateDatabase) => T,
+  options: OpenDatabaseOptions = {}
+): T {
+  const db = openDatabase(targetDir, options);
+  try {
+    return fn(db);
+  } finally {
+    db.close();
+  }
+}
+
+export async function withStateDbAsync<T>(
+  targetDir: string,
+  fn: (db: StateDatabase) => Promise<T>,
+  options: OpenDatabaseOptions = {}
+): Promise<T> {
+  const db = openDatabase(targetDir, options);
+  try {
+    return await fn(db);
+  } finally {
+    db.close();
+  }
+}

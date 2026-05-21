@@ -1,5 +1,5 @@
 import { resolveStateDbPath } from "../paths.js";
-import { openDatabase, stateDbExists } from "./db.js";
+import { withStateDb, stateDbExists } from "./db.js";
 import { getActiveSession } from "./session.js";
 import { getCurrentPhaseRow } from "./phase.js";
 import { getStateCounts } from "./query.js";
@@ -21,8 +21,7 @@ export function getStateStatusInfo(targetDir: string): StateStatusInfo {
     return { dbPath, hasDb, taskCount: 0, criteriaCount: 0 };
   }
 
-  const db = openDatabase(targetDir);
-  try {
+  return withStateDb(targetDir, (db) => {
     const session = getActiveSession(db);
     if (!session) {
       return { dbPath, hasDb, taskCount: 0, criteriaCount: 0 };
@@ -39,7 +38,5 @@ export function getStateStatusInfo(targetDir: string): StateStatusInfo {
       taskCount: counts.tasks,
       criteriaCount: counts.criteria,
     };
-  } finally {
-    db.close();
-  }
+  });
 }

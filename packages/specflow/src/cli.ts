@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { SpecflowCliError } from "./errors.js";
-import { runInit, InitCancelledError } from "./commands/init.js";
+import { runInit } from "./commands/init.js";
 import { runSync } from "./commands/sync.js";
 import { runStatus } from "./commands/status.js";
 import {
@@ -20,14 +19,7 @@ import {
   runStateEnsure,
 } from "./commands/state.js";
 import { getCliVersion } from "./lib/version.js";
-
-function handleCliError(error: unknown): never {
-  if (error instanceof SpecflowCliError) {
-    console.error(error.message);
-    process.exit(1);
-  }
-  throw error;
-}
+import { runCommandAction } from "./lib/cli-action.js";
 
 const program = new Command();
 
@@ -45,23 +37,20 @@ program
   .option("--no-docs", "Skip .agents-docs/ scaffold")
   .option("--dry-run", "Preview without writing")
   .action(
-    async (opts: {
+    (opts: {
       cwd: string;
       docs: boolean;
       dryRun?: boolean;
     }) => {
-      try {
-        await runInit({
-          cwd: opts.cwd,
-          noDocs: opts.docs === false,
-          dryRun: opts.dryRun,
-        });
-      } catch (e) {
-        if (e instanceof InitCancelledError) {
-          process.exit(0);
-        }
-        handleCliError(e);
-      }
+      runCommandAction(
+        () =>
+          runInit({
+            cwd: opts.cwd,
+            noDocs: opts.docs === false,
+            dryRun: opts.dryRun,
+          }),
+        { onCancel: () => process.exit(0) }
+      );
     }
   );
 
@@ -71,16 +60,14 @@ program
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .option("--dry-run", "Preview changes")
   .option("-y, --yes", "Allow sync while flow task is active")
-  .action(async (opts: { cwd: string; dryRun?: boolean; yes?: boolean }) => {
-    try {
-      await runSync({
+  .action((opts: { cwd: string; dryRun?: boolean; yes?: boolean }) => {
+    runCommandAction(() =>
+      runSync({
         cwd: opts.cwd,
         dryRun: opts.dryRun,
         yes: opts.yes,
-      });
-    } catch (e) {
-      handleCliError(e);
-    }
+      })
+    );
   });
 
 program
@@ -88,12 +75,10 @@ program
   .description("Show version, adapters, and flow state")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (opts: { cwd: string }) => {
-    try {
+    runCommandAction(async () => {
       const result = await runStatus({ cwd: opts.cwd });
       if (result === "not_installed") process.exit(1);
-    } catch (e) {
-      handleCliError(e);
-    }
+    });
   });
 
 const tools = program
@@ -105,11 +90,7 @@ tools
   .description("List installed and available adapters")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (opts: { cwd: string }) => {
-    try {
-      await runToolsList({ cwd: opts.cwd });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runToolsList({ cwd: opts.cwd }));
   });
 
 tools
@@ -118,11 +99,9 @@ tools
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .option("--dry-run", "Preview changes")
   .action(async (opts: { cwd: string; dryRun?: boolean }) => {
-    try {
-      await runToolsAdd({ cwd: opts.cwd, dryRun: opts.dryRun });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() =>
+      runToolsAdd({ cwd: opts.cwd, dryRun: opts.dryRun })
+    );
   });
 
 const state = program
@@ -134,11 +113,7 @@ state
   .description("Bootstrap state.db per .specflow-config.json (flow activation)")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (opts: { cwd: string }) => {
-    try {
-      await runStateEnsure({ cwd: opts.cwd });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runStateEnsure({ cwd: opts.cwd }));
   });
 
 state
@@ -146,11 +121,7 @@ state
   .description("Show state.db session and phase")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (opts: { cwd: string }) => {
-    try {
-      await runStateStatus({ cwd: opts.cwd });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runStateStatus({ cwd: opts.cwd }));
   });
 
 state
@@ -164,15 +135,13 @@ state
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(
     async (opts: { cwd: string; slice: string; json?: boolean }) => {
-      try {
-        await runStateQuery({
+      runCommandAction(() =>
+        runStateQuery({
           cwd: opts.cwd,
           slice: opts.slice,
           json: opts.json,
-        });
-      } catch (e) {
-        handleCliError(e);
-      }
+        })
+      );
     }
   );
 
@@ -182,11 +151,7 @@ state
   .argument("<term>", "Search term")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (term: string, opts: { cwd: string }) => {
-    try {
-      await runStateSearch({ cwd: opts.cwd, term });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runStateSearch({ cwd: opts.cwd, term }));
   });
 
 state
@@ -194,11 +159,7 @@ state
   .description("Import legacy .agents-state/current/*.md into state.db")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (opts: { cwd: string }) => {
-    try {
-      await runStateMigrate({ cwd: opts.cwd });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runStateMigrate({ cwd: opts.cwd }));
   });
 
 state
@@ -206,11 +167,7 @@ state
   .description("Export active session to .agents-state/history/")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (opts: { cwd: string }) => {
-    try {
-      await runStateExport({ cwd: opts.cwd });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runStateExport({ cwd: opts.cwd }));
   });
 
 state
@@ -219,11 +176,7 @@ state
   .argument("<phase>", "refining|designing|implementing|reviewing")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (phase: string, opts: { cwd: string }) => {
-    try {
-      await runStateSetPhase({ cwd: opts.cwd, phase });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() => runStateSetPhase({ cwd: opts.cwd, phase }));
   });
 
 state
@@ -234,15 +187,13 @@ state
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(
     async (opts: { cwd: string; code: string; status: string }) => {
-      try {
-        await runStateSyncTask({
+      runCommandAction(() =>
+        runStateSyncTask({
           cwd: opts.cwd,
           code: opts.code,
           status: opts.status,
-        });
-      } catch (e) {
-        handleCliError(e);
-      }
+        })
+      );
     }
   );
 
@@ -252,11 +203,9 @@ tools
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .option("--dry-run", "Preview changes")
   .action(async (opts: { cwd: string; dryRun?: boolean }) => {
-    try {
-      await runToolsRemove({ cwd: opts.cwd, dryRun: opts.dryRun });
-    } catch (e) {
-      handleCliError(e);
-    }
+    runCommandAction(() =>
+      runToolsRemove({ cwd: opts.cwd, dryRun: opts.dryRun })
+    );
   });
 
 program.parse();

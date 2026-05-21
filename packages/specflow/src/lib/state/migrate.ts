@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "node:path";
-import { openDatabase, setMeta, getMeta, type StateDatabase } from "./db.js";
+import { withStateDbAsync, setMeta, getMeta, type StateDatabase } from "./db.js";
 import { ensureActiveSession } from "./session.js";
 import {
   isValidPhase,
@@ -8,110 +8,24 @@ import {
   writePhaseShim,
 } from "./phase.js";
 import { resolveStateCurrentPath } from "../paths.js";
-
-const LEGACY_FILES = [
-  "phase.md",
-  "task.md",
-  "refinement-log.md",
-  "sdd.md",
-  "tasks.md",
-  "review.md",
-] as const;
+import {
+  DB_ARTIFACT_KINDS,
+  LEGACY_ARTIFACT_FILES,
+  legacyFileForKind,
+} from "./artifacts.js";
+import {
+  parseAcceptanceCriteria,
+  parseRefinementMessages,
+  parseTasksMarkdown,
+} from "./migrate-parsers.js";
 
 export async function hasLegacyMarkdown(targetDir: string): Promise<boolean> {
   const currentDir = resolveStateCurrentPath(targetDir);
   if (!(await fs.pathExists(currentDir))) return false;
-  for (const file of LEGACY_FILES) {
+  for (const file of LEGACY_ARTIFACT_FILES) {
     if (await fs.pathExists(path.join(currentDir, file))) return true;
   }
   return false;
-}
-
-function parseAcceptanceCriteria(taskContent: string): string[] {
-  const lines = taskContent.split("\n");
-  const criteria: string[] = [];
-  let inSection = false;
-
-  for (const line of lines) {
-    if (/^##\s+Acceptance Criteria/i.test(line)) {
-      inSection = true;
-      continue;
-    }
-    if (inSection && /^##\s+/.test(line)) break;
-    if (inSection) {
-      const m = line.match(/^-\s+\[[ xX~]\]\s+(.+)$/);
-      if (m) criteria.push(m[1].trim());
-    }
-  }
-  return criteria;
-}
-
-function parseRefinementMessages(content: string): Array<{
-  round: number;
-  role: string;
-  content: string;
-}> {
-  const messages: Array<{ round: number; role: string; content: string }> = [];
-  const blocks = content.split(/^## Round (\d+)/m).slice(1);
-
-  for (let i = 0; i < blocks.length; i += 2) {
-    const round = parseInt(blocks[i], 10);
-    const body = blocks[i + 1] ?? "";
-    const userMatch = body.match(/\*\*User:\*\*([\s\S]*?)(?=\*\*Refiner:\*\*|$)/);
-    const refinerMatch = body.match(
-      /\*\*Refiner:\*\*([\s\S]*?)(?=\*\*Answers:\*\*|$)/
-    );
-    const answersMatch = body.match(/\*\*Answers:\*\*([\s\S]*?)$/);
-
-    if (userMatch) {
-      messages.push({ round, role: "user", content: userMatch[1].trim() });
-    }
-    if (refinerMatch) {
-      messages.push({ round, role: "agent", content: refinerMatch[1].trim() });
-    }
-    if (answersMatch?.[1]?.trim()) {
-      messages.push({
-        round,
-        role: "user",
-        content: answersMatch[1].trim(),
-      });
-    }
-  }
-  return messages;
-}
-
-function parseTasksMarkdown(content: string): Array<{
-  code: string;
-  title: string;
-  body: string;
-  status: string;
-  sortOrder: number;
-}> {
-  const tasks: Array<{
-    code: string;
-    title: string;
-    body: string;
-    status: string;
-    sortOrder: number;
-  }> = [];
-  const re =
-    /^- \[( |x|~)\] \*\*(T\d+)\*\* — ([^:]+):\s*(.*)$/gim;
-  let m: RegExpExecArray | null;
-  let order = 0;
-
-  while ((m = re.exec(content)) !== null) {
-    const mark = m[1];
-    const status =
-      mark === "x" ? "done" : mark === "~" ? "in_progress" : "pending";
-    tasks.push({
-      code: m[2],
-      title: m[3].trim(),
-      body: m[4].trim(),
-      status,
-      sortOrder: order++,
-    });
-  }
-  return tasks;
 }
 
 function upsertArtifact(
@@ -142,9 +56,8 @@ export async function migrateLegacyState(
   targetDir: string
 ): Promise<{ sessionId: string; migrated: boolean }> {
   const currentDir = resolveStateCurrentPath(targetDir);
-  const db = openDatabase(targetDir);
 
-  try {
+  return withStateDbAsync(targetDir, async (db) => {
     if (getMeta(db, "migrated_from_legacy") === "1") {
       const session = ensureActiveSession(db);
       return { sessionId: session.id, migrated: false };
@@ -189,9 +102,8 @@ export async function migrateLegacyState(
       }
     }
 
-    for (const kind of ["sdd", "tasks", "review"] as const) {
-      const fileName = kind === "tasks" ? "tasks.md" : `${kind}.md`;
-      const filePath = path.join(currentDir, fileName);
+    for (const kind of DB_ARTIFACT_KINDS) {
+      const filePath = path.join(currentDir, legacyFileForKind(kind));
       if (await fs.pathExists(filePath)) {
         const content = await fs.readFile(filePath, "utf8");
         upsertArtifact(db, session.id, kind, content);
@@ -220,7 +132,5 @@ export async function migrateLegacyState(
 
     setMeta(db, "migrated_from_legacy", "1");
     return { sessionId: session.id, migrated: true };
-  } finally {
-    db.close();
-  }
+  });
 }

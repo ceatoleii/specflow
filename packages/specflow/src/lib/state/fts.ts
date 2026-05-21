@@ -1,4 +1,4 @@
-import { openDatabase } from "./db.js";
+import { withStateDb } from "./db.js";
 import { ensureActiveSession } from "./session.js";
 
 export interface SearchHit {
@@ -8,8 +8,7 @@ export interface SearchHit {
 }
 
 export function searchState(targetDir: string, term: string): SearchHit[] {
-  const db = openDatabase(targetDir);
-  try {
+  return withStateDb(targetDir, (db) => {
     const session = ensureActiveSession(db);
     const hits: SearchHit[] = [];
     const escaped = term.replace(/"/g, '""');
@@ -48,9 +47,7 @@ export function searchState(targetDir: string, term: string): SearchHit[] {
     }
 
     return hits;
-  } finally {
-    db.close();
-  }
+  });
 }
 
 export function insertDecision(
@@ -58,14 +55,11 @@ export function insertDecision(
   content: string,
   phase?: string
 ): void {
-  const db = openDatabase(targetDir);
-  try {
+  withStateDb(targetDir, (db) => {
     const session = ensureActiveSession(db);
     const now = new Date().toISOString();
     db.prepare(
       "INSERT INTO decisions (session_id, phase, content, created_at) VALUES (?, ?, ?, ?)"
     ).run(session.id, phase ?? null, content, now);
-  } finally {
-    db.close();
-  }
+  });
 }

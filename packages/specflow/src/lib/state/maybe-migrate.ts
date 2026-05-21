@@ -1,6 +1,6 @@
 import { isFlowActive } from "../flow.js";
 import { isStateDbEnabled } from "../project-config.js";
-import { stateDbExists, getMeta, openDatabase } from "./db.js";
+import { stateDbExists, getMeta, withStateDb } from "./db.js";
 import { hasLegacyMarkdown, migrateLegacyState } from "./migrate.js";
 
 export async function maybeMigrateLegacyState(
@@ -15,13 +15,11 @@ export async function maybeMigrateLegacyState(
   }
 
   if (stateDbExists(targetDir)) {
-    const db = openDatabase(targetDir);
-    try {
-      if (getMeta(db, "migrated_from_legacy") === "1") {
-        return { ran: false };
-      }
-    } finally {
-      db.close();
+    const alreadyMigrated = withStateDb(targetDir, (db) => {
+      return getMeta(db, "migrated_from_legacy") === "1";
+    });
+    if (alreadyMigrated) {
+      return { ran: false };
     }
   }
 

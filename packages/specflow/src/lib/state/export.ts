@@ -1,25 +1,16 @@
 import fs from "fs-extra";
 import path from "node:path";
 import { SpecflowCliError } from "../../errors.js";
-import { openDatabase } from "./db.js";
+import { withStateDbAsync } from "./db.js";
 import { getActiveSession, archiveActiveSession } from "./session.js";
 import { STATE_DIR } from "../paths.js";
-
-const ARTIFACT_FILES: Record<string, string> = {
-  task: "task.md",
-  refinement: "refinement-log.md",
-  sdd: "sdd.md",
-  tasks: "tasks.md",
-  review: "review.md",
-};
+import { artifactFileForKind } from "./artifacts.js";
 
 export async function exportSessionToHistory(
   targetDir: string,
   sessionId?: string
 ): Promise<string> {
-  const db = openDatabase(targetDir);
-
-  try {
+  return withStateDbAsync(targetDir, async (db) => {
     const sid =
       sessionId ??
       (() => {
@@ -43,7 +34,7 @@ export async function exportSessionToHistory(
       .all(sid) as Array<{ kind: string; content: string }>;
 
     for (const a of artifacts) {
-      const fileName = ARTIFACT_FILES[a.kind];
+      const fileName = artifactFileForKind(a.kind);
       if (fileName) {
         await fs.writeFile(path.join(historyDir, fileName), a.content, "utf8");
       }
@@ -68,7 +59,5 @@ export async function exportSessionToHistory(
     }
 
     return sid;
-  } finally {
-    db.close();
-  }
+  });
 }

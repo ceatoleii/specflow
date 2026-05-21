@@ -3,17 +3,15 @@ import { SpecflowCliError } from "../errors.js";
 import { syncCoreAndAdapters } from "../lib/install.js";
 import { confirmIfFlowActive } from "../lib/flow.js";
 import { resolveTargetDir } from "../lib/paths.js";
-import {
-  readProjectTools,
-  detectLegacyTools,
-  writeProjectTools,
-} from "../lib/tools-config.js";
+import { resolveInstalledTools } from "../lib/tools-config.js";
+import { assertProjectInstalled } from "../lib/project-guard.js";
 import {
   getCliVersion,
   readProjectVersion,
   writeProjectVersion,
 } from "../lib/version.js";
 import { loadManifest } from "../lib/manifest.js";
+import { writeProjectTools } from "../lib/tools-config.js";
 
 export interface SyncOptions {
   cwd?: string;
@@ -21,26 +19,13 @@ export interface SyncOptions {
   yes?: boolean;
 }
 
-async function resolveInstalledTools(targetDir: string): Promise<string[]> {
-  const config = await readProjectTools(targetDir);
-  if (config?.tools.length) return config.tools;
-  const legacy = await detectLegacyTools(targetDir);
-  if (legacy.length) return legacy;
-  return [];
-}
-
 export async function runSync(options: SyncOptions): Promise<void> {
   const targetDir = resolveTargetDir(options.cwd);
   const cliVersion = getCliVersion();
   const dryRun = options.dryRun ?? false;
 
-  const installed = await readProjectVersion(targetDir);
-  if (!installed) {
-    throw new SpecflowCliError(
-      "NOT_INSTALLED",
-      "SpecFlow no está instalado. Ejecuta: specflow init"
-    );
-  }
+  await assertProjectInstalled(targetDir);
+  const installed = (await readProjectVersion(targetDir))!;
 
   const canProceed = await confirmIfFlowActive(targetDir, options.yes ?? false);
   if (!canProceed) {

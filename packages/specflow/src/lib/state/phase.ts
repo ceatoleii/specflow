@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "node:path";
 import type { StateDatabase } from "./db.js";
-import { openDatabase } from "./db.js";
+import { withStateDb, withStateDbAsync } from "./db.js";
 import { ensureActiveSession } from "./session.js";
 import { resolveFlowPhasePath } from "../paths.js";
 
@@ -64,26 +64,20 @@ export async function readPhaseShim(targetDir: string): Promise<string | undefin
 export function getCurrentPhaseFromDb(
   targetDir: string
 ): string | undefined {
-  const db = openDatabase(targetDir);
-  try {
+  return withStateDb(targetDir, (db) => {
     const session = ensureActiveSession(db);
     const row = getCurrentPhaseRow(db, session.id);
     return row?.phase;
-  } finally {
-    db.close();
-  }
+  });
 }
 
 export async function setPhase(
   targetDir: string,
   phase: FlowPhase
 ): Promise<void> {
-  const db = openDatabase(targetDir);
-  try {
+  await withStateDbAsync(targetDir, async (db) => {
     const session = ensureActiveSession(db);
     setPhaseInDb(db, session.id, phase);
     await writePhaseShim(targetDir, phase);
-  } finally {
-    db.close();
-  }
+  });
 }

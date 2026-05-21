@@ -1,9 +1,9 @@
 import { loadManifest } from "./manifest.js";
+import type { SpecflowManifestV2 } from "./manifest.js";
 import {
   copyAdapter,
   copyCoreScaffold,
   copyCoreStatic,
-  mergeResults,
   printCopyResult,
   type CopyResult,
 } from "./copy.js";
@@ -21,6 +21,42 @@ export interface InstallCoreOptions {
   dryRun: boolean;
   locale: Locale;
   stateDb: boolean;
+}
+
+interface CopyAdaptersOptions {
+  dryRun: boolean;
+  logEmptyAdapters?: boolean;
+}
+
+async function copyInstalledAdapters(
+  targetDir: string,
+  tools: string[],
+  manifest: SpecflowManifestV2,
+  options: CopyAdaptersOptions
+): Promise<void> {
+  const { dryRun, logEmptyAdapters = false } = options;
+
+  for (const toolId of tools) {
+    const adapter = manifest.adapters[toolId];
+    if (!adapter) continue;
+
+    if (adapter.files.length === 0) {
+      if (logEmptyAdapters) {
+        console.log(
+          `\n  Adaptador ${adapter.label}: usa AGENTS.md (sin archivos extra)`
+        );
+      }
+      continue;
+    }
+
+    const adapterResult = await copyAdapter(
+      targetDir,
+      toolId,
+      adapter.files,
+      { dryRun }
+    );
+    printCopyResult(`Adaptador: ${adapter.label}`, adapterResult, dryRun);
+  }
 }
 
 export async function installCoreAndAdapters(
@@ -50,23 +86,10 @@ export async function installCoreAndAdapters(
     printCopyResult("Docs (.agents-docs/, solo nuevos)", scaffoldResult, dryRun);
   }
 
-  for (const toolId of tools) {
-    const adapter = manifest.adapters[toolId];
-    if (!adapter) continue;
-
-    if (adapter.files.length === 0) {
-      console.log(`\n  Adaptador ${adapter.label}: usa AGENTS.md (sin archivos extra)`);
-      continue;
-    }
-
-    const adapterResult = await copyAdapter(
-      targetDir,
-      toolId,
-      adapter.files,
-      { dryRun }
-    );
-    printCopyResult(`Adaptador: ${adapter.label}`, adapterResult, dryRun);
-  }
+  await copyInstalledAdapters(targetDir, tools, manifest, {
+    dryRun,
+    logEmptyAdapters: true,
+  });
 
   if (!dryRun) {
     const gitignoreAdded = await ensureGitignoreEntries(
@@ -107,18 +130,7 @@ export async function syncCoreAndAdapters(
   );
   printCopyResult("Core actualizado", coreResult, dryRun);
 
-  for (const toolId of tools) {
-    const adapter = manifest.adapters[toolId];
-    if (!adapter || adapter.files.length === 0) continue;
-
-    const adapterResult = await copyAdapter(
-      targetDir,
-      toolId,
-      adapter.files,
-      { dryRun }
-    );
-    printCopyResult(`Adaptador: ${adapter.label}`, adapterResult, dryRun);
-  }
+  await copyInstalledAdapters(targetDir, tools, manifest, { dryRun });
 
   if (!dryRun) {
     await writeProjectVersion(

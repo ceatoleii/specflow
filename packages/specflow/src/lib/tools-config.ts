@@ -29,6 +29,16 @@ export async function writeProjectTools(
   await fs.writeJson(path.join(targetDir, TOOLS_FILE), data, { spaces: 2 });
 }
 
+export async function resolveInstalledTools(
+  targetDir: string
+): Promise<string[]> {
+  const config = await readProjectTools(targetDir);
+  if (config?.tools.length) return config.tools;
+  const legacy = await detectLegacyTools(targetDir);
+  if (legacy.length) return legacy;
+  return [];
+}
+
 export async function detectLegacyTools(targetDir: string): Promise<string[]> {
   const tools: string[] = [];
   if (
