@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { SpecflowCliError } from "./errors.js";
-import { runInit } from "./commands/init.js";
+import { runInit, InitCancelledError } from "./commands/init.js";
 import { runSync } from "./commands/sync.js";
 import { runStatus } from "./commands/status.js";
 import {
@@ -32,26 +32,22 @@ program
   .command("init")
   .description("Install SpecFlow (interactive)")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
-  .option("-y, --yes", "Non-interactive: all stable tools + docs")
   .option("--no-docs", "Skip .agents-docs/ scaffold")
   .option("--dry-run", "Preview without writing")
   .action(
     async (opts: {
       cwd: string;
-      yes?: boolean;
       docs: boolean;
       dryRun?: boolean;
     }) => {
       try {
         await runInit({
           cwd: opts.cwd,
-          yes: opts.yes,
           noDocs: opts.docs === false,
           dryRun: opts.dryRun,
         });
       } catch (e) {
-        if (e instanceof Error && e.message === "Instalación cancelada.") {
-          console.log("\n  Cancelado.");
+        if (e instanceof InitCancelledError) {
           process.exit(0);
         }
         handleCliError(e);

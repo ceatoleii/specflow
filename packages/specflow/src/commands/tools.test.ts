@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import fs from "fs-extra";
 import path from "node:path";
-import { runInit } from "./init.js";
 import { runToolsList, runToolsAdd, runToolsRemove } from "./tools.js";
 import { readProjectTools } from "../lib/tools-config.js";
 import { createProjectDir } from "../test/helpers.js";
+import { installTestProject } from "../test/install-fixture.js";
 
 describe("tools", () => {
   it("throws NOT_INSTALLED for list", async () => {
@@ -16,13 +16,13 @@ describe("tools", () => {
 
   it("list shows installed adapters", async () => {
     const dir = await createProjectDir("tools-list");
-    await runInit({ cwd: dir, yes: true, noDocs: true });
+    await installTestProject(dir, { includeDocs: false });
     await expect(runToolsList({ cwd: dir })).resolves.toBeUndefined();
   });
 
   it("add installs github-copilot adapter", async () => {
     const dir = await createProjectDir("tools-add");
-    await runInit({ cwd: dir, yes: true, noDocs: true });
+    await installTestProject(dir, { includeDocs: false });
 
     await runToolsAdd({
       cwd: dir,
@@ -38,7 +38,7 @@ describe("tools", () => {
 
   it("remove deletes adapter files", async () => {
     const dir = await createProjectDir("tools-remove");
-    await runInit({ cwd: dir, yes: true });
+    await installTestProject(dir);
 
     await runToolsRemove({
       cwd: dir,

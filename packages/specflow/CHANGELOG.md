@@ -4,6 +4,22 @@ All notable changes to `@ceatoleii/specflow` are documented here.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Guided `specflow init` wizard with `@clack/prompts`: ASCII banner, language selection (ES/EN), step-by-step flow
+- `.specflow-config.json` stores per-project preferences (`locale`, `includeDocs`)
+
+### Changed
+
+- `specflow init` always interactive; removed `--yes` / `-y` flag
+- Init prompts fully localized (Spanish / English)
+
+### Removed
+
+- `specflow init --yes` non-interactive mode
+
 ## [1.1.1] - 2026-05-21
 
 ### Fixed

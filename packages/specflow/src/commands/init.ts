@@ -2,52 +2,66 @@ import { installCoreAndAdapters } from "../lib/install.js";
 import { runInitPrompts } from "../lib/prompts.js";
 import { resolveTargetDir } from "../lib/paths.js";
 import { readProjectVersion, getCliVersion } from "../lib/version.js";
+import { SpecflowCliError } from "../errors.js";
+import { InitCancelledError } from "../lib/init-cancelled.js";
+import { t, tPreLocale } from "../lib/i18n.js";
 
 export interface InitOptions {
   cwd?: string;
-  yes?: boolean;
   noDocs?: boolean;
   dryRun?: boolean;
 }
 
 export async function runInit(options: InitOptions): Promise<void> {
+  if (!process.stdin.isTTY) {
+    throw new SpecflowCliError("NO_TTY", tPreLocale("initRequiresTty"));
+  }
+
   const targetDir = resolveTargetDir(options.cwd);
   const cliVersion = getCliVersion();
   const dryRun = options.dryRun ?? false;
-  const interactive = !options.yes && process.stdin.isTTY;
 
   const existing = await readProjectVersion(targetDir);
-  if (existing && !dryRun && interactive) {
-    console.log(
-      `\n  SpecFlow ya instalado (v${existing.specflow}). Usa \`specflow sync\` o \`specflow tools add\`.`
-    );
-  }
 
   const answers = await runInitPrompts(targetDir, {
-    yes: !interactive,
+    alreadyInstalledVersion: existing && !dryRun ? existing.specflow : undefined,
   });
 
+  const messages = t(answers.locale);
   const tools = answers.tools;
   const includeDocs = options.noDocs ? false : answers.includeDocs;
 
-  console.log(`\n→ Instalando SpecFlow v${cliVersion} en ${targetDir}`);
+  const spinner = (await import("@clack/prompts")).spinner();
+  spinner.start(messages.installing(cliVersion, targetDir));
 
-  await installCoreAndAdapters({
-    targetDir,
-    tools,
-    includeDocs,
-    dryRun,
-  });
+  try {
+    await installCoreAndAdapters({
+      targetDir,
+      tools,
+      includeDocs,
+      dryRun,
+      locale: answers.locale,
+    });
+  } catch (error) {
+    spinner.stop("");
+    throw error;
+  }
+
+  const { outro } = await import("@clack/prompts");
 
   if (dryRun) {
-    console.log("\n[dry-run] Sin cambios escritos.");
+    spinner.stop("");
+    outro(messages.dryRunDone);
     return;
   }
 
-  console.log(`\n✓ SpecFlow v${cliVersion} instalado.`);
+  spinner.stop(messages.installDone(cliVersion));
+
+  const outroLines = [messages.editDocs, messages.activateFlow];
   if (tools.length) {
-    console.log(`  Adaptadores: ${tools.join(", ")}`);
+    outroLines.unshift(messages.adaptersLine(tools.join(", ")));
   }
-  console.log("  Edita .agents-docs/ cuando quieras.");
-  console.log('  Activa el flujo: "nueva tarea: [tu requerimiento]"');
+  outro(outroLines.join("\n"));
 }
+
+export { InitCancelledError };

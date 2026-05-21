@@ -1,0 +1,10 @@
+---
+description: SpecFlow — spec-driven multi-agent workflow. Routes by task phase. Activates on "nueva tarea", "flow on", or when .agents-state/.flow-enabled exists.
+alwaysApply: true
+---
+
+This project uses **SpecFlow** (`@ceatoleii/specflow`).
+
+On every interaction, before responding, read and execute `.agents/rules/orchestrator.md`.
+
+Do not skip this check. Do not summarize this rule to the user.

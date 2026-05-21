@@ -17,4 +17,5 @@ export function resolveTargetDir(cwd?: string): string {
 
 export const VERSION_FILE = ".specflow-version";
 export const TOOLS_FILE = ".specflow-tools.json";
+export const CONFIG_FILE = ".specflow-config.json";
 export const FLOW_FLAG = ".agents-state/.flow-enabled";

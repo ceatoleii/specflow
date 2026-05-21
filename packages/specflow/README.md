@@ -92,19 +92,15 @@ Example: **`nueva tarea: add password reset to the login flow`**
 npx @ceatoleii/specflow init
 ```
 
-The CLI asks (checkbox / confirm):
+The CLI guides you step by step (`@clack/prompts`):
 
-1. Confirm directory  
-2. **Which AI tools** you use (Cursor, Claude Code, Copilot, Codex, …)  
-3. Whether to scaffold `.agents-docs/`  
-4. Summary → install  
+1. **Language** — Español or English  
+2. Confirm directory  
+3. **Which AI tools** you use (Cursor, Claude Code, Copilot, Codex, …)  
+4. Whether to scaffold `.agents-docs/`  
+5. Summary → install  
 
-### Non-interactive (CI / scripts)
-
-```bash
-npx @ceatoleii/specflow init --yes
-npx @ceatoleii/specflow init --yes --no-docs
-```
+Requires an interactive terminal (no `--yes` shortcut).
 
 ### What gets installed
 
@@ -113,6 +109,7 @@ npx @ceatoleii/specflow init --yes --no-docs
 | `AGENTS.md` | `init` / `sync` | Universal entry ([agents.md](https://agents.md/)) |
 | `.agents/` | `init` / `sync` | Orchestrator + 4 agents — **do not edit** |
 | `.specflow-tools.json` | `init` / `sync` | Installed IDE adapters |
+| `.specflow-config.json` | `init` | Project preferences (locale, docs) |
 | Adapter files | per tool | e.g. `.cursor/rules/`, `CLAUDE.md`, `.github/copilot-instructions.md` |
 | `.agents-docs/` | **You** | Project context (manual) |
 | `.agents-state/` | Runtime | Per-task state (gitignored) |
@@ -135,7 +132,7 @@ npx @ceatoleii/specflow init --yes --no-docs
 
 | Command | Description |
 |---------|-------------|
-| `specflow init` | Interactive install (checkbox for IDE tools) |
+| `specflow init` | Interactive guided install (language, IDE tools, docs) |
 | `specflow sync` | Update core + installed adapters |
 | `specflow status` | Version, adapters, flow state |
 | `specflow tools list` | Show installed / available adapters |
@@ -145,7 +142,6 @@ npx @ceatoleii/specflow init --yes --no-docs
 ### Options
 
 ```bash
-specflow init --yes           # all stable tools, no prompts
 specflow init --no-docs       # skip .agents-docs/
 specflow init --dry-run
 specflow sync --yes           # sync while flow task active

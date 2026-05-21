@@ -1,37 +1,65 @@
-import { confirm, checkbox, select } from "@inquirer/prompts";
+import * as clack from "@clack/prompts";
 import fs from "fs-extra";
 import path from "node:path";
+import { renderBanner } from "./banner.js";
+import { InitCancelledError } from "./init-cancelled.js";
+import { t, type Locale } from "./i18n.js";
 import { loadManifest, getStableAdapterIds } from "./manifest.js";
 import { detectLegacyTools } from "./tools-config.js";
+import { getCliVersion } from "./version.js";
 
 export interface InitAnswers {
   targetDir: string;
   tools: string[];
   includeDocs: boolean;
+  locale: Locale;
+}
+
+function throwIfCancelled<T>(value: T | symbol): T {
+  if (clack.isCancel(value)) {
+    throw new InitCancelledError();
+  }
+  return value;
 }
 
 export async function runInitPrompts(
   targetDir: string,
-  options: { yes?: boolean }
+  options: { alreadyInstalledVersion?: string }
 ): Promise<InitAnswers> {
   const manifest = await loadManifest();
+  const version = getCliVersion();
 
-  if (options.yes) {
-    return {
-      targetDir,
-      tools: getStableAdapterIds(manifest),
-      includeDocs: true,
-    };
+  clack.intro(renderBanner(version));
+
+  const locale = throwIfCancelled(
+    await clack.select({
+      message: t("en").languagePrompt,
+      options: [
+        { value: "es" as const, label: "Español" },
+        { value: "en" as const, label: "English" },
+      ],
+    })
+  );
+
+  const messages = t(locale);
+  clack.log.message(messages.introSubtitle);
+
+  if (options.alreadyInstalledVersion) {
+    clack.note(
+      messages.alreadyInstalled(options.alreadyInstalledVersion),
+      "SpecFlow"
+    );
   }
 
-  console.log("\n  SpecFlow — instalación interactiva\n");
-
-  const proceed = await confirm({
-    message: `¿Instalar en ${targetDir}?`,
-    default: true,
-  });
+  const proceed = throwIfCancelled(
+    await clack.confirm({
+      message: messages.confirmDirectory(targetDir),
+      initialValue: true,
+    })
+  );
   if (!proceed) {
-    throw new Error("Instalación cancelada.");
+    clack.cancel(messages.cancelled);
+    throw new InitCancelledError();
   }
 
   const legacy = await detectLegacyTools(targetDir);
@@ -39,34 +67,47 @@ export async function runInitPrompts(
     legacy.length > 0 ? legacy : getStableAdapterIds(manifest)
   );
 
-  const choices = Object.entries(manifest.adapters).map(([id, adapter]) => ({
-    name:
+  const toolOptions = Object.entries(manifest.adapters).map(([id, adapter]) => ({
+    value: id,
+    label:
       adapter.tier === "experimental"
         ? `${adapter.label} [experimental]`
         : adapter.label,
-    value: id,
-    checked: defaultChecked.has(id),
   }));
 
-  const selectedTools = await checkbox({
-    message:
-      "Herramientas de IA (espacio para marcar, Enter para confirmar)",
-    choices,
-  });
+  let tools = throwIfCancelled(
+    await clack.multiselect({
+      message: messages.toolsPrompt,
+      options: toolOptions,
+      initialValues: toolOptions
+        .filter((o) => defaultChecked.has(o.value))
+        .map((o) => o.value),
+      required: false,
+    })
+  );
 
-  const coreOnly = await confirm({
-    message: "¿Solo core (AGENTS.md + .agents) sin adaptadores de IDE?",
-    default: false,
-  });
+  const coreOnly = throwIfCancelled(
+    await clack.confirm({
+      message: messages.coreOnlyPrompt,
+      initialValue: false,
+    })
+  );
 
-  let tools = coreOnly ? [] : selectedTools;
+  if (coreOnly) {
+    tools = [];
+  }
 
   if (tools.length === 0 && !coreOnly) {
-    const onlyCore = await confirm({
-      message: "No seleccionaste herramientas. ¿Continuar solo con core?",
-      default: true,
-    });
-    if (!onlyCore) throw new Error("Instalación cancelada.");
+    const onlyCore = throwIfCancelled(
+      await clack.confirm({
+        message: messages.noToolsSelected,
+        initialValue: true,
+      })
+    );
+    if (!onlyCore) {
+      clack.cancel(messages.cancelled);
+      throw new InitCancelledError();
+    }
     tools = [];
   }
 
@@ -78,60 +119,76 @@ export async function runInitPrompts(
   );
 
   if (hasExperimental && !hasStable && tools.length > 0) {
-    const ok = await confirm({
-      message:
-        "Solo elegiste herramientas [experimental]. ¿Continuar igual?",
-      default: false,
-    });
-    if (!ok) throw new Error("Instalación cancelada.");
+    const ok = throwIfCancelled(
+      await clack.confirm({
+        message: messages.experimentalOnly,
+        initialValue: false,
+      })
+    );
+    if (!ok) {
+      clack.cancel(messages.cancelled);
+      throw new InitCancelledError();
+    }
   }
 
   if (tools.includes("claude-code")) {
     const claudePath = path.join(targetDir, "CLAUDE.md");
     if (await fs.pathExists(claudePath)) {
-      const ok = await confirm({
-        message:
-          "Ya existe CLAUDE.md. SpecFlow lo sobrescribirá al sincronizar. ¿Continuar?",
-        default: false,
-      });
+      const ok = throwIfCancelled(
+        await clack.confirm({
+          message: messages.claudeOverwrite,
+          initialValue: false,
+        })
+      );
       if (!ok) {
-        tools = tools.filter((t) => t !== "claude-code");
+        tools = tools.filter((toolId) => toolId !== "claude-code");
       }
     }
   }
 
-  const docsChoice = await select({
-    message: "Documentación del proyecto (.agents-docs/)",
-    choices: [
-      { name: "Crear plantillas (recomendado)", value: "yes" as const },
-      { name: "Omitir por ahora", value: "no" as const },
-    ],
-    default: "yes",
-  });
-
-  console.log("\n  Resumen:");
-  console.log(`    Directorio: ${targetDir}`);
-  console.log(
-    `    Adaptadores: ${
-      tools.length
-        ? tools
-            .map((id) => manifest.adapters[id]?.label ?? id)
-            .join(", ")
-        : "(solo core — Codex/Copilot vía AGENTS.md)"
-    }`
+  const docsChoice = throwIfCancelled(
+    await clack.select({
+      message: messages.docsPrompt,
+      options: [
+        { value: "yes" as const, label: messages.docsYes },
+        { value: "no" as const, label: messages.docsNo },
+      ],
+      initialValue: "yes" as const,
+    })
   );
-  console.log(`    Docs: ${docsChoice === "yes" ? "sí" : "no"}`);
 
-  const confirmInstall = await confirm({
-    message: "¿Proceder con la instalación?",
-    default: true,
-  });
-  if (!confirmInstall) throw new Error("Instalación cancelada.");
+  const adapterSummary =
+    tools.length > 0
+      ? tools.map((id) => manifest.adapters[id]?.label ?? id).join(", ")
+      : messages.summaryAdaptersCoreOnly;
+
+  clack.note(
+    [
+      `${messages.summaryDirectory}: ${targetDir}`,
+      `${messages.summaryAdapters}: ${adapterSummary}`,
+      `${messages.summaryDocs}: ${
+        docsChoice === "yes" ? messages.summaryDocsYes : messages.summaryDocsNo
+      }`,
+    ].join("\n"),
+    messages.summaryTitle
+  );
+
+  const confirmInstall = throwIfCancelled(
+    await clack.confirm({
+      message: messages.confirmInstall,
+      initialValue: true,
+    })
+  );
+  if (!confirmInstall) {
+    clack.cancel(messages.cancelled);
+    throw new InitCancelledError();
+  }
 
   return {
     targetDir,
     tools,
     includeDocs: docsChoice === "yes",
+    locale,
   };
 }
 
@@ -155,6 +212,7 @@ export async function runToolsAddPrompts(
     return [];
   }
 
+  const { checkbox } = await import("@inquirer/prompts");
   return checkbox({
     message: "¿Qué adaptadores agregar?",
     choices: available,
@@ -165,6 +223,7 @@ export async function runToolsRemovePrompts(
   installed: string[]
 ): Promise<string[]> {
   const manifest = await loadManifest();
+  const { checkbox } = await import("@inquirer/prompts");
 
   return checkbox({
     message: "¿Qué adaptadores quitar?",

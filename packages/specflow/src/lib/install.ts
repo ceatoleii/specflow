@@ -11,19 +11,22 @@ import { ensureGitignoreEntries } from "./gitignore.js";
 import { writeProjectTools } from "./tools-config.js";
 import { writeProjectVersion } from "./version.js";
 import { getCliVersion } from "./version.js";
+import { writeProjectConfig } from "./project-config.js";
+import type { Locale } from "./i18n.js";
 
 export interface InstallCoreOptions {
   targetDir: string;
   tools: string[];
   includeDocs: boolean;
   dryRun: boolean;
+  locale: Locale;
 }
 
 export async function installCoreAndAdapters(
   options: InstallCoreOptions
 ): Promise<void> {
   const manifest = await loadManifest();
-  const { targetDir, tools, includeDocs, dryRun } = options;
+  const { targetDir, tools, includeDocs, dryRun, locale } = options;
 
   const coreResult = await copyCoreStatic(
     targetDir,
@@ -80,6 +83,12 @@ export async function installCoreAndAdapters(
       manifest.manifestVersion
     );
     await writeProjectTools(targetDir, tools, manifest.manifestVersion);
+    await writeProjectConfig(
+      targetDir,
+      locale,
+      includeDocs,
+      manifest.manifestVersion
+    );
   }
 }
 
