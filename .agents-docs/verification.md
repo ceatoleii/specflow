@@ -50,7 +50,7 @@ Expected: includes `bin/specflow.js`, `dist/`, `assets/`, `manifest.json`; no `*
 
 - All commands exit 0 → review PASS
 - CI (`.github/workflows/ci.yml`) runs typecheck + coverage on push/PR
-- Publish (`.github/workflows/publish.yml`) on Release or manual dispatch
+- Publish (`.github/workflows/ci.yml`) on push to `main` when package version is new on npm
 
 ---
 

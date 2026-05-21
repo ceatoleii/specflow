@@ -230,7 +230,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
 ### Publishing (GitHub Actions)
 
-Releases are published automatically via [`.github/workflows/publish.yml`](../../.github/workflows/publish.yml). No OTP in CI — uses an npm automation token.
+Releases are published automatically via [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) when you push to `main`. No OTP in CI — uses an npm automation token.
 
 **One-time setup**
 
@@ -242,10 +242,12 @@ Releases are published automatically via [`.github/workflows/publish.yml`](../..
 **Release flow**
 
 1. Bump version in `packages/specflow/package.json` and update `CHANGELOG.md`
-2. Commit, push, create GitHub Release with tag `vX.Y.Z` (must match `package.json`)
-3. The publish workflow runs tests and runs `npm publish`
+2. Commit and push to `main`
+3. CI runs tests → if the version is not on npm yet, publishes and creates GitHub Release `vX.Y.Z`
 
-**Manual publish** (emergency): Actions → **Publish npm** → **Run workflow**
+If the version is already on npm, the publish job skips (no error).
+
+**Manual re-run:** Actions → **CI** → **Run workflow**
 
 ---
 

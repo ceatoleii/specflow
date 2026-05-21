@@ -18,7 +18,7 @@ eh-sdd-flow/                         ← repo root (dogfooding SpecFlow)
 ├── AGENTS.md / .agents/             ← consumer layout (from specflow init)
 ├── .agents-docs/                    ← project context (this folder)
 ├── .specflow-version / .specflow-tools.json
-├── .github/workflows/               ← ci.yml, publish.yml
+├── .github/workflows/               ← ci.yml (test + publish on main)
 ├── packages/
 │   └── specflow/                    ← publishable npm package
 │       ├── bin/specflow.js          ← CLI entry (executable)
@@ -52,7 +52,7 @@ eh-sdd-flow/                         ← repo root (dogfooding SpecFlow)
 
 5. **Published tarball:** `bin/`, `dist/`, `assets/`, `manifest.json` — not `src/` or tests.
 
-6. **Version bumps** only in `packages/specflow/package.json`. Publish via GitHub Release `vX.Y.Z` or Actions → Publish npm.
+6. **Version bumps** only in `packages/specflow/package.json`. Push to `main` → CI publishes if version is new on npm and creates GitHub Release `vX.Y.Z`.
 
 7. **Root `.agents/`** is for dogfooding the installed package. After changing `assets/core/`, release npm and run `specflow sync` at root — do not edit root rules for product changes.
 

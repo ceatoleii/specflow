@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-21
+
 ### Added
 
 - Guided `specflow init` wizard with `@clack/prompts`: ASCII banner, language selection (ES/EN), step-by-step flow
@@ -15,6 +17,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 - `specflow init` always interactive; removed `--yes` / `-y` flag
 - Init prompts fully localized (Spanish / English)
+- Orchestrator: Implementer auto-handoffs to Reviewer in the same turn (no manual trigger)
+- CI: push to `main` auto-publishes new versions to npm and creates GitHub Release (no manual deploy)
 
 ### Removed
 

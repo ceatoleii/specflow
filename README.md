@@ -43,13 +43,13 @@ npm run test:coverage
 
 ### Publish to npm
 
-Automated via GitHub Actions (`.github/workflows/publish.yml`):
+Automated via GitHub Actions (`.github/workflows/ci.yml`) on push to `main`:
 
 1. Add repo secret **`NPM_TOKEN`** (granular npm token with publish + bypass 2FA)
-2. Bump `packages/specflow/package.json` version
-3. Create GitHub Release tag `vX.Y.Z` (must match package version)
+2. Bump `packages/specflow/package.json` version and update `CHANGELOG.md`
+3. Push to `main` → CI runs tests, publishes to npm if the version is new, creates GitHub Release `vX.Y.Z`
 
-Or run manually: **Actions → Publish npm → Run workflow**
+Manual re-run: **Actions → CI → Run workflow**
 
 ---
 

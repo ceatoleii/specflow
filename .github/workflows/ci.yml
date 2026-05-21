@@ -5,6 +5,11 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -29,3 +34,65 @@ jobs:
 
       - name: Test with coverage (≥80% threshold)
         run: npm run test:coverage -w @ceatoleii/specflow
+
+  publish:
+    name: Publish npm
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve package version
+        id: version
+        run: |
+          VERSION=$(npm pkg get version -w @ceatoleii/specflow | tr -d '"')
+          echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Package version: ${VERSION}"
+
+      - name: Check if version is already on npm
+        id: npm
+        run: |
+          VERSION="${{ steps.version.outputs.value }}"
+          if npm view "@ceatoleii/specflow@${VERSION}" version 2>/dev/null; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "v${VERSION} already published — skipping."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "v${VERSION} not on npm — will publish."
+          fi
+
+      - name: Publish to npm
+        if: steps.npm.outputs.skip == 'false'
+        run: npm publish -w @ceatoleii/specflow --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.npm.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.value }}"
+          TAG="v${VERSION}"
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists — skipping."
+            exit 0
+          fi
+          gh release create "${TAG}" \
+            --title "${TAG}" \
+            --notes "Release ${TAG}. See packages/specflow/CHANGELOG.md."
