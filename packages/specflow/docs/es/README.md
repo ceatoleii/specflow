@@ -29,7 +29,7 @@ Luego di **`nueva tarea`** o **`flow on`** en tu chat de IA para iniciar el fluj
 | [Layout del proyecto](./project-layout.md) | Árbol de directorios tras `init` |
 | [Documentación del proyecto](./project-documentation.md) | Cómo completar `.agents-docs/` |
 | [Adaptadores IDE](./ide-adapters.md) | Herramientas soportadas y archivos generados |
-| [Context Engine](./context-engine.md) | `state.db`, consultas, migración (1.3+) |
+| [Context Engine](./context-engine.md) | `stateDb`, `state.db`, `state ensure`, consultas, migración (1.3+) |
 | [Principios de diseño](./design-principles.md) | Reglas que impone el flujo |
 | [Solución de problemas](./troubleshooting.md) | FAQ e incidencias comunes |
 

@@ -38,8 +38,9 @@ Each adapter file contains a short instruction: *read and execute `.agents/rules
 The orchestrator then:
 
 1. Checks if flow is active (`.agents-state/.flow-enabled`)
-2. Reads current phase from `phase.md` or `state.db`
-3. Loads the matching phase agent rules
+2. Runs `specflow state ensure` when `stateDb` is enabled (flow activation)
+3. Reads current phase from `phase.md` (shim) or `state.db`
+4. Loads the matching phase agent rules
 
 Without flow activation → Direct Mode (normal assistant behavior).
 

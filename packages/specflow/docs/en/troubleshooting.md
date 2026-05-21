@@ -69,11 +69,21 @@ Check `.agents-docs/verification.md` commands. Fix failing tests/lint, then cont
 
 ### Legacy markdown not in `state.db`
 
+Requires `stateDb: true` in `.specflow-config.json` and flow **inactive**:
+
 ```bash
 specflow state migrate
 ```
 
-Or run `sync` while flow is inactive.
+Or run `sync` or `state ensure` while flow is inactive.
+
+### `state.db` missing after install
+
+Run `specflow state ensure` or activate flow (`nueva tarea`) when `stateDb` is enabled. If you chose markdown-only (`stateDb: false`), agents never create `state.db` — that is expected.
+
+### Agents still read full markdown files
+
+Check `.specflow-config.json` → `stateDb` must be `true` and `state.db` must exist. Run `specflow status` to see `stateDb` and State DB lines.
 
 ### `init` cancelled immediately
 

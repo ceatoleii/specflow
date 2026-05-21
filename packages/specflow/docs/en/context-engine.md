@@ -10,13 +10,42 @@ Starting in **SpecFlow 1.3**, flow state can live in a SQLite database (`.agents
 
 The Context Engine lets agents query **slices** of state instead of reading full files — saving tokens and keeping context focused.
 
-Markdown files remain as a shim and fallback when `state.db` is absent.
+Whether agents use the database is controlled by **`.specflow-config.json`** → `stateDb` (default `true` on new installs). When `stateDb` is `true`, markdown under `current/` remains a shim synced from `state.db`. When `stateDb` is `false`, agents read and write markdown only (no `state query`, no automatic migration).
+
+---
+
+## Configuration (`stateDb`)
+
+| `stateDb` | Agent behavior | `state.db` |
+|-----------|----------------|------------|
+| `true` (default) | Prefer `specflow state query` slices | Created on flow activation via `state ensure` |
+| `false` | Read/write `.agents-state/current/*.md` only | Not used |
+
+Set at install time (wizard step; current releases default to enabled). Stored in `.specflow-config.json` alongside `locale` and `includeDocs`.
+
+---
+
+## Bootstrap (`state ensure`)
+
+When you activate flow (`nueva tarea`, `flow on`, …), the orchestrator runs:
+
+```bash
+specflow state ensure
+```
+
+if `stateDb` is enabled. This command:
+
+- Creates or opens `state.db` and applies the schema
+- Runs **conditional** legacy import (see Migration) when applicable
+- Does **not** start a new session by itself — sessions begin when agents write artifacts
+
+You can run `specflow state ensure` manually after install to prepare the database before the first task.
 
 ---
 
 ## How agents use it
 
-When flow is active and `state.db` exists, agents prefer:
+When flow is active, `stateDb` is enabled, and `state.db` exists, agents prefer:
 
 ```bash
 specflow state query --slice task
@@ -45,10 +74,12 @@ Add `--json` for machine-readable output.
 
 Legacy projects store state only in `.agents-state/current/*.md`.
 
-**Automatic migration** runs on `init` or `sync` when:
+**Automatic migration** runs on `init`, `sync`, or `state ensure` when **all** of the following hold:
 
+- `stateDb` is enabled in `.specflow-config.json`
 - Legacy markdown exists in `current/`
-- Flow is **not** active
+- Flow is **not** active (no `.flow-enabled`)
+- Import has not already run for this project
 
 **Manual migration:**
 
@@ -56,7 +87,7 @@ Legacy projects store state only in `.agents-state/current/*.md`.
 specflow state migrate
 ```
 
-Imports `task.md`, `sdd.md`, `tasks.md`, `phase.md`, and refinement logs into `state.db`.
+Imports `task.md`, `sdd.md`, `tasks.md`, `phase.md`, and refinement logs into `state.db`. Requires `stateDb` enabled; skipped while flow is active.
 
 ---
 
@@ -99,7 +130,12 @@ Updates both `state.db` and the `phase.md` shim.
 
 ## Markdown fallback
 
-If `state.db` is missing, agents read markdown files directly. This keeps older projects and fresh installs working without migration.
+Agents use markdown only when:
+
+- `stateDb` is `false` in `.specflow-config.json`, or
+- `state.db` does not exist yet and `state ensure` has not run
+
+Pre-1.2 projects without `.specflow-config.json` behave as markdown-only until you run `init` or `sync`.
 
 ---
 
@@ -107,8 +143,9 @@ If `state.db` is missing, agents read markdown files directly. This keeps older 
 
 | Situation | Action |
 |-----------|--------|
-| New install (1.3+) | `state.db` created automatically when flow starts |
-| Existing markdown-only project | Run `sync` or `state migrate` |
+| New install with `stateDb: true` | `state.db` bootstrapped on first `state ensure` (flow activation or manual) |
+| Existing markdown-only project | `specflow state migrate`, or `sync` / `state ensure` while flow inactive |
+| `stateDb: false` | No migration — keep using markdown |
 | Flow currently active | Finish or deactivate flow before migrating |
 
 ---

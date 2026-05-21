@@ -61,7 +61,7 @@ specflow status [options]
 
 Exit code **1** if SpecFlow is not installed in the target directory.
 
-Output includes: version comparison (up to date / outdated / not installed), installed adapters, whether flow is active, current phase.
+Output includes: version comparison (up to date / outdated / not installed), installed adapters, whether flow is active, **`stateDb` config** (`stateDb=on` when `.specflow-config.json` exists), and **State DB** stats (active/archived sessions, current session id and phase) when `state.db` is present.
 
 ---
 
@@ -107,7 +107,15 @@ Interactive. Removes adapter files for selected tools.
 
 ## `specflow state`
 
-Flow state database commands (SQLite `state.db` in `.agents-state/`). Available in **1.3+**.
+Flow state database commands (SQLite `state.db` in `.agents-state/`). Available in **1.3+**. Most commands require `stateDb` enabled in `.specflow-config.json`.
+
+### `specflow state ensure`
+
+```bash
+specflow state ensure [-C, --cwd <dir>]
+```
+
+Bootstrap `state.db` (schema only). Runs legacy markdown import when conditions match (see [Context Engine](./context-engine.md)). Called automatically when flow starts if `stateDb` is enabled.
 
 ### `specflow state status`
 
@@ -145,7 +153,7 @@ specflow state migrate [-C, --cwd <dir>]
 
 Import legacy `.agents-state/current/*.md` into `state.db`.
 
-Also runs automatically on `init`/`sync` when legacy markdown exists and flow is inactive.
+Also runs automatically on `init`, `sync`, or `state ensure` when `stateDb` is enabled, legacy markdown exists, flow is inactive, and import has not run yet.
 
 ### `specflow state export`
 

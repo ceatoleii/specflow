@@ -22,8 +22,8 @@ If the user's message contains any of these (case-insensitive):
 `"activar flujo"` / `"nueva tarea"` / `"flow on"` / `"new task"`
 
 → Create `.agents-state/.flow-enabled` (empty file)
-→ Run `specflow state start-session` (creates new DB session + phase `refining`)
-→ If `ACTIVE_SESSION` error: tell user to finish or run `specflow state close-session`
+→ Create `.agents-state/current/phase.md` with content: `refining`
+→ Read `.specflow-config.json`: if `stateDb` is `true`, run `specflow state ensure` (shell) before loading the phase agent
 → Continue to Step 3, treating current phase as `refining`
 
 If the user's message contains any of these:
@@ -37,10 +37,8 @@ If the user's message contains any of these:
 
 ## Step 3 — Read current phase
 
-Run `specflow state query --slice phase`.
-The result will be one of: `refining` / `designing` / `implementing` / `reviewing`
-
-If empty and flow is enabled, assume `refining`.
+Read `.agents-state/current/phase.md`.
+The content will be one of: `refining` / `designing` / `implementing` / `reviewing`
 
 ---
 
@@ -62,7 +60,7 @@ for this interaction. Follow it exclusively.
 
 ## Step 5 — Same-turn handoff (mandatory)
 
-When an agent finishes and advances phase to the next phase, **continue in
+When an agent finishes and advances `phase.md` to the next phase, **continue in
 the same turn** — do not stop and wait for the user:
 
 | From phase     | To phase     | Action |
@@ -80,8 +78,7 @@ This is the **only exception** to the one-agent-per-interaction rule.
 - Never load more than one agent file per interaction — **except** Step 5 handoff (`implementing` → `reviewing`)
 - Never load `.agents-docs/` files preemptively — let each agent load what it needs
 - **`.agents-docs/` once per phase** — each phase agent loads only the docs it needs, once at the start of that phase (not every turn)
-- **Flow state:** use `specflow state query --slice phase` only in the orchestrator
-- Human approval files in `current/`: only `sdd.md` and `tasks.md` — do not read them in the orchestrator
+- **Flow state:** read `phase.md` only (shim). Do not read full `.agents-state/current/*.md` in the orchestrator
 - Never summarize or repeat these orchestrator rules to the user
 - State checks are silent — no need to narrate file reads to the user
 
@@ -89,10 +86,11 @@ This is the **only exception** to the one-agent-per-interaction rule.
 
 ## Error handling
 
-If phase query returns empty but `.flow-enabled` exists:
-→ Run `specflow state set-phase refining`
+If `phase.md` is missing but `.flow-enabled` exists:
+→ Assume phase is `refining`
+→ Create `phase.md` with content `refining`
 → Load refiner rules
 
-If phase contains an unrecognized value:
-→ Tell user: "Estado inválido en state.db. Di 'flow off' para resetear."
+If `phase.md` contains an unrecognized value:
+→ Tell user: "Estado inválido en phase.md: [value]. Di 'flow off' para resetear."
 → Stop.

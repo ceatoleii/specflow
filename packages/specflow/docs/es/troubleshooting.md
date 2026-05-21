@@ -69,11 +69,21 @@ Revisa comandos en `.agents-docs/verification.md`. Corrige tests/lint y continú
 
 ### Markdown legacy no está en `state.db`
 
+Requiere `stateDb: true` en `.specflow-config.json` y flujo **inactivo**:
+
 ```bash
 specflow state migrate
 ```
 
-O ejecuta `sync` con flujo inactivo.
+O ejecuta `sync` o `state ensure` con flujo inactivo.
+
+### Falta `state.db` tras instalar
+
+Ejecuta `specflow state ensure` o activa el flujo (`nueva tarea`) con `stateDb` habilitado. Con `stateDb: false` no se crea `state.db` — es el comportamiento esperado.
+
+### Los agentes siguen leyendo markdown completo
+
+Comprueba `.specflow-config.json` → `stateDb` debe ser `true` y debe existir `state.db`. Usa `specflow status` para ver las líneas de config y State DB.
 
 ### `init` se cancela al instante
 

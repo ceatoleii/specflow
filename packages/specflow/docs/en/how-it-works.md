@@ -71,6 +71,8 @@ flow on — fix the pagination bug on the users list
 
 Ending flow removes `.agents-state/.flow-enabled`. Active task artifacts may remain in `.agents-state/current/` until archived.
 
+On flow start, if `.specflow-config.json` has `stateDb: true`, the orchestrator runs **`specflow state ensure`** before loading the Refiner (bootstraps `state.db` and may import legacy markdown).
+
 ---
 
 ## State on disk
@@ -86,7 +88,7 @@ During an active task, artifacts live in `.agents-state/current/`:
 | `review.md` | reviewing | Review result |
 | `refinement-log.md` | refining | Q&A history (compacted after task.md) |
 
-With **Context Engine 1.3+**, agents prefer `specflow state query` slices when `state.db` exists. See [Context Engine](./context-engine.md).
+With **Context Engine 1.3+** and `stateDb: true`, agents prefer `specflow state query` slices instead of reading full markdown files. `phase.md` stays a shim synced from `state.db`. See [Context Engine](./context-engine.md).
 
 ---
 

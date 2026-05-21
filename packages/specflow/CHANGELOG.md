@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-05-21
+
 ### Added
 
 - `specflow init` prompts for **state.db**; preference stored in `.specflow-config.json` (`stateDb`)
@@ -15,10 +17,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 ### Changed
 
 - Legacy migrate / sync one-shot only runs when `stateDb: true` in project config
+- Package docs (`docs/en`, `docs/es`): `stateDb`, `state ensure`, conditional migration, CLI reference
 
 ### Removed
 
 - CodeGraph companion adapter and `codegraph` project config option
+
+## [1.3.2] - 2026-05-21
+
+### Changed
+
+- State management and agent rules improvements
 
 ## [1.3.0] - 2026-05-21
 

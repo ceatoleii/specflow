@@ -35,11 +35,11 @@ Refiner and SDD specify. Reviewer verifies. One agent owns the diff.
 
 ## 3. Explicit state
 
-Phase and artifacts live on disk in `.agents-state/current/` (and `state.db` when present).
+Phase and artifacts live on disk in `.agents-state/current/` (markdown shim) and, when `stateDb` is enabled, in `state.db` as the source of truth.
 
 You can inspect:
 
-- Current phase (`phase.md`)
+- Current phase (`phase.md` shim, or `specflow state query --slice phase`)
 - Requirement (`task.md`)
 - Design (`sdd.md`)
 - Progress (`tasks.md`)

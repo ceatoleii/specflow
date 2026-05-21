@@ -10,7 +10,7 @@ After `specflow init`, your repository root typically looks like this:
 your-project/
 ├── AGENTS.md                 # Universal agent entry (agents.md standard)
 ├── .specflow-version         # Installed engine version
-├── .specflow-config.json     # Locale and init preferences
+├── .specflow-config.json     # locale, includeDocs, stateDb (init)
 ├── .specflow-tools.json      # Installed IDE adapters
 │
 ├── .agents/                  # SpecFlow engine — managed by init/sync
@@ -76,7 +76,8 @@ Other adapters add their own files — see [IDE Adapters](./ide-adapters.md).
 | Path | Notes |
 |------|-------|
 | `.agents-state/**` | Per-task state; safe to delete when inactive |
-| `.specflow-config.json` | Written once at init |
+| `.specflow-config.json` | Written at init (`locale`, `includeDocs`, `stateDb`) |
+| `state.db` | Created when `stateDb` is true and `state ensure` runs |
 
 ---
 

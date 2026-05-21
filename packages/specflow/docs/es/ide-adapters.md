@@ -38,8 +38,9 @@ Cada adapter contiene una instrucción breve: *leer y ejecutar `.agents/rules/or
 El orquestador entonces:
 
 1. Comprueba si el flujo está activo (`.agents-state/.flow-enabled`)
-2. Lee la fase desde `phase.md` o `state.db`
-3. Carga las reglas del agente de fase correspondiente
+2. Ejecuta `specflow state ensure` si `stateDb` está habilitado (activación de flujo)
+3. Lee la fase desde `phase.md` (shim) o `state.db`
+4. Carga las reglas del agente de fase correspondiente
 
 Sin activación de flujo → Modo Direct (comportamiento normal del asistente).
 

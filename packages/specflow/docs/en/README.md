@@ -29,7 +29,7 @@ Then say **`nueva tarea`** or **`flow on`** in your AI chat to start the workflo
 | [Project Layout](./project-layout.md) | Directory tree after `init` |
 | [Project Documentation](./project-documentation.md) | Filling in `.agents-docs/` |
 | [IDE Adapters](./ide-adapters.md) | Supported tools and generated files |
-| [Context Engine](./context-engine.md) | `state.db`, queries, migration (1.3+) |
+| [Context Engine](./context-engine.md) | `stateDb`, `state.db`, `state ensure`, queries, migration (1.3+) |
 | [Design Principles](./design-principles.md) | Rules the workflow enforces |
 | [Troubleshooting](./troubleshooting.md) | FAQ and common issues |
 

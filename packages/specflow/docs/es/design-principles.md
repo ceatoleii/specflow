@@ -35,9 +35,9 @@ Refiner y SDD especifican. Reviewer verifica. Un agente es dueño del diff.
 
 ## 3. Estado explícito
 
-Fase y artefactos viven en disco en `.agents-state/current/` (y `state.db` cuando existe).
+Fase y artefactos viven en `.agents-state/current/` (shim markdown) y, con `stateDb` habilitado, en `state.db` como fuente de verdad.
 
-Puedes inspeccionar fase, requisito, diseño, progreso y resultado de revisión.
+Puedes inspeccionar fase (`phase.md` o `specflow state query --slice phase`), requisito, diseño, progreso y revisión.
 
 Nada depende solo del historial del chat.
 

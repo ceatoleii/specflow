@@ -13,10 +13,10 @@ expose hidden complexity, and produce a clean, approved task definition.
 |-----------------|---------|
 | Read codebase   | ✅ Yes  |
 | Read .agents-docs/architecture.md | ✅ Yes |
-| Write state.db via CLI | ✅ Yes |
+| Write task.md   | ✅ Yes  |
+| Write refinement-log.md | ✅ Yes |
 | Write any code file | ❌ No |
 | Write sdd.md / tasks.md | ❌ No |
-| Write operational .md in current/ | ❌ No |
 
 ---
 
@@ -36,14 +36,12 @@ Then begin asking clarifying questions.
 - Prefer specific questions over vague ones
 - If the user gives a short answer, probe deeper before moving on
 - Never ask about implementation details — that's the SDD agent's job
-- After each exchange, persist to DB:
-  ```bash
-  specflow state append-message --round N --role user --stdin <<'EOF'
-  [user message]
-  EOF
-  specflow state append-message --round N --role agent --stdin <<'EOF'
-  [your questions]
-  EOF
+- Append each exchange to `.agents-state/current/refinement-log.md`:
+  ```
+  ## Round N — YYYY-MM-DD
+  **User:** [their message]
+  **Refiner:** [your questions]
+  **Answers:** [their answers]
   ```
 
 ### 4. Know when to stop
@@ -57,44 +55,47 @@ Refinement is complete when you can confidently answer ALL of these:
 If you can't answer all five after 3 rounds, surface the remaining gaps explicitly
 and ask the user if they want to proceed with partial clarity.
 
-### 5. Write task to state.db
-When refinement is complete, write the task artifact to DB (not markdown):
+### 5. Write task.md
+When refinement is complete, write `.agents-state/current/task.md`:
 
-```bash
-specflow state write-artifact --kind task --stdin <<'EOF'
+```markdown
 # Task: [short descriptive title]
 
 ## Requirement
-...
+[Clear, concise description of what needs to be built. 2-4 sentences.]
 
 ## Acceptance Criteria
-- [ ] ...
+- [ ] [Specific, verifiable criterion]
+- [ ] [Specific, verifiable criterion]
 
 ## Known Edge Cases
-- ...
+- [Edge case and expected behavior]
 
 ## Constraints
-- Must not break: ...
-- Must not change: ...
+- Must not break: [list]
+- Must not change: [list]
 
 ## Affected Areas
-- ...
+- [File or module likely impacted]
 
 ## Out of Scope
-- ...
+- [Explicitly excluded items agreed with user]
 
 ## Open Questions
-- ...
-EOF
+- [Any remaining ambiguities, if any]
 ```
 
-Criteria are synced automatically. Verify with `specflow state query --slice task`.
-
 ### 6. Advance phase
-After writing the task artifact:
-1. Run `specflow state set-phase designing`
-2. Tell the user:
+After writing `task.md`:
+1. Update `.agents-state/current/phase.md` → `designing` (or `specflow state set-phase designing` if `state.db` exists)
+2. **Compact refinement:** keep `refinement-log.md` as a short summary (≤ ~2 KB) or rely on `state.db` after migrate — do not leave a bloated log after `task.md` is written
+3. Tell the user:
    > "Refinamiento completo ✓ Pasando al SDD Agent para diseñar la solución."
+
+### Project config (`.specflow-config.json`)
+
+- If `stateDb` is `true`: prefer `specflow state query --slice task`; run `specflow state ensure` at flow start if needed
+- If `stateDb` is `false`: use markdown only (`task.md`, `refinement-log.md`)
 
 ---
 

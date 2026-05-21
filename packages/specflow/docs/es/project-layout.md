@@ -10,7 +10,7 @@ Tras `specflow init`, la raíz de tu repositorio suele verse así:
 your-project/
 ├── AGENTS.md                 # Entrada universal (estándar agents.md)
 ├── .specflow-version         # Versión del motor instalada
-├── .specflow-config.json     # Locale y preferencias de init
+├── .specflow-config.json     # locale, includeDocs, stateDb (init)
 ├── .specflow-tools.json      # Adaptadores IDE instalados
 │
 ├── .agents/                  # Motor SpecFlow — gestionado por init/sync
@@ -71,7 +71,8 @@ Otros adaptadores añaden sus archivos — ver [Adaptadores IDE](./ide-adapters.
 | Ruta | Notas |
 |------|-------|
 | `.agents-state/**` | Estado por tarea; seguro borrar si inactivo |
-| `.specflow-config.json` | Escrito una vez en init |
+| `.specflow-config.json` | Escrito en init (`locale`, `includeDocs`, `stateDb`) |
+| `state.db` | Creado con `stateDb: true` al ejecutar `state ensure` |
 
 ---
 
