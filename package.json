@@ -11,6 +11,9 @@
     "build": "npm run build -w @ceatoleii/specflow",
     "test": "npm run test -w @ceatoleii/specflow",
     "test:coverage": "npm run test:coverage -w @ceatoleii/specflow",
-    "specflow": "npm run build -w @ceatoleii/specflow && node packages/specflow/dist/cli.js"
+    "specflow": "npm run build -w @ceatoleii/specflow && node packages/specflow/dist/cli.js",
+    "docs:dev": "npm run dev -w @ceatoleii/specflow-docs",
+    "docs:build": "npm run build -w @ceatoleii/specflow-docs",
+    "docs:preview": "npm run preview -w @ceatoleii/specflow-docs"
   }
 }

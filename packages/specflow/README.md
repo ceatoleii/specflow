@@ -15,8 +15,8 @@ npx @ceatoleii/specflow init
 
 **Documentation**
 
-[English](https://github.com/ceatoleii/specflow/tree/main/packages/specflow/docs/en) ·
-[Español](https://github.com/ceatoleii/specflow/tree/main/packages/specflow/docs/es)
+[English](https://ceatoleii.github.io/specflow/) ·
+[Español](https://ceatoleii.github.io/specflow/es/)
 
 </div>
 
@@ -27,8 +27,8 @@ Install once per project. Pick your IDE adapters interactively. Refine → desig
 | | |
 |---|---|
 | **npm** | [`@ceatoleii/specflow`](https://www.npmjs.com/package/@ceatoleii/specflow) |
-| **Docs (EN)** | [docs/en/README.md](./docs/en/README.md) |
-| **Docs (ES)** | [docs/es/README.md](./docs/es/README.md) |
+| **Docs (EN)** | [ceatoleii.github.io/specflow](https://ceatoleii.github.io/specflow/) |
+| **Docs (ES)** | [ceatoleii.github.io/specflow/es](https://ceatoleii.github.io/specflow/es/) |
 | **Changelog** | [CHANGELOG.md](./CHANGELOG.md) |
 | **License** | [MIT](./LICENSE) |
 
