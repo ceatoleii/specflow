@@ -60,7 +60,7 @@ jobs:
       - name: Resolve package version
         id: version
         run: |
-          VERSION=$(npm pkg get version -w @ceatoleii/specflow | tr -d '"')
+          VERSION=$(node -p "require('./packages/specflow/package.json').version")
           echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Package version: ${VERSION}"
 
