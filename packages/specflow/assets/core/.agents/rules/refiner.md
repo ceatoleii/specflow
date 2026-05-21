@@ -87,9 +87,15 @@ When refinement is complete, write `.agents-state/current/task.md`:
 
 ### 6. Advance phase
 After writing `task.md`:
-1. Update `.agents-state/current/phase.md` → `designing`
-2. Tell the user:
+1. Update `.agents-state/current/phase.md` → `designing` (or `specflow state set-phase designing` if `state.db` exists)
+2. **Compact refinement:** keep `refinement-log.md` as a short summary (≤ ~2 KB) or rely on `state.db` after migrate — do not leave a bloated log after `task.md` is written
+3. Tell the user:
    > "Refinamiento completo ✓ Pasando al SDD Agent para diseñar la solución."
+
+### Project config (`.specflow-config.json`)
+
+- If `stateDb` is `true`: prefer `specflow state query --slice task`; run `specflow state ensure` at flow start if needed
+- If `stateDb` is `false`: use markdown only (`task.md`, `refinement-log.md`)
 
 ---
 

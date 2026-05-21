@@ -61,7 +61,11 @@ AGENTS.md
 .agents/
 .agents-docs/           ← you edit
 .agents-state/          ← runtime (gitignored)
+  state.db              ← flow source of truth (when present)
+  current/              ← phase.md shim + markdown export/debug
 ```
+
+**Context Engine (1.3+):** `specflow init` asks for `stateDb` → stored in `.specflow-config.json`. When `stateDb: true`, agents use `specflow state ensure|query|…`; when `false`, markdown only.
 
 ---
 

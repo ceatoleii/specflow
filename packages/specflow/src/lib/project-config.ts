@@ -6,8 +6,30 @@ import type { Locale } from "./i18n.js";
 export interface ProjectConfig {
   locale: Locale;
   includeDocs: boolean;
+  /** Use SQLite state.db as flow source of truth (vs markdown only). */
+  stateDb: boolean;
   installedAt: string;
   manifestVersion: number;
+}
+
+export type ProjectConfigInput = {
+  locale: Locale;
+  includeDocs: boolean;
+  stateDb: boolean;
+  manifestVersion: number;
+};
+
+export function normalizeProjectConfig(
+  raw: Partial<ProjectConfig> | null
+): ProjectConfig | null {
+  if (!raw?.locale || raw.installedAt === undefined) return null;
+  return {
+    locale: raw.locale,
+    includeDocs: raw.includeDocs ?? true,
+    stateDb: raw.stateDb ?? false,
+    installedAt: raw.installedAt,
+    manifestVersion: raw.manifestVersion ?? 2,
+  };
 }
 
 export async function readProjectConfig(
@@ -15,20 +37,25 @@ export async function readProjectConfig(
 ): Promise<ProjectConfig | null> {
   const filePath = path.join(targetDir, CONFIG_FILE);
   if (!(await fs.pathExists(filePath))) return null;
-  return fs.readJson(filePath) as Promise<ProjectConfig>;
+  const raw = await fs.readJson(filePath);
+  return normalizeProjectConfig(raw as Partial<ProjectConfig>);
+}
+
+export async function isStateDbEnabled(targetDir: string): Promise<boolean> {
+  const config = await readProjectConfig(targetDir);
+  return config?.stateDb === true;
 }
 
 export async function writeProjectConfig(
   targetDir: string,
-  locale: Locale,
-  includeDocs: boolean,
-  manifestVersion: number
+  input: ProjectConfigInput
 ): Promise<void> {
   const data: ProjectConfig = {
-    locale,
-    includeDocs,
+    locale: input.locale,
+    includeDocs: input.includeDocs,
+    stateDb: input.stateDb,
     installedAt: new Date().toISOString(),
-    manifestVersion,
+    manifestVersion: input.manifestVersion,
   };
   await fs.writeJson(path.join(targetDir, CONFIG_FILE), data, { spaces: 2 });
 }

@@ -7,6 +7,8 @@ import {
   detectLegacyTools,
 } from "../lib/tools-config.js";
 import { loadManifest } from "../lib/manifest.js";
+import { getStateStatusInfo } from "../lib/state/status-info.js";
+import { readProjectConfig } from "../lib/project-config.js";
 
 export type StatusResult = "ok" | "not_installed" | "outdated" | "cli_older";
 
@@ -52,6 +54,22 @@ export async function runStatus(options: StatusOptions): Promise<StatusResult> {
   }
 
   console.log(`  Flujo:      ${flowActive ? "activo" : "inactivo"}`);
+
+  const projectConfig = await readProjectConfig(targetDir);
+  if (projectConfig) {
+    console.log(
+      `  Config:     stateDb=${projectConfig.stateDb ? "on" : "off"}`
+    );
+  }
+
+  const stateInfo = getStateStatusInfo(targetDir);
+  if (stateInfo.hasDb && stateInfo.sessionId) {
+    console.log(
+      `  State DB:   session ${stateInfo.sessionId}, phase ${stateInfo.phase ?? "(unset)"}, ${stateInfo.taskCount} tasks`
+    );
+  } else if (stateInfo.hasDb) {
+    console.log(`  State DB:   (no active session)`);
+  }
 
   if (semver.lt(installed.specflow, cliVersion)) {
     const diff = semver.diff(installed.specflow, cliVersion) ?? "patch";

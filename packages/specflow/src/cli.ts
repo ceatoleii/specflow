@@ -9,6 +9,16 @@ import {
   runToolsAdd,
   runToolsRemove,
 } from "./commands/tools.js";
+import {
+  runStateStatus,
+  runStateQuery,
+  runStateSearch,
+  runStateMigrate,
+  runStateExport,
+  runStateSetPhase,
+  runStateSyncTask,
+  runStateEnsure,
+} from "./commands/state.js";
 import { getCliVersion } from "./lib/version.js";
 
 function handleCliError(error: unknown): never {
@@ -114,6 +124,127 @@ tools
       handleCliError(e);
     }
   });
+
+const state = program
+  .command("state")
+  .description("Flow state database (SQLite)");
+
+state
+  .command("ensure")
+  .description("Bootstrap state.db per .specflow-config.json (flow activation)")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    try {
+      await runStateEnsure({ cwd: opts.cwd });
+    } catch (e) {
+      handleCliError(e);
+    }
+  });
+
+state
+  .command("status")
+  .description("Show state.db session and phase")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    try {
+      await runStateStatus({ cwd: opts.cwd });
+    } catch (e) {
+      handleCliError(e);
+    }
+  });
+
+state
+  .command("query")
+  .description("Query a state slice")
+  .requiredOption(
+    "--slice <name>",
+    "phase|task|active-task|criteria|decisions|sdd-summary"
+  )
+  .option("--json", "JSON output")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(
+    async (opts: { cwd: string; slice: string; json?: boolean }) => {
+      try {
+        await runStateQuery({
+          cwd: opts.cwd,
+          slice: opts.slice,
+          json: opts.json,
+        });
+      } catch (e) {
+        handleCliError(e);
+      }
+    }
+  );
+
+state
+  .command("search")
+  .description("FTS search decisions and messages")
+  .argument("<term>", "Search term")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (term: string, opts: { cwd: string }) => {
+    try {
+      await runStateSearch({ cwd: opts.cwd, term });
+    } catch (e) {
+      handleCliError(e);
+    }
+  });
+
+state
+  .command("migrate")
+  .description("Import legacy .agents-state/current/*.md into state.db")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    try {
+      await runStateMigrate({ cwd: opts.cwd });
+    } catch (e) {
+      handleCliError(e);
+    }
+  });
+
+state
+  .command("export")
+  .description("Export active session to .agents-state/history/")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    try {
+      await runStateExport({ cwd: opts.cwd });
+    } catch (e) {
+      handleCliError(e);
+    }
+  });
+
+state
+  .command("set-phase")
+  .description("Set flow phase (updates state.db and phase.md)")
+  .argument("<phase>", "refining|designing|implementing|reviewing")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (phase: string, opts: { cwd: string }) => {
+    try {
+      await runStateSetPhase({ cwd: opts.cwd, phase });
+    } catch (e) {
+      handleCliError(e);
+    }
+  });
+
+state
+  .command("sync-task")
+  .description("Update task status in state.db")
+  .requiredOption("--code <id>", "Task code e.g. T01")
+  .requiredOption("--status <status>", "pending|in_progress|done")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(
+    async (opts: { cwd: string; code: string; status: string }) => {
+      try {
+        await runStateSyncTask({
+          cwd: opts.cwd,
+          code: opts.code,
+          status: opts.status,
+        });
+      } catch (e) {
+        handleCliError(e);
+      }
+    }
+  );
 
 tools
   .command("remove")

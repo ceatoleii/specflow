@@ -20,13 +20,14 @@ export interface InstallCoreOptions {
   includeDocs: boolean;
   dryRun: boolean;
   locale: Locale;
+  stateDb: boolean;
 }
 
 export async function installCoreAndAdapters(
   options: InstallCoreOptions
 ): Promise<void> {
   const manifest = await loadManifest();
-  const { targetDir, tools, includeDocs, dryRun, locale } = options;
+  const { targetDir, tools, includeDocs, dryRun, locale, stateDb } = options;
 
   const coreResult = await copyCoreStatic(
     targetDir,
@@ -83,12 +84,12 @@ export async function installCoreAndAdapters(
       manifest.manifestVersion
     );
     await writeProjectTools(targetDir, tools, manifest.manifestVersion);
-    await writeProjectConfig(
-      targetDir,
+    await writeProjectConfig(targetDir, {
       locale,
       includeDocs,
-      manifest.manifestVersion
-    );
+      stateDb,
+      manifestVersion: manifest.manifestVersion,
+    });
   }
 }
 

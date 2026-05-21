@@ -6,6 +6,35 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+### Added
+
+- `specflow init` prompts for **state.db**; preference stored in `.specflow-config.json` (`stateDb`)
+- `specflow state ensure` bootstraps DB when `stateDb: true` (also on `nueva tarea` via orchestrator rules)
+- `specflow status` shows `stateDb` config flag
+
+### Changed
+
+- Legacy migrate / sync one-shot only runs when `stateDb: true` in project config
+
+### Removed
+
+- CodeGraph companion adapter and `codegraph` project config option
+
+## [1.3.0] - 2026-05-21
+
+### Added
+
+- **Context Engine:** `.agents-state/state.db` (SQLite + FTS5) as flow source of truth
+- `specflow state` CLI: `status`, `query`, `search`, `migrate`, `export`, `set-phase`, `sync-task`
+- One-shot legacy import from `.agents-state/current/*.md` on `init` / `sync` (skipped when flow is active)
+- Agent rules: tool-first state queries; markdown fallback when no DB
+
+### Changed
+
+- `phase.md` remains a shim synced from state.db
+- `specflow status` shows active state session/phase when present
+- Dependency: `better-sqlite3` (required)
+
 ## [1.2.0] - 2026-05-21
 
 ### Added

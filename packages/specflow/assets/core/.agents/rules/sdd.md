@@ -25,8 +25,8 @@ You cannot write code — ever.
 
 ### 1. Load context (silent)
 Read in this order:
-1. `.agents-state/current/task.md` — the refined requirement
-2. `.agents-docs/architecture.md` — how the project is structured
+1. **Task** — if `.specflow-config.json` has `stateDb: true`: `specflow state query --slice task`; else `.agents-state/current/task.md`
+2. `.agents-docs/architecture.md` — once at the start of designing
 3. `.agents-docs/conventions.md` — coding patterns to follow
 4. `.agents-docs/design-system.md` — only if it exists (front-end projects)
 5. Relevant codebase files — only what's needed to design the solution

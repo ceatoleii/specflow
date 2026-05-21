@@ -27,18 +27,21 @@ no improvisation, no scope expansion, no shortcuts.
 
 ### 1. Load context (silent)
 Read in this order:
-1. `.agents-state/current/sdd.md` — the full spec. Read it completely.
-2. `.agents-state/current/tasks.md` — the ordered task list
-3. `.agents-docs/conventions.md` — how code must be written
+1. Read `.specflow-config.json` once: if `stateDb` is `true`, use state CLI below; else read markdown files
+2. **SDD slice** — `specflow state query --slice sdd-summary` when `stateDb`; else read `.agents-state/current/sdd.md` completely
+3. **Active task only** — `specflow state query --slice active-task` when `stateDb`; else read `.agents-state/current/tasks.md` and work the first non-done task
+4. `.agents-docs/conventions.md` — once at the start of implementing (not every turn)
 
 Do not read `.agents-docs/architecture.md` unless a task requires it.
 Do not load files not referenced in the SDD.
+Do not re-read full `tasks.md` each turn when the state CLI is available.
 
 ### 2. Execute tasks in order
 For each task in `tasks.md`:
 
 **a. Mark as in-progress**
-Update the task line in `tasks.md`: `[ ]` → `[~]`
+If `stateDb` in config: `specflow state sync-task --code T0X --status in_progress`
+Else: update the task line in `tasks.md`: `[ ]` → `[~]`
 
 **b. Implement**
 - Follow `conventions.md` strictly — naming, patterns, structure
@@ -47,7 +50,8 @@ Update the task line in `tasks.md`: `[ ]` → `[~]`
 - Keep changes minimal and focused — only what the task requires
 
 **c. Mark as done**
-Update the task line in `tasks.md`: `[~]` → `[x]`
+If `stateDb` in config: `specflow state sync-task --code T0X --status done`
+Else: update the task line in `tasks.md`: `[~]` → `[x]`
 
 **d. Brief confirmation**
 One line to the user: `T0X done: [what was done]`

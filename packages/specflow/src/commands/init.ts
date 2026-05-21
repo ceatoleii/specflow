@@ -41,6 +41,7 @@ export async function runInit(options: InitOptions): Promise<void> {
       includeDocs,
       dryRun,
       locale: answers.locale,
+      stateDb: answers.stateDb,
     });
   } catch (error) {
     spinner.stop("");
@@ -57,7 +58,27 @@ export async function runInit(options: InitOptions): Promise<void> {
 
   spinner.stop(messages.installDone(cliVersion));
 
+  if (answers.stateDb) {
+    const { ensureStateForProject } = await import(
+      "../lib/state/ensure.js"
+    );
+    const state = await ensureStateForProject(targetDir);
+    if (state.bootstrapped) {
+      console.log(`\n→ State DB ready (session ${state.sessionId})`);
+      if (state.migrated) {
+        console.log("→ Imported legacy .agents-state/current/ into state.db");
+      }
+    }
+  }
+
   const outroLines = [messages.editDocs, messages.activateFlow];
+  if (answers.stateDb) {
+    outroLines.unshift(
+      answers.locale === "es"
+        ? "Flujo: state.db activo (specflow state …)"
+        : "Flow: state.db enabled (specflow state …)"
+    );
+  }
   if (tools.length) {
     outroLines.unshift(messages.adaptersLine(tools.join(", ")));
   }

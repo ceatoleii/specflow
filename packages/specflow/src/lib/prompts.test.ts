@@ -36,6 +36,7 @@ function mockWizardFlow(
     includeDocs?: boolean;
     proceed?: boolean;
     coreOnly?: boolean;
+    stateDb?: boolean;
     confirmInstall?: boolean;
   } = {}
 ) {
@@ -45,6 +46,7 @@ function mockWizardFlow(
     includeDocs = true,
     proceed = true,
     coreOnly = false,
+    stateDb = true,
     confirmInstall = true,
   } = overrides;
 
@@ -54,6 +56,7 @@ function mockWizardFlow(
   vi.mocked(clack.confirm)
     .mockResolvedValueOnce(proceed)
     .mockResolvedValueOnce(coreOnly)
+    .mockResolvedValueOnce(stateDb)
     .mockResolvedValueOnce(confirmInstall);
   vi.mocked(clack.multiselect).mockResolvedValueOnce(tools);
 }

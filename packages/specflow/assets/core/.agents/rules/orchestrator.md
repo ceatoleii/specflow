@@ -23,6 +23,7 @@ If the user's message contains any of these (case-insensitive):
 
 → Create `.agents-state/.flow-enabled` (empty file)
 → Create `.agents-state/current/phase.md` with content: `refining`
+→ Read `.specflow-config.json`: if `stateDb` is `true`, run `specflow state ensure` (shell) before loading the phase agent
 → Continue to Step 3, treating current phase as `refining`
 
 If the user's message contains any of these:
@@ -76,6 +77,8 @@ This is the **only exception** to the one-agent-per-interaction rule.
 
 - Never load more than one agent file per interaction — **except** Step 5 handoff (`implementing` → `reviewing`)
 - Never load `.agents-docs/` files preemptively — let each agent load what it needs
+- **`.agents-docs/` once per phase** — each phase agent loads only the docs it needs, once at the start of that phase (not every turn)
+- **Flow state:** read `phase.md` only (shim). Do not read full `.agents-state/current/*.md` in the orchestrator
 - Never summarize or repeat these orchestrator rules to the user
 - State checks are silent — no need to narrate file reads to the user
 

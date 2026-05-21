@@ -18,4 +18,20 @@ export function resolveTargetDir(cwd?: string): string {
 export const VERSION_FILE = ".specflow-version";
 export const TOOLS_FILE = ".specflow-tools.json";
 export const CONFIG_FILE = ".specflow-config.json";
+export const STATE_DIR = ".agents-state";
+export const STATE_DB = ".agents-state/state.db";
+export const STATE_CURRENT = ".agents-state/current";
 export const FLOW_FLAG = ".agents-state/.flow-enabled";
+export const FLOW_PHASE_FILE = ".agents-state/current/phase.md";
+
+export function resolveStateDbPath(targetDir: string): string {
+  return path.join(targetDir, STATE_DB);
+}
+
+export function resolveStateCurrentPath(targetDir: string): string {
+  return path.join(targetDir, STATE_CURRENT);
+}
+
+export function resolveFlowPhasePath(targetDir: string): string {
+  return path.join(targetDir, FLOW_PHASE_FILE);
+}

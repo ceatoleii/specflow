@@ -35,6 +35,7 @@ function mockInitWizard(locale: "es" | "en" = "en") {
   vi.mocked(clack.confirm)
     .mockResolvedValueOnce(true)
     .mockResolvedValueOnce(false)
+    .mockResolvedValueOnce(true)
     .mockResolvedValueOnce(true);
   vi.mocked(clack.multiselect).mockResolvedValueOnce(["cursor", "codex"]);
 }
@@ -90,6 +91,7 @@ describe("runInit", () => {
     const config = await readProjectConfig(dir);
     expect(config?.locale).toBe("es");
     expect(config?.includeDocs).toBe(true);
+    expect(config?.stateDb).toBe(true);
   });
 
   it("throws NO_TTY when stdin is not interactive", async () => {

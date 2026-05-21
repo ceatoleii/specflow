@@ -23,6 +23,11 @@ export interface I18nMessages {
   summaryDocs: string;
   summaryDocsYes: string;
   summaryDocsNo: string;
+  stateDbPrompt: string;
+  stateDbHint: string;
+  summaryStateDb: string;
+  summaryStateDbYes: string;
+  summaryStateDbNo: string;
   confirmInstall: string;
   cancelled: string;
   installing: (version: string, dir: string) => string;
@@ -61,6 +66,12 @@ const es: I18nMessages = {
   summaryDocs: "Docs",
   summaryDocsYes: "sí",
   summaryDocsNo: "no",
+  stateDbPrompt: "¿Usar base de datos local (state.db) para el flujo?",
+  stateDbHint:
+    "Menos tokens: los agentes consultan slices vía CLI en lugar de releer markdown enteros.",
+  summaryStateDb: "State DB",
+  summaryStateDbYes: "sí (state.db)",
+  summaryStateDbNo: "no (solo markdown)",
   confirmInstall: "¿Proceder con la instalación?",
   cancelled: "Instalación cancelada.",
   installing: (version, dir) => `Instalando SpecFlow v${version} en ${dir}`,
@@ -100,6 +111,12 @@ const en: I18nMessages = {
   summaryDocs: "Docs",
   summaryDocsYes: "yes",
   summaryDocsNo: "no",
+  stateDbPrompt: "Use local database (state.db) for flow state?",
+  stateDbHint:
+    "Fewer tokens: agents query slices via CLI instead of re-reading full markdown files.",
+  summaryStateDb: "State DB",
+  summaryStateDbYes: "yes (state.db)",
+  summaryStateDbNo: "no (markdown only)",
   confirmInstall: "Proceed with installation?",
   cancelled: "Installation cancelled.",
   installing: (version, dir) => `Installing SpecFlow v${version} in ${dir}`,

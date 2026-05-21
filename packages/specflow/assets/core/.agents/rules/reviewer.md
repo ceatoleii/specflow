@@ -27,9 +27,8 @@ You are the last gate before a task is considered complete.
 
 ### 1. Load context (silent)
 Read in this order:
-1. `.agents-state/current/sdd.md` — the authoritative spec
-2. `.agents-state/current/tasks.md` — verify all tasks are `[x]`
-3. `.agents-docs/verification.md` — the commands to run
+1. **Criteria** — if `.specflow-config.json` has `stateDb: true`: `specflow state query --slice criteria` + `sdd-summary`; else read `sdd.md` and `tasks.md`
+2. `.agents-docs/verification.md` — once at the start of reviewing
 
 ### 2. Pre-check: task completeness
 Before reviewing code, confirm every task in `tasks.md` is marked `[x]`.
@@ -69,8 +68,8 @@ Be specific — vague feedback like "code quality issues" is not actionable.
 - No unspecified items were left unresolved
 
 **Actions on PASS:**
-1. Generate archive ID: `YYYY-MM-DD_NNN` (increment NNN if same date exists)
-2. Copy `.agents-state/current/` → `.agents-state/history/[archive-id]/`
+1. If `stateDb` in config: `specflow state export` (archives session to `.agents-state/history/[session-id]/`)
+2. Else: copy `.agents-state/current/` → `.agents-state/history/[archive-id]/`
 3. Delete all files in `.agents-state/current/`
 4. Delete `.agents-state/.flow-enabled`
 5. Tell the user:

@@ -7,12 +7,14 @@ import { t, type Locale } from "./i18n.js";
 import { loadManifest, getStableAdapterIds } from "./manifest.js";
 import { detectLegacyTools } from "./tools-config.js";
 import { getCliVersion } from "./version.js";
+import { readProjectConfig } from "./project-config.js";
 
 export interface InitAnswers {
   targetDir: string;
   tools: string[];
   includeDocs: boolean;
   locale: Locale;
+  stateDb: boolean;
 }
 
 function throwIfCancelled<T>(value: T | symbol): T {
@@ -43,6 +45,8 @@ export async function runInitPrompts(
 
   const messages = t(locale);
   clack.log.message(messages.introSubtitle);
+
+  const existingConfig = await readProjectConfig(targetDir);
 
   if (options.alreadyInstalledVersion) {
     clack.note(
@@ -157,6 +161,14 @@ export async function runInitPrompts(
     })
   );
 
+  const stateDb = throwIfCancelled(
+    await clack.confirm({
+      message: messages.stateDbPrompt,
+      initialValue: existingConfig?.stateDb ?? true,
+    })
+  );
+  clack.log.message(messages.stateDbHint);
+
   const adapterSummary =
     tools.length > 0
       ? tools.map((id) => manifest.adapters[id]?.label ?? id).join(", ")
@@ -168,6 +180,9 @@ export async function runInitPrompts(
       `${messages.summaryAdapters}: ${adapterSummary}`,
       `${messages.summaryDocs}: ${
         docsChoice === "yes" ? messages.summaryDocsYes : messages.summaryDocsNo
+      }`,
+      `${messages.summaryStateDb}: ${
+        stateDb ? messages.summaryStateDbYes : messages.summaryStateDbNo
       }`,
     ].join("\n"),
     messages.summaryTitle
@@ -189,6 +204,7 @@ export async function runInitPrompts(
     tools,
     includeDocs: docsChoice === "yes",
     locale,
+    stateDb,
   };
 }
 
