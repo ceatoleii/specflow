@@ -12,6 +12,12 @@ import {
   runStateMirrorApproval,
   runStateCloseSession,
   runStateListSessions,
+  runStateEnsure,
+  runStateSyncCriteria,
+  runStateSyncTasks,
+  runStateAppendMessage,
+  runStateSyncTask,
+  runStateSearch,
 } from "./state.js";
 import { runSync } from "./sync.js";
 import { runStatus } from "./status.js";
@@ -269,5 +275,184 @@ describe("state engine", () => {
       console.log = orig;
     }
     expect(logs.some((l) => l.includes("archived"))).toBe(true);
+  });
+
+  it("S14 — ensure initializes state db", async () => {
+    const dir = await createProjectDir("state-ensure");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+
+    await expect(runStateEnsure({ cwd: dir })).resolves.toBeUndefined();
+    expect(await fs.pathExists(path.join(dir, STATE_DB))).toBe(true);
+  });
+
+  it("S15 — sync-criteria CLI syncs from task artifact", async () => {
+    const dir = await createProjectDir("state-sync-criteria-cli");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    const taskPath = path.join(dir, "task-input.md");
+    await fs.writeFile(
+      taskPath,
+      "# Task\n\n## Acceptance Criteria\n- [ ] CLI criterion\n"
+    );
+    await runStateWriteArtifact({ cwd: dir, kind: "task", file: taskPath });
+    await runStateSyncCriteria({ cwd: dir });
+
+    const criteria = await import("../lib/state/query.js").then((m) =>
+      m.querySlice(dir, "criteria")
+    );
+    expect(criteria).toContain("CLI criterion");
+  });
+
+  it("S16 — sync-tasks CLI parses file and mirrors", async () => {
+    const dir = await createProjectDir("state-sync-tasks-cli");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    const tasksPath = path.join(dir, "tasks-input.md");
+    await fs.writeFile(
+      tasksPath,
+      "# Tasks\n\n- [ ] **T01** — Alpha: Do alpha\n"
+    );
+    await runStateSyncTasks({ cwd: dir, file: tasksPath });
+
+    expect(
+      await fs.pathExists(path.join(dir, ".agents-state", "current", "tasks.md"))
+    ).toBe(true);
+  });
+
+  it("S17 — append-message stores user and agent messages", async () => {
+    const dir = await createProjectDir("state-append-msg");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    const msgPath = path.join(dir, "msg.md");
+    await fs.writeFile(msgPath, "User question");
+    await runStateAppendMessage({
+      cwd: dir,
+      round: 1,
+      role: "user",
+      file: msgPath,
+    });
+    await runStateAppendMessage({
+      cwd: dir,
+      round: 1,
+      role: "agent",
+      file: msgPath,
+    });
+
+    const decisions = await import("../lib/state/query.js").then((m) =>
+      m.querySlice(dir, "decisions")
+    );
+    expect(decisions).toBeNull();
+  });
+
+  it("S18 — sync-task CLI updates status and refreshes artifact", async () => {
+    const dir = await createProjectDir("state-sync-task-cli");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    const tasksPath = path.join(dir, "tasks-sync.md");
+    await fs.writeFile(
+      tasksPath,
+      "# Tasks\n\n- [ ] **T01** — Work: Body\n"
+    );
+    await runStateSyncTasks({ cwd: dir, file: tasksPath, noMirror: true });
+    await runStateSyncTask({ cwd: dir, code: "T01", status: "done" });
+
+    const active = await import("../lib/state/query.js").then((m) =>
+      m.querySlice(dir, "active-task")
+    );
+    expect(active).toBeNull();
+  });
+
+  it("S19 — query slices and validation", async () => {
+    const dir = await createProjectDir("state-query-slices");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    const sddPath = path.join(dir, "sdd.md");
+    await fs.writeFile(
+      sddPath,
+      "# SDD\n\n## Summary\nShort design summary\n\n---\n\n## Details\n"
+    );
+    await runStateWriteArtifact({ cwd: dir, kind: "sdd", file: sddPath });
+    insertDecision(dir, "pick vitepress", "designing");
+
+    expect(await runStateQuery({ cwd: dir, slice: "sdd-summary" })).toBeUndefined();
+    const summary = await import("../lib/state/query.js").then((m) =>
+      m.querySlice(dir, "sdd-summary")
+    );
+    expect(summary).toContain("Short design summary");
+
+    const logs: string[] = [];
+    const orig = console.log;
+    console.log = (...args: unknown[]) => {
+      logs.push(args.map(String).join(" "));
+    };
+    try {
+      await runStateQuery({ cwd: dir, slice: "decisions" });
+      await runStateQuery({ cwd: dir, slice: "phase", json: true });
+    } finally {
+      console.log = orig;
+    }
+    expect(logs.some((l) => l.includes("designing"))).toBe(true);
+    expect(logs.some((l) => l.includes('"slice"'))).toBe(true);
+
+    await expect(
+      runStateQuery({ cwd: dir, slice: "invalid" })
+    ).rejects.toMatchObject({ code: "INVALID_SLICE" });
+  });
+
+  it("S20 — edge cases for close, list, search, migrate, write", async () => {
+    const dir = await createProjectDir("state-edge");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+
+    const logs: string[] = [];
+    const orig = console.log;
+    console.log = (...args: unknown[]) => {
+      logs.push(args.map(String).join(" "));
+    };
+    try {
+      await runStateCloseSession({ cwd: dir });
+      await runStateListSessions({ cwd: dir });
+      await runStateSearch({ cwd: dir, term: "missing-term-xyz" });
+      await runStateMigrate({ cwd: dir });
+    } finally {
+      console.log = orig;
+    }
+    expect(logs.some((l) => l.includes("No active session"))).toBe(true);
+    expect(logs.some((l) => l.includes("(none)"))).toBe(true);
+    expect(logs.some((l) => l.includes("No matches"))).toBe(true);
+
+    await expect(
+      runStateSetPhase({ cwd: dir, phase: "invalid-phase" })
+    ).rejects.toMatchObject({ code: "INVALID_PHASE" });
+
+    await expect(
+      runStateWriteArtifact({ cwd: dir, kind: "unknown" })
+    ).rejects.toMatchObject({ code: "INVALID_KIND" });
+
+    await expect(
+      runStateAppendMessage({ cwd: dir, round: 1, role: "bot" })
+    ).rejects.toMatchObject({ code: "INVALID_ROLE" });
+
+    await expect(
+      runStateSearch({ cwd: dir, term: "   " })
+    ).rejects.toMatchObject({ code: "INVALID_TERM" });
+  });
+
+  it("S21 — sync-task rejects invalid status and missing task", async () => {
+    const dir = await createProjectDir("state-sync-task-errors");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    await expect(
+      runStateSyncTask({ cwd: dir, code: "T99", status: "done" })
+    ).rejects.toMatchObject({ code: "TASK_NOT_FOUND" });
+
+    await expect(
+      runStateSyncTask({ cwd: dir, code: "T01", status: "bad" })
+    ).rejects.toMatchObject({ code: "INVALID_STATUS" });
   });
 });
