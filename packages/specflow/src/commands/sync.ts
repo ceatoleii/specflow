@@ -1,4 +1,5 @@
 import semver from "semver";
+import { SpecflowCliError } from "../errors.js";
 import { loadManifest } from "../lib/manifest.js";
 import { copyStatic, printCopyResult } from "../lib/copy.js";
 import { confirmIfFlowActive } from "../lib/flow.js";
@@ -23,16 +24,18 @@ export async function runSync(options: SyncOptions): Promise<void> {
 
   const installed = await readProjectVersion(targetDir);
   if (!installed) {
-    console.error(
+    throw new SpecflowCliError(
+      "NOT_INSTALLED",
       "SpecFlow no está instalado en este directorio. Ejecuta: specflow init"
     );
-    process.exit(1);
   }
 
   const canProceed = await confirmIfFlowActive(targetDir, options.yes ?? false);
   if (!canProceed) {
-    console.error("\nAbortado. Usa --yes para sincronizar con tarea activa.");
-    process.exit(1);
+    throw new SpecflowCliError(
+      "FLOW_ACTIVE",
+      "Abortado. Usa --yes para sincronizar con tarea activa."
+    );
   }
 
   if (semver.major(cliVersion) > semver.major(installed.specflow)) {

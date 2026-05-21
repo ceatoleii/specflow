@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .test-tmp/
+coverage/
 .DS_Store
 *.log
 .agents-state/

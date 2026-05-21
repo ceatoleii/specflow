@@ -1,27 +1,56 @@
+<div align="center">
+
 # SpecFlow
 
-Monorepo for **@ceatoleii/specflow** — spec-driven multi-agent workflow for Cursor and AI tools.
+Monorepo for [`@ceatoleii/specflow`](https://www.npmjs.com/package/@ceatoleii/specflow) — spec-driven multi-agent workflow for Cursor and AI coding tools.
 
-## Package
+[![CI](https://github.com/ceatoleii/specflow/actions/workflows/ci.yml/badge.svg)](https://github.com/ceatoleii/specflow/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@ceatoleii/specflow.svg?style=flat-square)](https://www.npmjs.com/package/@ceatoleii/specflow)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+**Full documentation → [packages/specflow/README.md](./packages/specflow/README.md)**
 
 ```bash
-cd packages/specflow
-npm install
-npm run build
+npx @ceatoleii/specflow init
 ```
 
-Publish:
+</div>
+
+---
+
+## Repository structure
+
+```
+.
+├── packages/specflow/     # Publishable npm package (@ceatoleii/specflow)
+│   ├── assets/            # Agent rules, templates, AGENTS.md (shipped to users)
+│   ├── src/               # CLI (TypeScript)
+│   └── README.md          # npm & GitHub package documentation
+├── .github/workflows/     # CI (test + coverage)
+└── package.json           # npm workspaces root
+```
+
+---
+
+## Development
+
+```bash
+npm install
+npm run build -w @ceatoleii/specflow
+npm test
+npm run test:coverage
+```
+
+### Publish to npm
 
 ```bash
 npm publish -w @ceatoleii/specflow --access public
 ```
 
-## Quick use
+---
 
-```bash
-npx @ceatoleii/specflow init
-npx @ceatoleii/specflow sync
-npx @ceatoleii/specflow status
-```
+## Links
 
-See [packages/specflow/README.md](./packages/specflow/README.md).
+- [npm package](https://www.npmjs.com/package/@ceatoleii/specflow)
+- [Changelog](./packages/specflow/CHANGELOG.md)
+- [License MIT](./packages/specflow/LICENSE)

@@ -5,9 +5,13 @@
   "keywords": ["cursor", "agents", "sdd", "spec-driven", "specflow", "ai"],
   "license": "MIT",
   "author": "ceatoleii",
+  "homepage": "https://github.com/ceatoleii/specflow#readme",
+  "bugs": {
+    "url": "https://github.com/ceatoleii/specflow/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ceatoleii/specflow.git"
+    "url": "git+https://github.com/ceatoleii/specflow.git"
   },
   "publishConfig": {
     "access": "public"
@@ -27,7 +31,9 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "test": "npm run build && node --test dist/test/smoke.test.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "engines": {
@@ -43,6 +49,9 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.21",
     "@types/semver": "^7.7.0",
-    "typescript": "^5.8.3"
+    "@vitest/coverage-v8": "^3.2.4",
+    "execa": "^9.6.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

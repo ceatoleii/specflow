@@ -1,5 +1,8 @@
 src/
 tsconfig.json
+vitest.config.ts
+vitest.global-setup.ts
 **/*.test.ts
 dist/test/
+coverage/
 node_modules/
