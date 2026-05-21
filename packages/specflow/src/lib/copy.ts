@@ -2,7 +2,6 @@ import fs from "fs-extra";
 import path from "node:path";
 import { glob } from "glob";
 import { getAssetsDir } from "./paths.js";
-import type { SpecflowManifest } from "./manifest.js";
 
 export interface CopyResult {
   created: string[];
@@ -14,6 +13,7 @@ async function expandPatterns(
   baseDir: string,
   patterns: string[]
 ): Promise<string[]> {
+  if (patterns.length === 0) return [];
   const files = new Set<string>();
   for (const pattern of patterns) {
     const matches = await glob(pattern, {
@@ -28,64 +28,115 @@ async function expandPatterns(
   return [...files].sort();
 }
 
-export async function copyFiles(
+function toDestPath(relativePath: string, stripPrefix: string): string {
+  if (stripPrefix && relativePath.startsWith(stripPrefix)) {
+    return relativePath.slice(stripPrefix.length);
+  }
+  return relativePath;
+}
+
+export async function copyFromPatterns(
   targetDir: string,
   patterns: string[],
-  options: { overwrite: boolean; dryRun: boolean }
+  options: { overwrite: boolean; dryRun: boolean; stripPrefix?: string }
 ): Promise<CopyResult> {
   const assetsDir = getAssetsDir();
   const relativePaths = await expandPatterns(assetsDir, patterns);
   const result: CopyResult = { created: [], updated: [], skipped: [] };
+  const stripPrefix = options.stripPrefix ?? "";
 
   for (const rel of relativePaths) {
     const src = path.join(assetsDir, rel);
-    const dest = path.join(targetDir, rel);
+    const destRel = toDestPath(rel, stripPrefix);
+    const dest = path.join(targetDir, destRel);
 
     if (!(await fs.pathExists(src))) continue;
 
     const destExists = await fs.pathExists(dest);
 
     if (destExists && !options.overwrite) {
-      result.skipped.push(rel);
+      result.skipped.push(destRel);
       continue;
     }
 
     if (options.dryRun) {
-      if (destExists) result.updated.push(rel);
-      else result.created.push(rel);
+      if (destExists) result.updated.push(destRel);
+      else result.created.push(destRel);
       continue;
     }
 
     await fs.ensureDir(path.dirname(dest));
     await fs.copy(src, dest, { overwrite: true });
 
-    if (destExists && options.overwrite) result.updated.push(rel);
-    else result.created.push(rel);
+    if (destExists && options.overwrite) result.updated.push(destRel);
+    else result.created.push(destRel);
   }
 
   return result;
 }
 
-export async function copyStatic(
+export async function copyCoreStatic(
   targetDir: string,
-  manifest: SpecflowManifest,
+  patterns: string[],
   options: { dryRun: boolean }
 ): Promise<CopyResult> {
-  return copyFiles(targetDir, manifest.static, {
+  return copyFromPatterns(targetDir, patterns, {
     overwrite: true,
     dryRun: options.dryRun,
+    stripPrefix: "core/",
   });
 }
 
-export async function copyScaffold(
+export async function copyCoreScaffold(
   targetDir: string,
-  manifest: SpecflowManifest,
+  patterns: string[],
   options: { dryRun: boolean }
 ): Promise<CopyResult> {
-  return copyFiles(targetDir, manifest.scaffold, {
+  return copyFromPatterns(targetDir, patterns, {
     overwrite: false,
     dryRun: options.dryRun,
+    stripPrefix: "core/",
   });
+}
+
+export async function copyAdapter(
+  targetDir: string,
+  adapterId: string,
+  patterns: string[],
+  options: { dryRun: boolean }
+): Promise<CopyResult> {
+  if (patterns.length === 0) {
+    return { created: [], updated: [], skipped: [] };
+  }
+  return copyFromPatterns(targetDir, patterns, {
+    overwrite: true,
+    dryRun: options.dryRun,
+    stripPrefix: `adapters/${adapterId}/`,
+  });
+}
+
+export async function removeAdapterFiles(
+  targetDir: string,
+  adapterId: string,
+  patterns: string[],
+  options: { dryRun: boolean }
+): Promise<string[]> {
+  const assetsDir = getAssetsDir();
+  const relativePaths = await expandPatterns(assetsDir, patterns);
+  const removed: string[] = [];
+
+  for (const rel of relativePaths) {
+    const destRel = toDestPath(rel, `adapters/${adapterId}/`);
+    const dest = path.join(targetDir, destRel);
+    if (!(await fs.pathExists(dest))) continue;
+
+    if (!options.dryRun) {
+      await fs.remove(dest);
+    }
+    removed.push(destRel);
+  }
+
+  return removed;
 }
 
 export function mergeResults(...results: CopyResult[]): CopyResult {

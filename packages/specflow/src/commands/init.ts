@@ -1,60 +1,43 @@
-import { loadManifest } from "../lib/manifest.js";
-import {
-  copyScaffold,
-  copyStatic,
-  mergeResults,
-  printCopyResult,
-} from "../lib/copy.js";
-import { ensureGitignoreEntries } from "../lib/gitignore.js";
+import { installCoreAndAdapters } from "../lib/install.js";
+import { runInitPrompts } from "../lib/prompts.js";
 import { resolveTargetDir } from "../lib/paths.js";
-import { getCliVersion, readProjectVersion, writeProjectVersion } from "../lib/version.js";
+import { readProjectVersion, getCliVersion } from "../lib/version.js";
 
 export interface InitOptions {
   cwd?: string;
+  yes?: boolean;
   noDocs?: boolean;
   dryRun?: boolean;
 }
 
 export async function runInit(options: InitOptions): Promise<void> {
   const targetDir = resolveTargetDir(options.cwd);
-  const manifest = await loadManifest();
   const cliVersion = getCliVersion();
   const dryRun = options.dryRun ?? false;
+  const interactive = !options.yes && process.stdin.isTTY;
 
   const existing = await readProjectVersion(targetDir);
-  if (existing && !dryRun) {
+  if (existing && !dryRun && interactive) {
     console.log(
-      `SpecFlow ya está instalado (v${existing.specflow}). Usa \`specflow sync\` para actualizar.`
+      `\n  SpecFlow ya instalado (v${existing.specflow}). Usa \`specflow sync\` o \`specflow tools add\`.`
     );
   }
+
+  const answers = await runInitPrompts(targetDir, {
+    yes: !interactive,
+  });
+
+  const tools = answers.tools;
+  const includeDocs = options.noDocs ? false : answers.includeDocs;
 
   console.log(`\n→ Instalando SpecFlow v${cliVersion} en ${targetDir}`);
 
-  const staticResult = await copyStatic(targetDir, manifest, { dryRun });
-  printCopyResult("Motor (reglas, templates, cursor)", staticResult, dryRun);
-
-  let scaffoldResult = { created: [] as string[], updated: [] as string[], skipped: [] as string[] };
-  if (!options.noDocs) {
-    scaffoldResult = await copyScaffold(targetDir, manifest, { dryRun });
-    printCopyResult("Docs (solo archivos nuevos)", scaffoldResult, dryRun);
-  } else {
-    console.log("\n  Docs: omitidos (--no-docs)");
-  }
-
-  if (!dryRun) {
-    const gitignoreAdded = await ensureGitignoreEntries(
-      targetDir,
-      manifest.gitignoreEntries
-    );
-    if (gitignoreAdded.length) {
-      console.log("\n  .gitignore:");
-      for (const e of gitignoreAdded) console.log(`    + ${e}`);
-    }
-
-    await writeProjectVersion(targetDir, cliVersion, manifest.manifestVersion);
-  }
-
-  const merged = mergeResults(staticResult, scaffoldResult);
+  await installCoreAndAdapters({
+    targetDir,
+    tools,
+    includeDocs,
+    dryRun,
+  });
 
   if (dryRun) {
     console.log("\n[dry-run] Sin cambios escritos.");
@@ -62,6 +45,9 @@ export async function runInit(options: InitOptions): Promise<void> {
   }
 
   console.log(`\n✓ SpecFlow v${cliVersion} instalado.`);
-  console.log("  Siguiente: edita .agents-docs/ cuando quieras (manual).");
-  console.log('  En Cursor: "nueva tarea: [tu requerimiento]"');
+  if (tools.length) {
+    console.log(`  Adaptadores: ${tools.join(", ")}`);
+  }
+  console.log("  Edita .agents-docs/ cuando quieras.");
+  console.log('  Activa el flujo: "nueva tarea: [tu requerimiento]"');
 }

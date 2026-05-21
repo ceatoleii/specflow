@@ -1,8 +1,12 @@
 import semver from "semver";
-import { SpecflowCliError } from "../errors.js";
 import { resolveTargetDir } from "../lib/paths.js";
 import { isFlowActive } from "../lib/flow.js";
 import { getCliVersion, readProjectVersion } from "../lib/version.js";
+import {
+  readProjectTools,
+  detectLegacyTools,
+} from "../lib/tools-config.js";
+import { loadManifest } from "../lib/manifest.js";
 
 export type StatusResult = "ok" | "not_installed" | "outdated" | "cli_older";
 
@@ -13,22 +17,41 @@ export interface StatusOptions {
 export async function runStatus(options: StatusOptions): Promise<StatusResult> {
   const targetDir = resolveTargetDir(options.cwd);
   const cliVersion = getCliVersion();
+  const manifest = await loadManifest();
   const installed = await readProjectVersion(targetDir);
   const flowActive = await isFlowActive(targetDir);
 
   console.log(`\nSpecFlow @ceatoleii/specflow`);
-  console.log(`  CLI:       v${cliVersion}`);
+  console.log(`  CLI:        v${cliVersion}`);
   console.log(`  Directorio: ${targetDir}`);
 
   if (!installed) {
-    console.log(`  Proyecto:  no instalado`);
+    console.log(`  Proyecto:   no instalado`);
     console.log(`\n  Ejecuta: specflow init`);
     return "not_installed";
   }
 
-  console.log(`  Proyecto:  v${installed.specflow}`);
-  console.log(`  Instalado: ${installed.installedAt}`);
-  console.log(`  Flujo:     ${flowActive ? "activo" : "inactivo"}`);
+  console.log(`  Proyecto:   v${installed.specflow}`);
+
+  let toolsConfig = await readProjectTools(targetDir);
+  const tools =
+    toolsConfig?.tools.length
+      ? toolsConfig.tools
+      : await detectLegacyTools(targetDir);
+
+  if (tools.length) {
+    const labels = tools.map(
+      (id) =>
+        `${manifest.adapters[id]?.label ?? id} (${
+          manifest.adapters[id]?.tier ?? "?"
+        })`
+    );
+    console.log(`  Adaptadores: ${labels.join(", ")}`);
+  } else {
+    console.log(`  Adaptadores: (solo core — AGENTS.md)`);
+  }
+
+  console.log(`  Flujo:      ${flowActive ? "activo" : "inactivo"}`);
 
   if (semver.lt(installed.specflow, cliVersion)) {
     const diff = semver.diff(installed.specflow, cliVersion) ?? "patch";
@@ -38,7 +61,7 @@ export async function runStatus(options: StatusOptions): Promise<StatusResult> {
   }
 
   if (semver.gt(installed.specflow, cliVersion)) {
-    console.log(`\n  Estado: proyecto más nuevo que el CLI (actualiza el paquete npm)`);
+    console.log(`\n  Estado: proyecto más nuevo que el CLI`);
     return "cli_older";
   }
 

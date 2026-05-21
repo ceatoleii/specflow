@@ -2,9 +2,9 @@
 
 # SpecFlow
 
-**Spec-driven multi-agent workflow for Cursor and AI coding tools.**
+**Spec-driven multi-agent workflow for Cursor, Claude Code, Copilot, Codex, and more.**
 
-Install once per project. Refine requirements, design the solution, implement with a single writer agent, and review against your spec — without losing project context between phases.
+Install once per project. Pick your IDE adapters interactively. Refine → design → implement → review with one code-writing agent.
 
 [![CI](https://github.com/ceatoleii/specflow/actions/workflows/ci.yml/badge.svg)](https://github.com/ceatoleii/specflow/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@ceatoleii/specflow.svg?style=flat-square)](https://www.npmjs.com/package/@ceatoleii/specflow)
@@ -86,35 +86,48 @@ Example: **`nueva tarea: add password reset to the login flow`**
 
 ## Installation
 
-### New project
+### Interactive (recommended)
 
 ```bash
 npx @ceatoleii/specflow init
 ```
 
-### Global CLI (optional)
+The CLI asks (checkbox / confirm):
+
+1. Confirm directory  
+2. **Which AI tools** you use (Cursor, Claude Code, Copilot, Codex, …)  
+3. Whether to scaffold `.agents-docs/`  
+4. Summary → install  
+
+### Non-interactive (CI / scripts)
 
 ```bash
-npm install -g @ceatoleii/specflow
-specflow init
+npx @ceatoleii/specflow init --yes
+npx @ceatoleii/specflow init --yes --no-docs
 ```
 
 ### What gets installed
 
 | Path | Managed by | Purpose |
 |------|--------------|---------|
-| `.agents/` | `init` / `sync` | Agent rules and templates — **do not edit** |
-| `AGENTS.md` | `init` / `sync` | Entry point for AI tools |
-| `.cursor/rules/_specflow.mdc` | `init` / `sync` | Cursor orchestrator hook |
-| `.agents-docs/` | **You** | Project-specific context (manual) |
+| `AGENTS.md` | `init` / `sync` | Universal entry ([agents.md](https://agents.md/)) |
+| `.agents/` | `init` / `sync` | Orchestrator + 4 agents — **do not edit** |
+| `.specflow-tools.json` | `init` / `sync` | Installed IDE adapters |
+| Adapter files | per tool | e.g. `.cursor/rules/`, `CLAUDE.md`, `.github/copilot-instructions.md` |
+| `.agents-docs/` | **You** | Project context (manual) |
 | `.agents-state/` | Runtime | Per-task state (gitignored) |
-| `.specflow-version` | `init` / `sync` | Installed package version |
 
-Skip doc scaffolding if you prefer to add docs later:
+### IDE support matrix
 
-```bash
-npx @ceatoleii/specflow init --no-docs
-```
+| Tool | Tier | Adapter files |
+|------|------|----------------|
+| Cursor | stable | `.cursor/rules/_specflow.mdc` |
+| Claude Code | stable | `CLAUDE.md` |
+| GitHub Copilot | stable | `.github/copilot-instructions.md` |
+| OpenAI Codex | stable | `AGENTS.md` only |
+| Windsurf | experimental | `.windsurf/rules/specflow.md` |
+| Opencode | experimental | `.opencode/rules/specflow.md` |
+| Antigravity | experimental | `.antigravity/rules/specflow.md` |
 
 ---
 
@@ -122,18 +135,21 @@ npx @ceatoleii/specflow init --no-docs
 
 | Command | Description |
 |---------|-------------|
-| `specflow init` | Install or bootstrap SpecFlow in the current directory |
-| `specflow sync` | Update engine files from the installed package |
-| `specflow status` | Compare project version vs CLI version |
+| `specflow init` | Interactive install (checkbox for IDE tools) |
+| `specflow sync` | Update core + installed adapters |
+| `specflow status` | Version, adapters, flow state |
+| `specflow tools list` | Show installed / available adapters |
+| `specflow tools add` | Add adapters (interactive) |
+| `specflow tools remove` | Remove adapters (interactive) |
 
 ### Options
 
 ```bash
-specflow init --no-docs       # skip .agents-docs/ scaffold
-specflow init --dry-run       # preview files without writing
-specflow sync --dry-run       # preview sync changes
-specflow sync --yes           # allow sync while a flow task is active
-specflow status -C ./my-app   # target another directory
+specflow init --yes           # all stable tools, no prompts
+specflow init --no-docs       # skip .agents-docs/
+specflow init --dry-run
+specflow sync --yes           # sync while flow task active
+specflow status -C ./my-app
 ```
 
 ### Versioning & sync safety

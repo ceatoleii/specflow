@@ -1,14 +1,19 @@
 import semver from "semver";
 import { SpecflowCliError } from "../errors.js";
-import { loadManifest } from "../lib/manifest.js";
-import { copyStatic, printCopyResult } from "../lib/copy.js";
+import { syncCoreAndAdapters } from "../lib/install.js";
 import { confirmIfFlowActive } from "../lib/flow.js";
 import { resolveTargetDir } from "../lib/paths.js";
+import {
+  readProjectTools,
+  detectLegacyTools,
+  writeProjectTools,
+} from "../lib/tools-config.js";
 import {
   getCliVersion,
   readProjectVersion,
   writeProjectVersion,
 } from "../lib/version.js";
+import { loadManifest } from "../lib/manifest.js";
 
 export interface SyncOptions {
   cwd?: string;
@@ -16,9 +21,16 @@ export interface SyncOptions {
   yes?: boolean;
 }
 
+async function resolveInstalledTools(targetDir: string): Promise<string[]> {
+  const config = await readProjectTools(targetDir);
+  if (config?.tools.length) return config.tools;
+  const legacy = await detectLegacyTools(targetDir);
+  if (legacy.length) return legacy;
+  return [];
+}
+
 export async function runSync(options: SyncOptions): Promise<void> {
   const targetDir = resolveTargetDir(options.cwd);
-  const manifest = await loadManifest();
   const cliVersion = getCliVersion();
   const dryRun = options.dryRun ?? false;
 
@@ -26,7 +38,7 @@ export async function runSync(options: SyncOptions): Promise<void> {
   if (!installed) {
     throw new SpecflowCliError(
       "NOT_INSTALLED",
-      "SpecFlow no está instalado en este directorio. Ejecuta: specflow init"
+      "SpecFlow no está instalado. Ejecuta: specflow init"
     );
   }
 
@@ -38,6 +50,8 @@ export async function runSync(options: SyncOptions): Promise<void> {
     );
   }
 
+  const tools = await resolveInstalledTools(targetDir);
+
   if (semver.major(cliVersion) > semver.major(installed.specflow)) {
     console.warn(
       `\n⚠ Actualización MAJOR: ${installed.specflow} → ${cliVersion}`
@@ -46,16 +60,20 @@ export async function runSync(options: SyncOptions): Promise<void> {
   } else if (semver.lt(installed.specflow, cliVersion)) {
     console.log(`\n→ Sincronizando ${installed.specflow} → ${cliVersion}`);
   } else {
-    console.log(`\n→ Ya estás en v${cliVersion} (sin cambios de versión).`);
+    console.log(`\n→ SpecFlow v${cliVersion} (motor al día)`);
   }
 
   console.log(`  Directorio: ${targetDir}`);
+  console.log(
+    `  Adaptadores: ${tools.length ? tools.join(", ") : "(solo core)"}`
+  );
   console.log("  .agents-docs/ no se modificará.");
 
-  const staticResult = await copyStatic(targetDir, manifest, { dryRun });
-  printCopyResult("Motor actualizado", staticResult, dryRun);
+  await syncCoreAndAdapters(targetDir, tools, dryRun);
 
   if (!dryRun) {
+    const manifest = await loadManifest();
+    await writeProjectTools(targetDir, tools, manifest.manifestVersion);
     await writeProjectVersion(targetDir, cliVersion, manifest.manifestVersion);
     console.log(`\n✓ Sincronizado a SpecFlow v${cliVersion}`);
   } else {
