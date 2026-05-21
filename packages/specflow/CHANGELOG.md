@@ -4,6 +4,12 @@ All notable changes to `@ceatoleii/specflow` are documented here.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning follows [SemVer](https://semver.org/).
 
+## [1.1.1] - 2026-05-21
+
+### Fixed
+
+- CLI `Permission denied` on macOS/external volumes: bin now uses `bin/specflow.js` wrapper with execute bit
+
 ## [1.1.0] - 2026-05-21
 
 ### Added
