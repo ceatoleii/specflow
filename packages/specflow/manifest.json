@@ -1,0 +1,20 @@
+{
+  "manifestVersion": 1,
+  "static": [
+    "AGENTS.md",
+    ".agents/**",
+    ".cursor/rules/_specflow.mdc"
+  ],
+  "scaffold": [
+    ".agents-docs/architecture.md",
+    ".agents-docs/conventions.md",
+    ".agents-docs/verification.md",
+    ".agents-docs/design-system.md"
+  ],
+  "neverTouch": [
+    ".agents-docs/**",
+    ".agents-state/**",
+    ".specflow-version"
+  ],
+  "gitignoreEntries": [".agents-state/"]
+}

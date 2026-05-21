@@ -1,0 +1,48 @@
+{
+  "name": "@ceatoleii/specflow",
+  "version": "1.0.0",
+  "description": "Spec-driven multi-agent workflow for Cursor and AI coding tools",
+  "keywords": ["cursor", "agents", "sdd", "spec-driven", "specflow", "ai"],
+  "license": "MIT",
+  "author": "ceatoleii",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceatoleii/specflow.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "specflow": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "manifest.json",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && node --test dist/test/smoke.test.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "fs-extra": "^11.3.0",
+    "glob": "^10.4.5",
+    "semver": "^7.7.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.21",
+    "@types/semver": "^7.7.0",
+    "typescript": "^5.8.3"
+  }
+}

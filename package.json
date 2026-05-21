@@ -1,0 +1,10 @@
+{
+  "name": "specflow-repo",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "npm run build -w @ceatoleii/specflow",
+    "test": "npm run test -w @ceatoleii/specflow",
+    "specflow": "npm run build -w @ceatoleii/specflow && node packages/specflow/dist/cli.js"
+  }
+}
