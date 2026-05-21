@@ -41,7 +41,7 @@ export async function runInit(options: InitOptions): Promise<void> {
       includeDocs,
       dryRun,
       locale: answers.locale,
-      stateDb: answers.stateDb,
+      stateDb: true,
     });
   } catch (error) {
     spinner.stop("");
@@ -58,27 +58,23 @@ export async function runInit(options: InitOptions): Promise<void> {
 
   spinner.stop(messages.installDone(cliVersion));
 
-  if (answers.stateDb) {
-    const { ensureStateForProject } = await import(
-      "../lib/state/ensure.js"
-    );
-    const state = await ensureStateForProject(targetDir);
-    if (state.bootstrapped) {
-      console.log(`\n→ State DB ready (session ${state.sessionId})`);
-      if (state.migrated) {
-        console.log("→ Imported legacy .agents-state/current/ into state.db");
-      }
-    }
+  const { ensureStateForProject } = await import("../lib/state/ensure.js");
+  const state = await ensureStateForProject(targetDir);
+  console.log("\n→ State DB ready");
+  if (state.migrated) {
+    console.log("→ Imported legacy .agents-state/current/ into state.db");
+  }
+  if (state.activeSessionId) {
+    console.log(`→ Active session: ${state.activeSessionId}`);
   }
 
-  const outroLines = [messages.editDocs, messages.activateFlow];
-  if (answers.stateDb) {
-    outroLines.unshift(
-      answers.locale === "es"
-        ? "Flujo: state.db activo (specflow state …)"
-        : "Flow: state.db enabled (specflow state …)"
-    );
-  }
+  const outroLines = [
+    answers.locale === "es"
+      ? "Flujo: state.db (specflow state …)"
+      : "Flow: state.db (specflow state …)",
+    messages.editDocs,
+    messages.activateFlow,
+  ];
   if (tools.length) {
     outroLines.unshift(messages.adaptersLine(tools.join(", ")));
   }

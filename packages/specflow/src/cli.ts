@@ -17,6 +17,14 @@ import {
   runStateSetPhase,
   runStateSyncTask,
   runStateEnsure,
+  runStateStartSession,
+  runStateCloseSession,
+  runStateListSessions,
+  runStateWriteArtifact,
+  runStateAppendMessage,
+  runStateSyncCriteria,
+  runStateSyncTasks,
+  runStateMirrorApproval,
 } from "./commands/state.js";
 import { getCliVersion } from "./lib/version.js";
 import { runCommandAction } from "./lib/cli-action.js";
@@ -125,6 +133,133 @@ state
   });
 
 state
+  .command("start-session")
+  .description("Start a new flow session (one per task)")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .option("--title <text>", "Optional session title")
+  .action(async (opts: { cwd: string; title?: string }) => {
+    runCommandAction(() =>
+      runStateStartSession({ cwd: opts.cwd, title: opts.title })
+    );
+  });
+
+state
+  .command("close-session")
+  .description("Archive the active session without full export")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    runCommandAction(() => runStateCloseSession({ cwd: opts.cwd }));
+  });
+
+state
+  .command("list-sessions")
+  .description("List flow sessions")
+  .option(
+    "--status <status>",
+    "Filter: active or archived"
+  )
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string; status?: string }) => {
+    runCommandAction(() =>
+      runStateListSessions({ cwd: opts.cwd, status: opts.status })
+    );
+  });
+
+state
+  .command("write-artifact")
+  .description("Write artifact content to state.db")
+  .requiredOption("--kind <kind>", "task|refinement|sdd|tasks|review")
+  .option("--file <path>", "Read content from file")
+  .option("--stdin", "Read content from stdin")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(
+    async (opts: {
+      cwd: string;
+      kind: string;
+      file?: string;
+      stdin?: boolean;
+    }) => {
+      runCommandAction(() =>
+        runStateWriteArtifact({
+          cwd: opts.cwd,
+          kind: opts.kind,
+          file: opts.file,
+          stdin: opts.stdin,
+        })
+      );
+    }
+  );
+
+state
+  .command("append-message")
+  .description("Append refinement message to state.db")
+  .requiredOption("--round <n>", "Refinement round number", parseInt)
+  .requiredOption("--role <role>", "user or agent")
+  .option("--file <path>", "Read content from file")
+  .option("--stdin", "Read content from stdin")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(
+    async (opts: {
+      cwd: string;
+      round: number;
+      role: string;
+      file?: string;
+      stdin?: boolean;
+    }) => {
+      runCommandAction(() =>
+        runStateAppendMessage({
+          cwd: opts.cwd,
+          round: opts.round,
+          role: opts.role,
+          file: opts.file,
+          stdin: opts.stdin,
+        })
+      );
+    }
+  );
+
+state
+  .command("sync-criteria")
+  .description("Sync acceptance criteria from task artifact")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    runCommandAction(() => runStateSyncCriteria({ cwd: opts.cwd }));
+  });
+
+state
+  .command("sync-tasks")
+  .description("Parse tasks markdown into state.db")
+  .option("--file <path>", "Read tasks markdown from file")
+  .option("--stdin", "Read from stdin")
+  .option("--no-mirror", "Skip sdd.md/tasks.md mirror")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(
+    async (opts: {
+      cwd: string;
+      file?: string;
+      stdin?: boolean;
+      noMirror?: boolean;
+    }) => {
+      runCommandAction(() =>
+        runStateSyncTasks({
+          cwd: opts.cwd,
+          file: opts.file,
+          stdin: opts.stdin,
+          noMirror: opts.noMirror,
+        })
+      );
+    }
+  );
+
+state
+  .command("mirror-approval")
+  .description("Mirror sdd + tasks from DB to current/ for human review")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .action(async (opts: { cwd: string }) => {
+    runCommandAction(() => runStateMirrorApproval({ cwd: opts.cwd }));
+  });
+
+state
   .command("query")
   .description("Query a state slice")
   .requiredOption(
@@ -172,7 +307,7 @@ state
 
 state
   .command("set-phase")
-  .description("Set flow phase (updates state.db and phase.md)")
+  .description("Set flow phase in state.db")
   .argument("<phase>", "refining|designing|implementing|reviewing")
   .option("-C, --cwd <dir>", "Target directory", process.cwd())
   .action(async (phase: string, opts: { cwd: string }) => {

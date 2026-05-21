@@ -21,6 +21,6 @@ export async function installTestProject(
     includeDocs: options.includeDocs ?? true,
     dryRun: options.dryRun ?? false,
     locale: options.locale ?? "en",
-    stateDb: options.stateDb ?? false,
+    stateDb: options.stateDb ?? true,
   });
 }

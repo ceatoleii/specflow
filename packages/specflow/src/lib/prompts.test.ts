@@ -56,7 +56,6 @@ function mockWizardFlow(
   vi.mocked(clack.confirm)
     .mockResolvedValueOnce(proceed)
     .mockResolvedValueOnce(coreOnly)
-    .mockResolvedValueOnce(stateDb)
     .mockResolvedValueOnce(confirmInstall);
   vi.mocked(clack.multiselect).mockResolvedValueOnce(tools);
 }

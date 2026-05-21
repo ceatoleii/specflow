@@ -1,36 +1,33 @@
-import { isStateDbEnabled } from "../project-config.js";
+import fs from "fs-extra";
+import path from "node:path";
+import type { StateDatabase } from "./db.js";
 import { withStateDb, setMeta } from "./db.js";
 import { maybeMigrateLegacyState } from "./maybe-migrate.js";
-import { createActiveSession } from "./session.js";
+import { getActiveSession } from "./session.js";
 
 export interface EnsureStateResult {
-  enabled: boolean;
   bootstrapped: boolean;
   migrated: boolean;
-  sessionId?: string;
+  activeSessionId?: string;
 }
 
-/** Bootstrap state.db when project config has stateDb: true. */
+/** Bootstrap state.db schema (no new session). */
 export async function ensureStateForProject(
   targetDir: string
 ): Promise<EnsureStateResult> {
-  const enabled = await isStateDbEnabled(targetDir);
-  if (!enabled) {
-    return { enabled: false, bootstrapped: false, migrated: false };
-  }
-
-  const sessionId = withStateDb(targetDir, (db) => {
-    const session = createActiveSession(db);
+  withStateDb(targetDir, (db) => {
     setMeta(db, "state_db_enabled", "1");
-    return session.id;
   });
 
   const migrated = await maybeMigrateLegacyState(targetDir);
 
+  const activeSessionId = withStateDb(targetDir, (db) => {
+    return getActiveSession(db)?.id;
+  });
+
   return {
-    enabled: true,
     bootstrapped: true,
     migrated: migrated.ran,
-    sessionId: migrated.sessionId ?? sessionId,
+    activeSessionId,
   };
 }

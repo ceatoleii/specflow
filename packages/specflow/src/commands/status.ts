@@ -57,18 +57,21 @@ export async function runStatus(options: StatusOptions): Promise<StatusResult> {
 
   const projectConfig = await readProjectConfig(targetDir);
   if (projectConfig) {
-    console.log(
-      `  Config:     stateDb=${projectConfig.stateDb ? "on" : "off"}`
-    );
+    console.log(`  Config:     stateDb=on (required)`);
   }
 
   const stateInfo = getStateStatusInfo(targetDir);
-  if (stateInfo.hasDb && stateInfo.sessionId) {
+  if (stateInfo.hasDb) {
     console.log(
-      `  State DB:   session ${stateInfo.sessionId}, phase ${stateInfo.phase ?? "(unset)"}, ${stateInfo.taskCount} tasks`
+      `  State DB:   ${stateInfo.activeCount} active, ${stateInfo.archivedCount} archived`
     );
-  } else if (stateInfo.hasDb) {
-    console.log(`  State DB:   (no active session)`);
+    if (stateInfo.sessionId) {
+      console.log(
+        `              session ${stateInfo.sessionId}, phase ${stateInfo.phase ?? "(unset)"}, ${stateInfo.taskCount} tasks`
+      );
+    } else if (stateInfo.activeCount > 0) {
+      console.log(`              ⚠ active session(s) without current phase`);
+    }
   }
 
   if (semver.lt(installed.specflow, cliVersion)) {

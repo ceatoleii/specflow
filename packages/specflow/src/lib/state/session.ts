@@ -23,13 +23,28 @@ export function getActiveSession(db: StateDatabase): SessionRow | undefined {
     .get() as SessionRow | undefined;
 }
 
-export function createActiveSession(
+export function listSessions(
+  db: StateDatabase,
+  status?: "active" | "archived"
+): SessionRow[] {
+  if (status) {
+    return db
+      .prepare(
+        "SELECT id, title, created_at, archived_at, status FROM sessions WHERE status = ? ORDER BY created_at DESC"
+      )
+      .all(status) as SessionRow[];
+  }
+  return db
+    .prepare(
+      "SELECT id, title, created_at, archived_at, status FROM sessions ORDER BY created_at DESC"
+    )
+    .all() as SessionRow[];
+}
+
+export function createNewSession(
   db: StateDatabase,
   title?: string
 ): SessionRow {
-  const existing = getActiveSession(db);
-  if (existing) return existing;
-
   const id = newSessionId();
   const createdAt = new Date().toISOString();
   db.prepare(
@@ -43,6 +58,16 @@ export function createActiveSession(
     archived_at: null,
     status: "active",
   };
+}
+
+/** @deprecated Use startFlowSession for new tasks; kept for in-session operations */
+export function createActiveSession(
+  db: StateDatabase,
+  title?: string
+): SessionRow {
+  const existing = getActiveSession(db);
+  if (existing) return existing;
+  return createNewSession(db, title);
 }
 
 export function archiveActiveSession(db: StateDatabase): SessionRow | undefined {
@@ -61,5 +86,5 @@ export function ensureActiveSession(
   db: StateDatabase,
   title?: string
 ): SessionRow {
-  return getActiveSession(db) ?? createActiveSession(db, title);
+  return getActiveSession(db) ?? createNewSession(db, title);
 }

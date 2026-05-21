@@ -26,7 +26,7 @@ export function normalizeProjectConfig(
   return {
     locale: raw.locale,
     includeDocs: raw.includeDocs ?? true,
-    stateDb: raw.stateDb ?? false,
+    stateDb: raw.stateDb ?? true,
     installedAt: raw.installedAt,
     manifestVersion: raw.manifestVersion ?? 2,
   };
@@ -43,7 +43,7 @@ export async function readProjectConfig(
 
 export async function isStateDbEnabled(targetDir: string): Promise<boolean> {
   const config = await readProjectConfig(targetDir);
-  return config?.stateDb === true;
+  return config !== null;
 }
 
 export async function writeProjectConfig(
@@ -53,7 +53,7 @@ export async function writeProjectConfig(
   const data: ProjectConfig = {
     locale: input.locale,
     includeDocs: input.includeDocs,
-    stateDb: input.stateDb,
+    stateDb: true,
     installedAt: new Date().toISOString(),
     manifestVersion: input.manifestVersion,
   };

@@ -1,9 +1,7 @@
-import fs from "fs-extra";
-import path from "node:path";
+import { SpecflowCliError } from "../../errors.js";
 import type { StateDatabase } from "./db.js";
 import { withStateDb, withStateDbAsync } from "./db.js";
-import { ensureActiveSession } from "./session.js";
-import { resolveFlowPhasePath } from "../paths.js";
+import { getActiveSession } from "./session.js";
 
 export const VALID_PHASES = [
   "refining",
@@ -45,29 +43,13 @@ export function setPhaseInDb(
   ).run(sessionId, phase, now);
 }
 
-export async function writePhaseShim(
-  targetDir: string,
-  phase: string
-): Promise<void> {
-  const phasePath = resolveFlowPhasePath(targetDir);
-  await fs.ensureDir(path.dirname(phasePath));
-  await fs.writeFile(phasePath, `${phase}\n`, "utf8");
-}
-
-export async function readPhaseShim(targetDir: string): Promise<string | undefined> {
-  const phasePath = resolveFlowPhasePath(targetDir);
-  if (!(await fs.pathExists(phasePath))) return undefined;
-  const raw = await fs.readFile(phasePath, "utf8");
-  return raw.trim() || undefined;
-}
-
 export function getCurrentPhaseFromDb(
   targetDir: string
 ): string | undefined {
   return withStateDb(targetDir, (db) => {
-    const session = ensureActiveSession(db);
-    const row = getCurrentPhaseRow(db, session.id);
-    return row?.phase;
+    const session = getActiveSession(db);
+    if (!session) return undefined;
+    return getCurrentPhaseRow(db, session.id)?.phase;
   });
 }
 
@@ -76,8 +58,13 @@ export async function setPhase(
   phase: FlowPhase
 ): Promise<void> {
   await withStateDbAsync(targetDir, async (db) => {
-    const session = ensureActiveSession(db);
+    const session = getActiveSession(db);
+    if (!session) {
+      throw new SpecflowCliError(
+        "NO_SESSION",
+        "No active session. Run: specflow state start-session"
+      );
+    }
     setPhaseInDb(db, session.id, phase);
-    await writePhaseShim(targetDir, phase);
   });
 }

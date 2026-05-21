@@ -7,6 +7,11 @@ import {
   runStateSetPhase,
   runStateQuery,
   runStateExport,
+  runStateStartSession,
+  runStateWriteArtifact,
+  runStateMirrorApproval,
+  runStateCloseSession,
+  runStateListSessions,
 } from "./state.js";
 import { runSync } from "./sync.js";
 import { runStatus } from "./status.js";
@@ -94,18 +99,20 @@ describe("state engine", () => {
     expect(await fs.pathExists(path.join(dir, STATE_DB))).toBe(true);
   });
 
-  it("S05 — set-phase updates phase.md shim", async () => {
+  it("S05 — set-phase updates phase in DB", async () => {
     const dir = await createProjectDir("state-set-phase");
     await installTestProject(dir, { includeDocs: false, tools: [] });
-    await runStateStatus({ cwd: dir });
+    await runStateStartSession({ cwd: dir });
 
     await runStateSetPhase({ cwd: dir, phase: "implementing" });
 
-    const phaseFile = await fs.readFile(
-      path.join(dir, ".agents-state", "current", "phase.md"),
-      "utf8"
+    const phase = await import("../lib/state/query.js").then((m) =>
+      m.querySlice(dir, "phase")
     );
-    expect(phaseFile.trim()).toBe("implementing");
+    expect(phase).toBe("implementing");
+    expect(
+      await fs.pathExists(path.join(dir, ".agents-state", "current", "phase.md"))
+    ).toBe(false);
   });
 
   it("S06 — query active-task returns first pending", async () => {
@@ -163,7 +170,7 @@ describe("state engine", () => {
   it("S09 — status shows state db line", async () => {
     const dir = await createProjectDir("state-status-line");
     await installTestProject(dir, { includeDocs: false, tools: [] });
-    await runStateStatus({ cwd: dir });
+    await runStateStartSession({ cwd: dir });
     await runStateSetPhase({ cwd: dir, phase: "implementing" });
 
     const logs: string[] = [];
@@ -195,5 +202,72 @@ describe("state engine", () => {
       m.querySlice(dir, "active-task")
     );
     expect(out).toBeNull();
+  });
+
+  it("S10 — start-session creates new active session", async () => {
+    const dir = await createProjectDir("state-start");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+
+    await runStateStartSession({ cwd: dir });
+
+    const phase = await import("../lib/state/query.js").then((m) =>
+      m.querySlice(dir, "phase")
+    );
+    expect(phase).toBe("refining");
+  });
+
+  it("S11 — start-session rejects when active exists", async () => {
+    const dir = await createProjectDir("state-start-dup");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    await expect(runStateStartSession({ cwd: dir })).rejects.toMatchObject({
+      code: "ACTIVE_SESSION",
+    });
+  });
+
+  it("S12 — write-artifact and mirror approval files", async () => {
+    const dir = await createProjectDir("state-write-mirror");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    const sddPath = path.join(dir, "input-sdd.md");
+    await fs.writeFile(sddPath, "# SDD: Test\n\n## Summary\nHello\n");
+
+    await runStateWriteArtifact({
+      cwd: dir,
+      kind: "sdd",
+      file: sddPath,
+    });
+
+    await runStateMirrorApproval({ cwd: dir });
+
+    expect(await fs.pathExists(path.join(dir, ".agents-state", "current", "sdd.md"))).toBe(
+      true
+    );
+    const currentFiles = await fs.readdir(
+      path.join(dir, ".agents-state", "current")
+    );
+    expect(currentFiles.sort()).toEqual(["sdd.md"]);
+  });
+
+  it("S13 — close-session archives active session", async () => {
+    const dir = await createProjectDir("state-close");
+    await installTestProject(dir, { includeDocs: false, tools: [] });
+    await runStateStartSession({ cwd: dir });
+
+    await runStateCloseSession({ cwd: dir });
+
+    const logs: string[] = [];
+    const orig = console.log;
+    console.log = (...args: unknown[]) => {
+      logs.push(args.map(String).join(" "));
+    };
+    try {
+      await runStateListSessions({ cwd: dir, status: "archived" });
+    } finally {
+      console.log = orig;
+    }
+    expect(logs.some((l) => l.includes("archived"))).toBe(true);
   });
 });

@@ -5,7 +5,6 @@ import { ensureActiveSession } from "./session.js";
 import {
   isValidPhase,
   setPhaseInDb,
-  writePhaseShim,
 } from "./phase.js";
 import { resolveStateCurrentPath } from "../paths.js";
 import {
@@ -118,16 +117,6 @@ export async function migrateLegacyState(
           }
         }
       }
-    }
-
-    const phaseRow = db
-      .prepare(
-        `SELECT phase FROM phases WHERE session_id = ? AND ended_at IS NULL ORDER BY id DESC LIMIT 1`
-      )
-      .get(session.id) as { phase: string } | undefined;
-
-    if (phaseRow?.phase && isValidPhase(phaseRow.phase)) {
-      await writePhaseShim(targetDir, phaseRow.phase);
     }
 
     setMeta(db, "migrated_from_legacy", "1");

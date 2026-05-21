@@ -63,14 +63,14 @@ export async function runSync(options: SyncOptions): Promise<void> {
 
     const { readProjectConfig } = await import("../lib/project-config.js");
     const config = await readProjectConfig(targetDir);
-    if (config?.stateDb) {
+    if (config) {
       const { ensureStateForProject } = await import(
         "../lib/state/ensure.js"
       );
       const state = await ensureStateForProject(targetDir);
       if (state.migrated) {
         console.log(
-          `\n→ Imported legacy .agents-state/current/ → state.db (session ${state.sessionId})`
+          `\n→ Imported legacy .agents-state/current/ → state.db`
         );
       }
     }
