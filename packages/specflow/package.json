@@ -18,14 +18,16 @@
   },
   "type": "module",
   "bin": {
-    "specflow": "./dist/cli.js"
+    "specflow": "dist/cli.js"
   },
   "files": [
-    "dist",
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
     "assets",
     "manifest.json",
     "CHANGELOG.md",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",

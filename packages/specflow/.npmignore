@@ -1,8 +1,15 @@
 src/
 tsconfig.json
 vitest.config.ts
+vitest.setup.ts
 vitest.global-setup.ts
 **/*.test.ts
+**/*.test.js
+**/*.test.d.ts
+**/*.test.js.map
+**/*.test.d.ts.map
 dist/test/
+dist/integration/
 coverage/
 node_modules/
+**/*.map

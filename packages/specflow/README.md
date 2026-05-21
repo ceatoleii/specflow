@@ -216,6 +216,25 @@ Pull requests welcome. Please keep tests passing and coverage at or above **80%*
 
 See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
+### Publishing (GitHub Actions)
+
+Releases are published automatically via [`.github/workflows/publish.yml`](../../.github/workflows/publish.yml). No OTP in CI — uses an npm automation token.
+
+**One-time setup**
+
+1. [npmjs.com → Access Tokens](https://www.npmjs.com/settings/tokens) → **Granular Access Token**
+2. Permissions: **Read and write** on `@ceatoleii` (or this package)
+3. Enable **Bypass two-factor authentication for automation** (required for CI)
+4. GitHub repo → **Settings → Secrets and variables → Actions** → New secret: `NPM_TOKEN`
+
+**Release flow**
+
+1. Bump version in `packages/specflow/package.json` and update `CHANGELOG.md`
+2. Commit, push, create GitHub Release with tag `vX.Y.Z` (must match `package.json`)
+3. The publish workflow runs tests and runs `npm publish`
+
+**Manual publish** (emergency): Actions → **Publish npm** → **Run workflow**
+
 ---
 
 ## License

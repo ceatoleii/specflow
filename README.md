@@ -43,9 +43,13 @@ npm run test:coverage
 
 ### Publish to npm
 
-```bash
-npm publish -w @ceatoleii/specflow --access public
-```
+Automated via GitHub Actions (`.github/workflows/publish.yml`):
+
+1. Add repo secret **`NPM_TOKEN`** (granular npm token with publish + bypass 2FA)
+2. Bump `packages/specflow/package.json` version
+3. Create GitHub Release tag `vX.Y.Z` (must match package version)
+
+Or run manually: **Actions → Publish npm → Run workflow**
 
 ---
 
