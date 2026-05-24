@@ -1,6 +1,6 @@
 # Design Principles
 
-[← Context Engine](./context-engine.md) · [Español](../es/design-principles.md)
+[← IDE Adapters](./ide-adapters.md) · [Español](../es/design-principles.md)
 
 ---
 
@@ -12,7 +12,7 @@ SpecFlow enforces five core principles. They apply regardless of IDE or project 
 
 No implementation until the SDD is approved.
 
-The SDD agent produces `sdd.md` and `tasks.md`, presents the design, and waits for explicit **`/approve`**. The Implementer cannot start until approval is received.
+The SDD agent produces `plan.md` and `tasks.md`, presents the design, and waits for explicit **`/approve`**. The Implementer cannot start until approval is received.
 
 This prevents “coding first, thinking later.”
 
@@ -35,17 +35,17 @@ Refiner and SDD specify. Reviewer verifies. One agent owns the diff.
 
 ## 3. Explicit state
 
-Phase and artifacts live on disk in `.agents-state/current/` (markdown shim) and, when `stateDb` is enabled, in `state.db` as the source of truth.
+Phase and artifacts live as markdown files in `.agents-state/current/`. `phase.md` is the source of truth for routing.
 
 You can inspect:
 
-- Current phase (`phase.md` shim, or `specflow state query --slice phase`)
+- Current phase (`phase.md`)
 - Requirement (`task.md`)
-- Design (`sdd.md`)
+- Design (`plan.md`)
 - Progress (`tasks.md`)
 - Review result (`review.md`)
 
-Nothing relies on chat history alone.
+Completed sessions move to `.agents-state/history/`. Nothing relies on chat history alone.
 
 ---
 
@@ -73,4 +73,4 @@ Use flow for scoped tasks with acceptance criteria. Use direct mode for quick fi
 
 ---
 
-[← Context Engine](./context-engine.md) · [Troubleshooting →](./troubleshooting.md)
+[← IDE Adapters](./ide-adapters.md) · [Troubleshooting →](./troubleshooting.md)

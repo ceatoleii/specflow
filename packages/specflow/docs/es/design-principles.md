@@ -1,6 +1,6 @@
 # Principios de diseño
 
-[← Context Engine](./context-engine.md) · [English](../en/design-principles.md)
+[← Adaptadores IDE](./ide-adapters.md) · [English](../en/design-principles.md)
 
 ---
 
@@ -12,7 +12,7 @@ SpecFlow impone cinco principios core. Aplican sin importar IDE o tipo de proyec
 
 No hay implementación hasta aprobar el SDD.
 
-El agente SDD produce `sdd.md` y `tasks.md`, presenta el diseño y espera **`/approve`** explícito. El Implementer no arranca sin aprobación.
+El agente SDD produce `plan.md` y `tasks.md`, presenta el diseño y espera **`/approve`** explícito. El Implementer no arranca sin aprobación.
 
 Evita “codificar primero, pensar después”.
 
@@ -35,11 +35,9 @@ Refiner y SDD especifican. Reviewer verifica. Un agente es dueño del diff.
 
 ## 3. Estado explícito
 
-Fase y artefactos viven en `.agents-state/current/` (shim markdown) y, con `stateDb` habilitado, en `state.db` como fuente de verdad.
+Fase y artefactos viven como archivos markdown en `.agents-state/current/`. `phase.md` es la fuente de verdad para el enrutamiento.
 
-Puedes inspeccionar fase (`phase.md` o `specflow state query --slice phase`), requisito, diseño, progreso y revisión.
-
-Nada depende solo del historial del chat.
+Puedes inspeccionar fase, requisito, diseño, progreso y revisión en esos archivos. Las sesiones completadas pasan a `.agents-state/history/`. Nada depende solo del historial del chat.
 
 ---
 
@@ -67,4 +65,4 @@ Usa flujo para tareas con alcance y criterios. Usa modo directo para fixes rápi
 
 ---
 
-[← Context Engine](./context-engine.md) · [Solución de problemas →](./troubleshooting.md)
+[← Adaptadores IDE](./ide-adapters.md) · [Solución de problemas →](./troubleshooting.md)

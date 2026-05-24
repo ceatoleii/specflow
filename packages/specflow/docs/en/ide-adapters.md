@@ -38,9 +38,8 @@ Each adapter file contains a short instruction: *read and execute `.agents/rules
 The orchestrator then:
 
 1. Checks if flow is active (`.agents-state/.flow-enabled`)
-2. Runs `specflow state ensure` when `stateDb` is enabled (flow activation)
-3. Reads current phase from `phase.md` (shim) or `state.db`
-4. Loads the matching phase agent rules
+2. Reads current phase from `phase.md`
+3. Loads the matching phase agent rules
 
 Without flow activation → Direct Mode (normal assistant behavior).
 
@@ -64,4 +63,4 @@ You can install multiple adapters (e.g. Cursor + Copilot). All point to the same
 
 ---
 
-[← Project Documentation](./project-documentation.md) · [Context Engine →](./context-engine.md)
+[← Project Documentation](./project-documentation.md) · [Design Principles →](./design-principles.md)

@@ -7,7 +7,6 @@ export interface InstallTestProjectOptions {
   includeDocs?: boolean;
   locale?: Locale;
   dryRun?: boolean;
-  stateDb?: boolean;
 }
 
 export async function installTestProject(
@@ -21,6 +20,5 @@ export async function installTestProject(
     includeDocs: options.includeDocs ?? true,
     dryRun: options.dryRun ?? false,
     locale: options.locale ?? "en",
-    stateDb: options.stateDb ?? true,
   });
 }

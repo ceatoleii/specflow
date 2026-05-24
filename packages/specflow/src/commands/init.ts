@@ -41,7 +41,6 @@ export async function runInit(options: InitOptions): Promise<void> {
       includeDocs,
       dryRun,
       locale: answers.locale,
-      stateDb: true,
     });
   } catch (error) {
     spinner.stop("");
@@ -58,20 +57,10 @@ export async function runInit(options: InitOptions): Promise<void> {
 
   spinner.stop(messages.installDone(cliVersion));
 
-  const { ensureStateForProject } = await import("../lib/state/ensure.js");
-  const state = await ensureStateForProject(targetDir);
-  console.log("\n→ State DB ready");
-  if (state.migrated) {
-    console.log("→ Imported legacy .agents-state/current/ into state.db");
-  }
-  if (state.activeSessionId) {
-    console.log(`→ Active session: ${state.activeSessionId}`);
-  }
-
   const outroLines = [
     answers.locale === "es"
-      ? "Flujo: state.db (specflow state …)"
-      : "Flow: state.db (specflow state …)",
+      ? "Verificá el setup: specflow doctor"
+      : "Verify setup: specflow doctor",
     messages.editDocs,
     messages.activateFlow,
   ];

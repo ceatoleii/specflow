@@ -60,21 +60,6 @@ export async function runSync(options: SyncOptions): Promise<void> {
     const manifest = await loadManifest();
     await writeProjectTools(targetDir, tools, manifest.manifestVersion);
     await writeProjectVersion(targetDir, cliVersion, manifest.manifestVersion);
-
-    const { readProjectConfig } = await import("../lib/project-config.js");
-    const config = await readProjectConfig(targetDir);
-    if (config) {
-      const { ensureStateForProject } = await import(
-        "../lib/state/ensure.js"
-      );
-      const state = await ensureStateForProject(targetDir);
-      if (state.migrated) {
-        console.log(
-          `\n→ Imported legacy .agents-state/current/ → state.db`
-        );
-      }
-    }
-
     console.log(`\n✓ Sincronizado a SpecFlow v${cliVersion}`);
   } else {
     console.log("\n[dry-run] Sin cambios escritos.");

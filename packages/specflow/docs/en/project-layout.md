@@ -10,7 +10,7 @@ After `specflow init`, your repository root typically looks like this:
 your-project/
 ├── AGENTS.md                 # Universal agent entry (agents.md standard)
 ├── .specflow-version         # Installed engine version
-├── .specflow-config.json     # locale, includeDocs, stateDb (init)
+├── .specflow-config.json     # locale, includeDocs (init)
 ├── .specflow-tools.json      # Installed IDE adapters
 │
 ├── .agents/                  # SpecFlow engine — managed by init/sync
@@ -21,9 +21,10 @@ your-project/
 │   │   ├── implementer.md
 │   │   └── reviewer.md
 │   └── templates/
-│       ├── sdd-template.md
+│       ├── plan-template.md
 │       ├── tasks-template.md
-│       └── review-template.md
+│       ├── review-template.md
+│       └── sdd-template.md      # deprecated → use plan-template
 │
 ├── .agents-docs/             # YOUR project knowledge (manual)
 │   ├── architecture.md
@@ -33,14 +34,13 @@ your-project/
 │
 ├── .agents-state/            # Runtime — gitignore this
 │   ├── .flow-enabled         # Present when flow is active
-│   ├── state.db              # Context Engine (1.3+)
-│   ├── current/              # Active task artifacts
+│   ├── current/              # Active task artifacts (source of truth)
 │   │   ├── phase.md
 │   │   ├── task.md
-│   │   ├── sdd.md
+│   │   ├── plan.md
 │   │   ├── tasks.md
 │   │   └── review.md
-│   └── history/              # Archived sessions
+│   └── history/              # Archived sessions (YYYY-MM-DD-slug/)
 │
 └── .cursor/                  # Example adapter (if Cursor selected)
     └── rules/
@@ -76,8 +76,7 @@ Other adapters add their own files — see [IDE Adapters](./ide-adapters.md).
 | Path | Notes |
 |------|-------|
 | `.agents-state/**` | Per-task state; safe to delete when inactive |
-| `.specflow-config.json` | Written at init (`locale`, `includeDocs`, `stateDb`) |
-| `state.db` | Created when `stateDb` is true and `state ensure` runs |
+| `.specflow-config.json` | Written at init (`locale`, `includeDocs`) |
 
 ---
 

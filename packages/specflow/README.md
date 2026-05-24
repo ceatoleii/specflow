@@ -22,7 +22,13 @@ npx @ceatoleii/specflow init
 
 ---
 
-Install once per project. Pick your IDE adapters interactively. Refine → design → implement → review with one code-writing agent.
+Install once per project. Pick your IDE adapters interactively.
+
+**Requirement → Plan → Tasks → Code** — Refine → design → implement → review with one code-writing agent.
+
+```bash
+specflow doctor   # verify setup after init
+```
 
 | | |
 |---|---|

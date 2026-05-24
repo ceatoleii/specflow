@@ -7,7 +7,6 @@ import {
   detectLegacyTools,
 } from "../lib/tools-config.js";
 import { loadManifest } from "../lib/manifest.js";
-import { getStateStatusInfo } from "../lib/state/status-info.js";
 import { readProjectConfig } from "../lib/project-config.js";
 
 export type StatusResult = "ok" | "not_installed" | "outdated" | "cli_older";
@@ -57,21 +56,7 @@ export async function runStatus(options: StatusOptions): Promise<StatusResult> {
 
   const projectConfig = await readProjectConfig(targetDir);
   if (projectConfig) {
-    console.log(`  Config:     stateDb=on (required)`);
-  }
-
-  const stateInfo = getStateStatusInfo(targetDir);
-  if (stateInfo.hasDb) {
-    console.log(
-      `  State DB:   ${stateInfo.activeCount} active, ${stateInfo.archivedCount} archived`
-    );
-    if (stateInfo.sessionId) {
-      console.log(
-        `              session ${stateInfo.sessionId}, phase ${stateInfo.phase ?? "(unset)"}, ${stateInfo.taskCount} tasks`
-      );
-    } else if (stateInfo.activeCount > 0) {
-      console.log(`              ⚠ active session(s) without current phase`);
-    }
+    console.log(`  Config:     locale=${projectConfig.locale}`);
   }
 
   if (semver.lt(installed.specflow, cliVersion)) {

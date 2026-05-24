@@ -6,6 +6,8 @@
 
 This project uses **SpecFlow** — a spec-driven multi-agent workflow.
 
+**Pipeline:** Requirement → Plan → Tasks → Code
+
 **On every task, before responding:**
 
 1. Read and execute `.agents/rules/orchestrator.md`
@@ -16,6 +18,8 @@ This project uses **SpecFlow** — a spec-driven multi-agent workflow.
 **Direct mode:** `modo directo` · `flow off` · `desactivar flujo`
 
 Installed via `@ceatoleii/specflow`. Update engine: `specflow sync` (never overwrites `.agents-docs/`).
+
+Verify setup: `specflow doctor` (optional: `--run` to execute verification commands).
 
 ---
 
@@ -57,15 +61,16 @@ Rules: `.agents/rules/` · Templates: `.agents/templates/`
 ```
 AGENTS.md
 .specflow-version
+.specflow-config.json    ← locale, includeDocs (init)
 .specflow-tools.json    ← installed IDE adapters
 .agents/
 .agents-docs/           ← you edit
 .agents-state/          ← runtime (gitignored)
-  state.db              ← flow source of truth (when present)
-  current/              ← phase.md shim + markdown export/debug
+  current/              ← task.md, plan.md, tasks.md, phase.md, …
+  history/              ← archived sessions (YYYY-MM-DD-slug/)
 ```
 
-**Context Engine (1.3+):** `specflow init` asks for `stateDb` → stored in `.specflow-config.json`. When `stateDb: true`, agents use `specflow state ensure|query|…`; when `false`, markdown only.
+Legacy: `sdd.md` may exist in old sessions — treat as `plan.md`.
 
 ---
 

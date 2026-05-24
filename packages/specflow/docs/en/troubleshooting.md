@@ -67,24 +67,6 @@ The SDD agent should wait for approval. If code changed prematurely, say **`flow
 
 Check `.agents-docs/verification.md` commands. Fix failing tests/lint, then continue in implementing phase or restart review.
 
-### Legacy markdown not in `state.db`
-
-Requires `stateDb: true` in `.specflow-config.json` and flow **inactive**:
-
-```bash
-specflow state migrate
-```
-
-Or run `sync` or `state ensure` while flow is inactive.
-
-### `state.db` missing after install
-
-Run `specflow state ensure` or activate flow (`nueva tarea`) when `stateDb` is enabled. If you chose markdown-only (`stateDb: false`), agents never create `state.db` — that is expected.
-
-### Agents still read full markdown files
-
-Check `.specflow-config.json` → `stateDb` must be `true` and `state.db` must exist. Run `specflow status` to see `stateDb` and State DB lines.
-
 ### `init` cancelled immediately
 
 The wizard requires an interactive terminal. Run in a real TTY, not a non-interactive CI step.

@@ -61,7 +61,27 @@ specflow status [opciones]
 
 Exit code **1** si SpecFlow no está instalado en ese directorio.
 
-La salida incluye: versión (actualizado / desactualizado / no instalado), adaptadores, si el flujo está activo, **config `stateDb`** (`stateDb=on` cuando existe `.specflow-config.json`) y estadísticas de **State DB** (sesiones activas/archivadas, id y fase) si hay `state.db`.
+La salida incluye: versión (actualizado / desactualizado / no instalado), adaptadores, si el flujo está activo, y **config de locale** (`locale=es` o `locale=en`) cuando existe `.specflow-config.json`.
+
+---
+
+## `specflow doctor`
+
+Verifica instalación de SpecFlow, `.gitignore`, plantillas y (con flujo activo) artefactos requeridos para la fase actual.
+
+```bash
+specflow doctor [opciones]
+```
+
+| Opción | Descripción |
+|--------|-------------|
+| `-C, --cwd <dir>` | Directorio destino |
+| `--run` | Ejecuta comandos bash de `.agents-docs/verification.md` |
+| `--json` | Salida JSON |
+
+Exit code **1** si hay checks con severidad `error`. Solo warnings → exit **0**.
+
+Con flujo activo valida `phase.md` y archivos por fase (`task.md`, `plan.md` o `sdd.md` legacy, `tasks.md`).
 
 ---
 
@@ -102,87 +122,6 @@ Interactivo. Elimina archivos adapter seleccionados.
 |--------|-------------|
 | `-C, --cwd <dir>` | Directorio destino |
 | `--dry-run` | Vista previa |
-
----
-
-## `specflow state`
-
-Comandos de base de datos de estado (SQLite `state.db` en `.agents-state/`). Disponible en **1.3+**. La mayoría requiere `stateDb` habilitado en `.specflow-config.json`.
-
-### `specflow state ensure`
-
-```bash
-specflow state ensure [-C, --cwd <dir>]
-```
-
-Inicializa `state.db` (solo esquema). Importa markdown legacy si aplica (ver [Context Engine](./context-engine.md)). Se ejecuta al activar el flujo si `stateDb` está habilitado.
-
-### `specflow state status`
-
-```bash
-specflow state status [-C, --cwd <dir>]
-```
-
-Muestra sesión activa, fase y conteo de tareas.
-
-### `specflow state query`
-
-```bash
-specflow state query --slice <nombre> [opciones]
-```
-
-| Opción | Descripción |
-|--------|-------------|
-| `--slice <nombre>` | **Requerido.** Uno de: `phase`, `task`, `active-task`, `criteria`, `decisions`, `sdd-summary` |
-| `--json` | Salida JSON |
-| `-C, --cwd <dir>` | Directorio destino |
-
-### `specflow state search`
-
-```bash
-specflow state search <término> [-C, --cwd <dir>]
-```
-
-Búsqueda full-text en decisiones y mensajes de refinamiento.
-
-### `specflow state migrate`
-
-```bash
-specflow state migrate [-C, --cwd <dir>]
-```
-
-Importa legacy `.agents-state/current/*.md` a `state.db`.
-
-También corre en `init`, `sync` o `state ensure` cuando `stateDb` está habilitado, hay markdown legacy, el flujo está inactivo y la importación aún no se ejecutó.
-
-### `specflow state export`
-
-```bash
-specflow state export [-C, --cwd <dir>]
-```
-
-Archiva la sesión activa en `.agents-state/history/`.
-
-### `specflow state set-phase`
-
-```bash
-specflow state set-phase <fase> [-C, --cwd <dir>]
-```
-
-Establece fase del flujo. Actualiza `state.db` y shim `phase.md`.
-
-`<fase>`: `refining` | `designing` | `implementing` | `reviewing`
-
-### `specflow state sync-task`
-
-```bash
-specflow state sync-task --code <id> --status <estado> [-C, --cwd <dir>]
-```
-
-| Opción | Descripción |
-|--------|-------------|
-| `--code <id>` | Código de tarea, ej. `T01` |
-| `--status <estado>` | `pending` \| `in_progress` \| `done` |
 
 ---
 

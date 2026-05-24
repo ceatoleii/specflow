@@ -14,7 +14,6 @@ export interface InitAnswers {
   tools: string[];
   includeDocs: boolean;
   locale: Locale;
-  stateDb: boolean;
 }
 
 function throwIfCancelled<T>(value: T | symbol): T {
@@ -193,7 +192,6 @@ export async function runInitPrompts(
     tools,
     includeDocs: docsChoice === "yes",
     locale,
-    stateDb: true,
   };
 }
 

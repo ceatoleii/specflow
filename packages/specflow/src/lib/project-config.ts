@@ -6,8 +6,6 @@ import type { Locale } from "./i18n.js";
 export interface ProjectConfig {
   locale: Locale;
   includeDocs: boolean;
-  /** Use SQLite state.db as flow source of truth (vs markdown only). */
-  stateDb: boolean;
   installedAt: string;
   manifestVersion: number;
 }
@@ -15,7 +13,6 @@ export interface ProjectConfig {
 export type ProjectConfigInput = {
   locale: Locale;
   includeDocs: boolean;
-  stateDb: boolean;
   manifestVersion: number;
 };
 
@@ -26,7 +23,6 @@ export function normalizeProjectConfig(
   return {
     locale: raw.locale,
     includeDocs: raw.includeDocs ?? true,
-    stateDb: raw.stateDb ?? true,
     installedAt: raw.installedAt,
     manifestVersion: raw.manifestVersion ?? 2,
   };
@@ -41,11 +37,6 @@ export async function readProjectConfig(
   return normalizeProjectConfig(raw as Partial<ProjectConfig>);
 }
 
-export async function isStateDbEnabled(targetDir: string): Promise<boolean> {
-  const config = await readProjectConfig(targetDir);
-  return config !== null;
-}
-
 export async function writeProjectConfig(
   targetDir: string,
   input: ProjectConfigInput
@@ -53,7 +44,6 @@ export async function writeProjectConfig(
   const data: ProjectConfig = {
     locale: input.locale,
     includeDocs: input.includeDocs,
-    stateDb: true,
     installedAt: new Date().toISOString(),
     manifestVersion: input.manifestVersion,
   };

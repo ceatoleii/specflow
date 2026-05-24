@@ -24,7 +24,6 @@ SpecFlow es un paquete CLI (`@ceatoleii/specflow`) que instala un flujo multi-ag
 - **Cuatro agentes de fase** — Refiner, SDD, Implementer, Reviewer
 - **Plantillas** para specs de tarea, documentos de diseño y revisiones
 - **Adaptadores IDE** para que Cursor, Claude Code, Copilot y otros carguen las reglas automáticamente
-- **Context Engine (1.3+)** — SQLite opcional `state.db` para slices de estado eficientes (`stateDb` en `.specflow-config.json`)
 
 Compatible con cualquier herramienta que lea [`AGENTS.md`](https://agents.md/) — incluyendo **Cursor**, Claude Code, GitHub Copilot y OpenAI Codex.
 

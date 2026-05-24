@@ -6,6 +6,42 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-05-24
+
+### Added
+
+- **`plan.md`** as primary design artifact (replaces `sdd.md` for new tasks)
+- **`plan-template.md`** with AC traceability and test scenarios
+- **AC1, AC2…** numbered acceptance criteria in `task.md` (Refiner)
+- **Review traceability** — every AC must have evidence in `review.md` (Reviewer)
+- **TDD task ordering** — `[test]` before `[impl]` in `tasks-template.md`
+- **Refiner context levels** — vague / medium / detailed input handling
+- **`specflow doctor`** — install and flow-state checks; optional `--run` for verification.md
+
+### Changed
+
+- Implementer and Reviewer read `plan.md` first, fallback to legacy `sdd.md`
+- Reviewer archives to `history/YYYY-MM-DD-slug/`
+- Docs and `AGENTS.md` updated for Requirement → Plan → Tasks → Code pipeline
+
+### Deprecated
+
+- `sdd.md` / `sdd-template.md` — use `plan.md` / `plan-template.md`
+
+## [2.0.0] - 2026-05-24
+
+### Removed
+
+- **Context Engine (SQLite):** `state.db`, `specflow state` CLI, and `stateDb` config option
+- Dependency: `better-sqlite3`
+
+### Changed
+
+- Flow state is **markdown-only** in `.agents-state/current/` (`phase.md`, `task.md`, `sdd.md`, `tasks.md`, …)
+- Agent rules simplified — no dual DB/markdown paths
+- `specflow status` shows locale config instead of State DB stats
+- Docs: removed Context Engine guide
+
 ## [1.3.3] - 2026-05-21
 
 ### Added

@@ -4,37 +4,36 @@ import path from "node:path";
 import {
   readProjectConfig,
   writeProjectConfig,
-  isStateDbEnabled,
   normalizeProjectConfig,
 } from "./project-config.js";
 import { createProjectDir } from "../test/helpers.js";
 
 describe("project-config", () => {
-  it("normalizes missing stateDb to true", () => {
+  it("normalizes partial config", () => {
     const config = normalizeProjectConfig({
       locale: "en",
       includeDocs: true,
       installedAt: "2026-01-01",
       manifestVersion: 2,
     });
-    expect(config?.stateDb).toBe(true);
+    expect(config?.locale).toBe("en");
+    expect(config?.includeDocs).toBe(true);
   });
 
-  it("writes and reads stateDb flag", async () => {
+  it("writes and reads project config", async () => {
     const dir = await createProjectDir("project-config");
     await writeProjectConfig(dir, {
       locale: "es",
       includeDocs: false,
-      stateDb: true,
       manifestVersion: 2,
     });
 
     const config = await readProjectConfig(dir);
-    expect(config?.stateDb).toBe(true);
-    expect(await isStateDbEnabled(dir)).toBe(true);
+    expect(config?.locale).toBe("es");
+    expect(config?.includeDocs).toBe(false);
 
     const raw = await fs.readJson(path.join(dir, ".specflow-config.json"));
-    expect(raw.stateDb).toBe(true);
-    expect(raw.codegraph).toBeUndefined();
+    expect(raw.locale).toBe("es");
+    expect(raw.stateDb).toBeUndefined();
   });
 });

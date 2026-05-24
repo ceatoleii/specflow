@@ -4,14 +4,27 @@
 
 ---
 
+## Pipeline
+
+**Requisito → Plan → Tasks → Código**
+
+| Paso | Artefacto | Agente |
+|------|-----------|--------|
+| Requisito | `task.md` (AC1, AC2…) | Refiner |
+| Plan | `plan.md` + `tasks.md` | SDD |
+| Código | archivos fuente | Implementer |
+| Verificación | `review.md` | Reviewer |
+
+Proyectos legacy pueden tener `sdd.md` en lugar de `plan.md` — los agentes leen `plan.md` primero.
+
+---
+
 ## Dos modos
 
 | Modo | Disparador | Comportamiento |
 |------|------------|----------------|
-| **Direct** | Por defecto (sin archivo flag) | Asistente normal, cero overhead |
-| **Flow** | Existe `.agents-state/.flow-enabled` | Orquestador enruta al agente de fase activa |
-
-Direct es el modo por defecto. Las reglas SpecFlow las carga tu adaptador IDE, pero el orquestador solo impone el pipeline con el flujo activo.
+| **Direct** | Por defecto | Asistente normal, cero overhead |
+| **Flow** | Existe `.agents-state/.flow-enabled` | Orquestador enruta al agente de fase |
 
 ---
 
@@ -28,79 +41,61 @@ flowchart LR
 
 | Fase | Agente | ¿Escribe código? | Salida |
 |------|--------|:----------------:|--------|
-| `refining` | Refiner | No | `task.md` — requisito clarificado |
-| `designing` | SDD | No | `sdd.md` + `tasks.md` (requiere aprobación explícita) |
-| `implementing` | Implementer | **Sí** | Código + checklist de tareas |
+| `refining` | Refiner | No | `task.md` con **AC1**, **AC2**… |
+| `designing` | SDD | No | `plan.md` + `tasks.md` (requiere `/approve`) |
+| `implementing` | Implementer | **Sí** | Código + checklist |
 | `reviewing` | Reviewer | No | `review.md` + verificación |
 
 ### Refiner
 
-Clarifica el requisito. Hace preguntas concretas. Produce `task.md` con criterios de aceptación, restricciones y áreas afectadas. Nunca escribe código.
+Clarifica el requisito. Ajusta las preguntas según el nivel de detalle (idea vaga vs PRD completo). Produce `task.md` con criterios numerados. Nunca escribe código.
 
-### SDD (Solution Design Document)
+### SDD
 
-Diseña la solución técnica desde `task.md`. Produce `sdd.md` y `tasks.md` ordenado. Espera **`/approve`** explícito antes de escribir código.
+Diseña desde `task.md`. Escribe `plan.md` (diseño + trazabilidad) y `tasks.md` (orden TDD). Espera **`/approve`** explícito.
 
 ### Implementer
 
-El **único** agente autorizado a crear, editar o borrar archivos fuente. Ejecuta `tasks.md` en orden. Se detiene ante huecos en la spec o bloqueos en lugar de improvisar.
+Único agente que edita código. Ejecuta `tasks.md` (`[test]` antes de `[impl]`).
 
 ### Reviewer
 
-Verifica la implementación contra el SDD y criterios de aceptación. Ejecuta comandos de verificación del proyecto. Con PASS archiva la sesión y desactiva el flujo. Con FAIL devuelve trabajo al Implementer.
+Verifica cada **AC** con evidencia, ejecuta `verification.md`, archiva en `history/YYYY-MM-DD-slug/` al PASS.
 
 ---
 
 ## Frases de activación
 
-Di cualquiera de estas en tu chat de IA (español o inglés):
-
-| Iniciar flujo | Terminar flujo |
-|---------------|----------------|
-| `nueva tarea` · `activar flujo` · `flow on` · `new task` | `modo directo` · `flow off` · `desactivar flujo` · `direct mode` |
-
-### Ejemplos
-
-```
-nueva tarea: añadir reset de contraseña al login
-```
-
-```
-flow on — arreglar el bug de paginación en la lista de usuarios
-```
-
-Terminar el flujo elimina `.agents-state/.flow-enabled`. Los artefactos pueden quedar en `.agents-state/current/` hasta archivarse.
-
-Al iniciar el flujo, si `.specflow-config.json` tiene `stateDb: true`, el orquestador ejecuta **`specflow state ensure`** antes de cargar el Refiner (inicializa `state.db` y puede importar markdown legacy).
+| Iniciar | Terminar |
+|---------|----------|
+| `nueva tarea` · `activar flujo` · `flow on` | `modo directo` · `flow off` · `desactivar flujo` |
 
 ---
 
 ## Estado en disco
 
-Durante una tarea activa, los artefactos viven en `.agents-state/current/`:
-
 | Archivo | Fase | Propósito |
 |---------|------|-----------|
-| `phase.md` | todas | Shim de fase actual |
-| `task.md` | refining+ | Requisito clarificado |
-| `sdd.md` | designing+ | Especificación técnica |
-| `tasks.md` | implementing+ | Checklist de implementación |
-| `review.md` | reviewing | Resultado de revisión |
-| `refinement-log.md` | refining | Historial Q&A (compactado tras task.md) |
-
-Con **Context Engine 1.3+** y `stateDb: true`, los agentes prefieren slices de `specflow state query` en lugar de leer markdown completo. `phase.md` es shim sincronizado desde `state.db`. Ver [Context Engine](./context-engine.md).
+| `phase.md` | todas | Fase actual |
+| `task.md` | refining+ | Requisito + AC1… |
+| `plan.md` | designing+ | Plan técnico (legacy: `sdd.md`) |
+| `tasks.md` | implementing+ | Checklist |
+| `review.md` | reviewing | Resultado review |
 
 ---
 
 ## Puerta de aprobación
 
-No hay implementación hasta aprobar el diseño explícitamente:
+`/approve` · `aprobado` · `dale` — sin esto no hay implementación.
 
-```
-/approve
-```
+---
 
-También vale: `aprobado`, `dale`, o aprobación clara. El agente SDD no avanza con acuerdo vago.
+## Verificar setup
+
+```bash
+specflow doctor
+specflow doctor --run
+```
 
 ---
 

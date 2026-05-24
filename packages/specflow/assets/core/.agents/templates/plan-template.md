@@ -1,11 +1,10 @@
-# SDD: [Task Title]
+# Plan: [Task Title]
 _Date: YYYY-MM-DD | Phase: designing_
 
 ---
 
 ## Summary
-[One paragraph. What is being built, why, and the chosen approach. No implementation
-details yet — this is the "what and why", not the "how".]
+[One paragraph. What is being built, why, and the chosen approach.]
 
 ---
 
@@ -40,18 +39,20 @@ details yet — this is the "what and why", not the "how".]
 
 These scenarios MUST have corresponding tests in the implementation:
 
-- **S01 — [Scenario name]:** [Given X, when Y, then Z]
-- **S02 — [Scenario name]:** [Given X, when Y, then Z]
+- **S01 — [Scenario name]:** [Given X, when Y, then Z] → covers **AC1**
+- **S02 — [Scenario name]:** [Given X, when Y, then Z] → covers **AC2**
 - **S03 — Edge case:** [description]
 
 ---
 
-## Acceptance Criteria
+## Acceptance Criteria Traceability
 
-Copied from `task.md` — these define DONE:
+Map each **AC** from `task.md` to scenarios and tasks:
 
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
+| AC | From task.md | Covered by |
+|----|--------------|------------|
+| AC1 | [criterion text] | S01, T02 |
+| AC2 | [criterion text] | S02, T04 |
 
 ---
 
@@ -59,13 +60,9 @@ Copied from `task.md` — these define DONE:
 
 The following will NOT be built as part of this task:
 - [Item explicitly excluded]
-- [Item deferred to future task]
 
 ---
 
 ## Open Questions
-
-[If any ambiguity remains after refinement — document it here and how it was resolved
-or why it was accepted as a known risk.]
 
 _None_ (ideal state)

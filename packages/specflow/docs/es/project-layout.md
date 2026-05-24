@@ -10,20 +10,20 @@ Tras `specflow init`, la raíz de tu repositorio suele verse así:
 your-project/
 ├── AGENTS.md                 # Entrada universal (estándar agents.md)
 ├── .specflow-version         # Versión del motor instalada
-├── .specflow-config.json     # locale, includeDocs, stateDb (init)
+├── .specflow-config.json     # locale, includeDocs (init)
 ├── .specflow-tools.json      # Adaptadores IDE instalados
 │
 ├── .agents/                  # Motor SpecFlow — gestionado por init/sync
 │   ├── rules/
 │   │   ├── orchestrator.md
 │   │   ├── refiner.md
-│   │   ├── sdd.md
 │   │   ├── implementer.md
 │   │   └── reviewer.md
 │   └── templates/
-│       ├── sdd-template.md
+│       ├── plan-template.md
 │       ├── tasks-template.md
-│       └── review-template.md
+│       ├── review-template.md
+│       └── sdd-template.md      # deprecated
 │
 ├── .agents-docs/             # TU conocimiento del proyecto (manual)
 │   ├── architecture.md
@@ -33,9 +33,13 @@ your-project/
 │
 ├── .agents-state/            # Runtime — añadir a .gitignore
 │   ├── .flow-enabled
-│   ├── state.db              # Context Engine (1.3+)
-│   ├── current/
-│   └── history/
+│   ├── current/              # Artefactos de tarea activa (fuente de verdad)
+│   │   ├── phase.md
+│   │   ├── task.md
+│   │   ├── plan.md
+│   │   ├── tasks.md
+│   │   └── review.md
+│   └── history/              # Sesiones archivadas (YYYY-MM-DD-slug/)
 │
 └── .cursor/                  # Ejemplo adapter (si elegiste Cursor)
     └── rules/
@@ -71,8 +75,7 @@ Otros adaptadores añaden sus archivos — ver [Adaptadores IDE](./ide-adapters.
 | Ruta | Notas |
 |------|-------|
 | `.agents-state/**` | Estado por tarea; seguro borrar si inactivo |
-| `.specflow-config.json` | Escrito en init (`locale`, `includeDocs`, `stateDb`) |
-| `state.db` | Creado con `stateDb: true` al ejecutar `state ensure` |
+| `.specflow-config.json` | Escrito en init (`locale`, `includeDocs`) |
 
 ---
 

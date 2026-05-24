@@ -30,10 +30,7 @@ The CLI guides you step by step:
 2. **Confirm directory** — defaults to current working directory
 3. **AI tools** — select which IDE adapters to install (Cursor, Claude Code, …)
 4. **Project docs** — whether to scaffold `.agents-docs/` templates
-5. **State DB** — whether to use `state.db` as flow source of truth (default: yes; markdown-only if no)
-6. **Summary** — review and confirm
-
-> **Note:** Current CLI releases may default `stateDb` to enabled without showing step 5; the preference is still stored in `.specflow-config.json`.
+5. **Summary** — review and confirm
 
 There is no `--yes` shortcut for `init`. The wizard is always interactive.
 
@@ -54,7 +51,7 @@ specflow init -C ./my-app     # target a different directory
 | `AGENTS.md` | `init` / `sync` | Universal entry point ([agents.md](https://agents.md/)) |
 | `.agents/` | `init` / `sync` | Orchestrator + 4 phase agents — **do not edit** |
 | `.specflow-tools.json` | `init` / `sync` | Installed IDE adapters |
-| `.specflow-config.json` | `init` | Project preferences (`locale`, `includeDocs`, `stateDb`) |
+| `.specflow-config.json` | `init` | Project preferences (`locale`, `includeDocs`) |
 | `.specflow-version` | `init` / `sync` | Installed engine version |
 | Adapter files | per tool | e.g. `.cursor/rules/`, `CLAUDE.md` |
 | `.agents-docs/` | **You** | Project context (manual) |
@@ -76,9 +73,8 @@ specflow init -C ./my-app     # target a different directory
 
 1. Add `.agents-state/` to `.gitignore` if not already present
 2. Fill in [`.agents-docs/`](./project-documentation.md) when ready
-3. Say **`nueva tarea`** or **`flow on`** in your AI chat to start a task
-
-With `stateDb` enabled, the orchestrator runs `specflow state ensure` on flow activation to bootstrap `state.db`. See [Context Engine](./context-engine.md).
+3. Run **`specflow doctor`** to verify the install
+4. Say **`nueva tarea`** or **`flow on`** in your AI chat to start a task
 
 ### `.specflow-config.json` fields
 
@@ -86,7 +82,6 @@ With `stateDb` enabled, the orchestrator runs `specflow state ensure` on flow ac
 |-------|-------------|
 | `locale` | `es` or `en` — CLI wizard language |
 | `includeDocs` | Whether `.agents-docs/` templates were scaffolded |
-| `stateDb` | `true` → Context Engine (`state.db`); `false` → markdown only in `current/` |
 | `installedAt` | ISO timestamp of install |
 | `manifestVersion` | Engine manifest version (currently `2`) |
 

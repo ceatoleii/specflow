@@ -28,10 +28,7 @@ No hace falta instalación global. `npx` descarga el paquete y ejecuta el asiste
 2. **Confirmar directorio** — por defecto el directorio actual
 3. **Herramientas IA** — selecciona adaptadores IDE (Cursor, Claude Code, …)
 4. **Docs del proyecto** — si crear plantillas en `.agents-docs/`
-5. **State DB** — si usar `state.db` como fuente de verdad del flujo (por defecto: sí; solo markdown si no)
-6. **Resumen** — revisar y confirmar
-
-> **Nota:** Releases actuales del CLI pueden dejar `stateDb` activado por defecto sin mostrar el paso 5; la preferencia igual se guarda en `.specflow-config.json`.
+5. **Resumen** — revisar y confirmar
 
 No existe atajo `--yes` para `init`. El asistente siempre es interactivo.
 
@@ -52,7 +49,7 @@ specflow init -C ./my-app     # directorio destino distinto
 | `AGENTS.md` | `init` / `sync` | Punto de entrada universal ([agents.md](https://agents.md/)) |
 | `.agents/` | `init` / `sync` | Orquestador + 4 agentes — **no editar** |
 | `.specflow-tools.json` | `init` / `sync` | Adaptadores IDE instalados |
-| `.specflow-config.json` | `init` | Preferencias (`locale`, `includeDocs`, `stateDb`) |
+| `.specflow-config.json` | `init` | Preferencias (`locale`, `includeDocs`) |
 | `.specflow-version` | `init` / `sync` | Versión del motor instalada |
 | Archivos adapter | por herramienta | ej. `.cursor/rules/`, `CLAUDE.md` |
 | `.agents-docs/` | **Tú** | Contexto del proyecto (manual) |
@@ -74,9 +71,8 @@ specflow init -C ./my-app     # directorio destino distinto
 
 1. Añade `.agents-state/` a `.gitignore` si no está
 2. Completa [`.agents-docs/`](./project-documentation.md) cuando estés listo
-3. Di **`nueva tarea`** o **`flow on`** en tu chat de IA
-
-Con `stateDb` habilitado, el orquestador ejecuta `specflow state ensure` al activar el flujo. Ver [Context Engine](./context-engine.md).
+3. Ejecuta **`specflow doctor`** para verificar la instalación
+4. Di **`nueva tarea`** o **`flow on`** en tu chat de IA
 
 ### Campos de `.specflow-config.json`
 
@@ -84,7 +80,6 @@ Con `stateDb` habilitado, el orquestador ejecuta `specflow state ensure` al acti
 |-------|-------------|
 | `locale` | `es` o `en` — idioma del asistente CLI |
 | `includeDocs` | Si se crearon plantillas en `.agents-docs/` |
-| `stateDb` | `true` → Context Engine (`state.db`); `false` → solo markdown en `current/` |
 | `installedAt` | Marca ISO de la instalación |
 | `manifestVersion` | Versión del manifest (actualmente `2`) |
 

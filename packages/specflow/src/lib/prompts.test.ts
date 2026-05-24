@@ -36,7 +36,6 @@ function mockWizardFlow(
     includeDocs?: boolean;
     proceed?: boolean;
     coreOnly?: boolean;
-    stateDb?: boolean;
     confirmInstall?: boolean;
   } = {}
 ) {
@@ -46,7 +45,6 @@ function mockWizardFlow(
     includeDocs = true,
     proceed = true,
     coreOnly = false,
-    stateDb = true,
     confirmInstall = true,
   } = overrides;
 

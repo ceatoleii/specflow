@@ -8,7 +8,6 @@ const guideLinksEn = [
   { text: 'Project Layout', link: '/project-layout' },
   { text: 'Project Documentation', link: '/project-documentation' },
   { text: 'IDE Adapters', link: '/ide-adapters' },
-  { text: 'Context Engine', link: '/context-engine' },
   { text: 'Design Principles', link: '/design-principles' },
   { text: 'Troubleshooting', link: '/troubleshooting' },
 ]
@@ -21,7 +20,6 @@ const guideLinksEs = [
   { text: 'Layout del proyecto', link: '/es/project-layout' },
   { text: 'Documentación del proyecto', link: '/es/project-documentation' },
   { text: 'Adaptadores IDE', link: '/es/ide-adapters' },
-  { text: 'Context Engine', link: '/es/context-engine' },
   { text: 'Principios de diseño', link: '/es/design-principles' },
   { text: 'Solución de problemas', link: '/es/troubleshooting' },
 ]
@@ -68,7 +66,7 @@ export default defineConfig({
       link: '/',
       themeConfig: {
         nav: [
-          { text: 'Guide', link: '/introduction', activeMatch: '/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|context-engine|design-principles|troubleshooting)' },
+          { text: 'Guide', link: '/introduction', activeMatch: '/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|design-principles|troubleshooting)' },
           { text: 'npm', link: 'https://www.npmjs.com/package/@ceatoleii/specflow' },
         ],
         sidebar: [{ text: 'Guide', items: guideLinksEn }],
@@ -89,7 +87,7 @@ export default defineConfig({
       link: '/es/',
       themeConfig: {
         nav: [
-          { text: 'Guía', link: '/es/introduction', activeMatch: '/es/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|context-engine|design-principles|troubleshooting)' },
+          { text: 'Guía', link: '/es/introduction', activeMatch: '/es/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|design-principles|troubleshooting)' },
           { text: 'npm', link: 'https://www.npmjs.com/package/@ceatoleii/specflow' },
         ],
         sidebar: [{ text: 'Guía', items: guideLinksEs }],

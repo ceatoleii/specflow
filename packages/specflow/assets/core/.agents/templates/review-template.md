@@ -10,18 +10,18 @@ _Date: YYYY-MM-DD | Result: **PASS** | **FAIL**_
 
 ---
 
-## Spec Compliance
+## Acceptance Criteria (from task.md)
 
-For each acceptance criterion from sdd.md:
+Every **AC** in `task.md` must have a row. Missing row → **FAIL**.
 
-| # | Criterion | Status | Notes |
-|---|-----------|--------|-------|
-| 1 | [criterion text] | ✅ Pass / ❌ Fail | [specific finding] |
-| 2 | [criterion text] | ✅ Pass / ❌ Fail | [specific finding] |
+| AC | Criterion | Met? | Evidence (file / test / command) |
+|----|-----------|------|----------------------------------|
+| AC1 | [text from task.md] | ✅ / ❌ | `tests/...` or `src/...` |
+| AC2 | [text from task.md] | ✅ / ❌ | |
 
 ---
 
-## Test Scenarios Coverage
+## Test Scenarios Coverage (from plan.md)
 
 | Scenario | Test exists? | Test passes? | Notes |
 |----------|-------------|--------------|-------|
@@ -42,17 +42,17 @@ Result: ✅ Pass / ❌ Fail
 ```
 [paste full command output here]
 ```
-Result: ✅ Pass / ❌ Fail
+Result: ✅ Pass / ❌ Fail / N/A
 
 ### Build
 ```
-[paste full command output here — or "N/A" if no build step]
+[paste full command output here]
 ```
 Result: ✅ Pass / ❌ N/A / ❌ Fail
 
 ### Type Check
 ```
-[paste full command output here — or "N/A"]
+[paste full command output here]
 ```
 Result: ✅ Pass / ❌ N/A / ❌ Fail
 
@@ -60,19 +60,16 @@ Result: ✅ Pass / ❌ N/A / ❌ Fail
 
 ## Issues Found
 
-<!-- Only fill this section on FAIL. Be specific and actionable. -->
+<!-- Only on FAIL. Be specific and actionable. -->
 
 ### Issue 1 — [Short title]
-- **Criterion affected:** [which criterion]
-- **What happened:** [specific description]
-- **Where:** `path/to/file.ext` line N
-- **What to fix:** [concrete instruction for the Implementer]
+- **AC affected:** AC1
+- **What happened:** [description]
+- **Where:** `path/to/file.ext`
+- **What to fix:** [concrete instruction]
 
 ---
 
 ## Decision
 
 **Result: PASS / FAIL**
-
-<!-- PASS: task will be archived and flow deactivated -->
-<!-- FAIL: returning to Implementer with issues above -->

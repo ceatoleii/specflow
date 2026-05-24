@@ -91,7 +91,6 @@ describe("runInit", () => {
     const config = await readProjectConfig(dir);
     expect(config?.locale).toBe("es");
     expect(config?.includeDocs).toBe(true);
-    expect(config?.stateDb).toBe(true);
   });
 
   it("throws NO_TTY when stdin is not interactive", async () => {

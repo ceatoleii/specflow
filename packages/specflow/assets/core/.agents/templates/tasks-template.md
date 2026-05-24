@@ -6,12 +6,13 @@ _Date: YYYY-MM-DD | Phase: implementing_
 ## Implementation Tasks
 
 <!-- Status: [ ] pending | [~] in-progress | [x] done -->
+<!-- Order: [test] tasks before [impl] for the same AC / scenario (TDD) -->
 
-- [ ] **T01** — [Action verb + what]: [brief description of what to build/change]
-- [ ] **T02** — [Action verb + what]: [brief description]
-- [ ] **T03** — Write test for S01: [test scenario name from SDD]
-- [ ] **T04** — Write test for S02: [test scenario name from SDD]
-- [ ] **T05** — [Action verb + what]: [brief description]
+- [ ] **T01** — [test] Unit test for S01 / AC1: [description]
+- [ ] **T02** — [impl] Implement S01 / AC1: [description]
+- [ ] **T03** — [test] Unit test for S02 / AC2: [description]
+- [ ] **T04** — [impl] Implement S02 / AC2: [description]
+- [ ] **T05** — [verify] Run project verification (if not covered by Reviewer)
 
 ---
 
@@ -23,7 +24,7 @@ _Date: YYYY-MM-DD | Phase: implementing_
 
 ## Unspecified Items
 
-<!-- If the implementer finds gaps in the SDD, they are logged here before asking -->
+<!-- If the implementer finds gaps in the plan, they are logged here before asking -->
 
 ---
 
