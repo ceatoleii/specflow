@@ -6,6 +6,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-05-24
+
+### Changed
+
+- **Repository layout:** single package at repo root (removed npm workspaces / `packages/`)
+- **User documentation:** rewritten `README.md` (npm + GitHub) and VitePress guide (EN/ES parity)
+- Guides now include step-by-step first flow, “what to read per phase”, and mermaid diagrams on GitHub Pages only
+- Troubleshooting links to first-flow walkthrough
+
 ## [2.1.0] - 2026-05-24
 
 ### Added
