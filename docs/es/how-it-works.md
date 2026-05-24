@@ -4,93 +4,151 @@
 
 ---
 
-## Pipeline
+## El pipeline
 
-**Requisito → Plan → Tasks → Código**
+Cada tarea sigue la misma historia:
 
-| Paso | Artefacto | Agente |
-|------|-----------|--------|
-| Requisito | `task.md` (AC1, AC2…) | Refiner |
-| Plan | `plan.md` + `tasks.md` | SDD |
-| Código | archivos fuente | Implementer |
-| Verificación | `review.md` | Reviewer |
-
-Proyectos legacy pueden tener `sdd.md` en lugar de `plan.md` — los agentes leen `plan.md` primero.
-
----
-
-## Dos modos
-
-| Modo | Disparador | Comportamiento |
-|------|------------|----------------|
-| **Direct** | Por defecto | Asistente normal, cero overhead |
-| **Flow** | Existe `.agents-state/.flow-enabled` | Orquestador enruta al agente de fase |
-
----
-
-## Cuatro agentes, un pipeline
+**Requisito → Plan → Tareas → Código → Revisión**
 
 ```mermaid
 flowchart LR
-  A[Refiner] --> B[SDD]
-  B -->|/approve| C[Implementer]
-  C --> D[Reviewer]
-  D -->|PASS| E[Archivar y off]
-  D -->|FAIL| C
+  subgraph fases [Fases del flujo]
+    R[Refining<br/>task.md]
+    D[Designing<br/>plan.md + tasks.md]
+    I[Implementing<br/>código fuente]
+    V[Reviewing<br/>review.md]
+  end
+  R --> D
+  D -->|/approve| I
+  I --> V
+  V -->|PASS| A[Archivo + flow off]
+  V -->|FAIL| I
 ```
 
-| Fase | Agente | ¿Escribe código? | Salida |
-|------|--------|:----------------:|--------|
+| Fase en `phase.md` | Agente | ¿Escribe código? | Salida principal |
+|--------------------|--------|:----------------:|------------------|
 | `refining` | Refiner | No | `task.md` con **AC1**, **AC2**… |
-| `designing` | SDD | No | `plan.md` + `tasks.md` (requiere `/approve`) |
-| `implementing` | Implementer | **Sí** | Código + checklist |
-| `reviewing` | Reviewer | No | `review.md` + verificación |
+| `designing` | SDD | No | `plan.md`, `tasks.md` |
+| `implementing` | Implementer | **Sí** | Código + casillas en `tasks.md` |
+| `reviewing` | Reviewer | No | `review.md` |
+
+Proyectos antiguos pueden tener `sdd.md` en lugar de `plan.md` — se prefiere `plan.md`.
+
+---
+
+## Modo directo vs modo flujo
+
+| | Modo directo | Modo flujo |
+|---|--------------|------------|
+| **Cuándo** | Por defecto | Tras `nueva tarea`, `flow on`, etc. |
+| **Señal** | Sin `.flow-enabled` | Archivo presente |
+| **Comportamiento** | Asistente normal | Orquestador elige agente |
+| **Overhead** | Ninguno | Artefactos en `current/` |
+
+**Por qué dos modos:** los arreglos pequeños deben seguir siendo rápidos. El trabajo estructurado se elige a propósito.
+
+---
+
+## Qué revisar en cada fase
+
+Guía de lectura — abre el archivo, mira la sección, decide si intervenir.
+
+### Refining — lee `task.md`
+
+| Revisa | Buena señal | Alerta |
+|--------|-------------|--------|
+| **AC*** | Concretos y verificables | Vagos (“mejóralo”) |
+| **Constraints** | Lista lo que no debe romperse | Vacío en cambios arriesgados |
+| **Out of Scope** | Exclusiones claras | Falta en tareas grandes |
+
+No hace falta editar el archivo — responde en el chat.
+
+### Designing — lee `plan.md` y `tasks.md`
+
+| Revisa | Buena señal | Alerta |
+|--------|-------------|--------|
+| **plan.md** | Archivos y enfoque acordados | Refactors sorpresa |
+| **tasks.md** | Pasos pequeños y ordenados | Tareas gigantes vagas |
+| Trazabilidad | ACs ligados a escenarios | ACs sin plan |
+
+Aprueba solo si el diff descrito te parece aceptable.
+
+### Implementing — `tasks.md` + diff git
+
+| Revisa | Buena señal | Alerta |
+|--------|-------------|--------|
+| Orden | `[test]` antes de `[impl]` | Tests saltados |
+| Alcance | Coincide con el plan | Archivos ajenos |
+| Bloqueos | Pregunta a ti | Suposiciones silenciosas |
+
+### Reviewing — lee `review.md`
+
+| Revisa | Buena señal | Alerta |
+|--------|-------------|--------|
+| Cada **AC** | Fila con evidencia | AC sin fila |
+| Verificación | Comandos exit 0 | Tests fallidos ignorados |
+| Decisión | PASS o FAIL claro | Resumen ambiguo |
+
+---
+
+## Cuatro agentes en lenguaje claro
 
 ### Refiner
 
-Clarifica el requisito. Ajusta las preguntas según el nivel de detalle (idea vaga vs PRD completo). Produce `task.md` con criterios numerados. Nunca escribe código.
+Convierte la idea en `task.md` claro. Pocas preguntas por ronda si el input es vago; resume si ya trajiste un ticket largo. **Nunca** edita código fuente.
 
 ### SDD
 
-Diseña desde `task.md`. Escribe `plan.md` (diseño + trazabilidad) y `tasks.md` (orden TDD). Espera **`/approve`** explícito.
+Plan técnico y checklist desde `task.md`. Espera **`/approve`**. **Nunca** edita código hasta entonces.
 
 ### Implementer
 
-Único agente que edita código. Ejecuta `tasks.md` (`[test]` antes de `[impl]`).
+**Único agente** que puede cambiar código. Sigue `tasks.md`. Para ante huecos de spec.
 
 ### Reviewer
 
-Verifica cada **AC** con evidencia, ejecuta `verification.md`, archiva en `history/YYYY-MM-DD-slug/` al PASS.
+Evidencia por **AC**, ejecuta `verification.md`, escribe `review.md`. En **PASS**, archiva y apaga el flujo.
 
 ---
 
 ## Frases de activación
 
-| Iniciar | Terminar |
-|---------|----------|
+| Iniciar flujo | Terminar flujo |
+|---------------|----------------|
 | `nueva tarea` · `activar flujo` · `flow on` | `modo directo` · `flow off` · `desactivar flujo` |
+
+El orquestador lee `phase.md` en cada mensaje.
 
 ---
 
-## Estado en disco
+## Archivos en `.agents-state/current/`
 
 | Archivo | Fase | Propósito |
 |---------|------|-----------|
-| `phase.md` | todas | Fase actual |
-| `task.md` | refining+ | Requisito + AC1… |
-| `plan.md` | designing+ | Plan técnico (legacy: `sdd.md`) |
-| `tasks.md` | implementing+ | Checklist |
-| `review.md` | reviewing | Resultado review |
+| `phase.md` | Siempre | Fase actual |
+| `refinement-log.md` | Refining | Preguntas y respuestas |
+| `task.md` | Refining+ | Requisito + ACs |
+| `plan.md` | Designing+ | Diseño (legacy: `sdd.md`) |
+| `tasks.md` | Implementing+ | Checklist |
+| `review.md` | Reviewing | Resultado |
+
+Sin flujo activo, `current/` puede estar vacío — es normal.
 
 ---
 
 ## Puerta de aprobación
 
-`/approve` · `aprobado` · `dale` — sin esto no hay implementación.
+```
+/approve
+```
+
+También: `aprobado`, `dale`.
+
+**Por qué:** separa “me gusta el plan” de “empieza a codear”.
 
 ---
 
-## Verificar setup
+## Verificar el setup
 
 ```bash
 specflow doctor

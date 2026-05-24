@@ -6,6 +6,10 @@
 
 ## FAQ
 
+### ¿Dónde está el paso a paso de mi primera tarea?
+
+[Primeros pasos → Tu primer flujo](./getting-started.md#tu-primer-flujo). Guía de qué leer por fase: [Cómo funciona → Qué revisar](./how-it-works.md#qué-revisar-en-cada-fase).
+
 ### ¿SpecFlow funciona sin `.agents-docs/`?
 
 Sí. Los agentes tienen menos contexto y pueden preguntar más. Completa docs antes de tareas serias.

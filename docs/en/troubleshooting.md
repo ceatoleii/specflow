@@ -6,6 +6,10 @@
 
 ## FAQ
 
+### Where is the step-by-step for my first task?
+
+See [Getting Started → Your first flow](./getting-started.md#your-first-flow). For phase-by-phase reading guide, see [How It Works → What to inspect](./how-it-works.md#what-to-inspect-in-each-phase).
+
 ### Does SpecFlow work without `.agents-docs/`?
 
 Yes. Agents have less project context and may ask more questions. Fill in docs before serious tasks.

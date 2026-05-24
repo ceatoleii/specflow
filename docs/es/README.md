@@ -1,45 +1,58 @@
-# Documentación de SpecFlow
+# Guía SpecFlow
 
-**Flujo multi-agente spec-driven para Cursor, Claude Code, Copilot, Codex y más.**
+**Flujo multi-agente spec-driven** para Cursor, Claude Code, Copilot, Codex y más.
 
-Instala una vez por proyecto. Elige tus adaptadores de IDE de forma interactiva. Refina → diseña → implementa → revisa con un solo agente que escribe código.
+Instálalo una vez por proyecto. Actívalo cuando la tarea merezca estructura. Un solo agente escribe código; el resto especifica, diseña y verifica.
 
-**Otro idioma:** [English](../en/README.md)
+**Other language:** [English](../en/README.md)
 
 ---
 
-## Inicio rápido
+## Empieza aquí
+
+| Quiero… | Leer |
+|---------|------|
+| Entender por qué existe SpecFlow | [Introducción](./introduction.md) |
+| Instalarlo en mi repo | [Primeros pasos](./getting-started.md) |
+| Hacer mi primera tarea completa | [Primeros pasos → Tu primer flujo](./getting-started.md#tu-primer-flujo) |
+| Ver fases, archivos y frases | [Cómo funciona](./how-it-works.md) |
+| Saber para qué sirve cada carpeta | [Layout del proyecto](./project-layout.md) |
+| Enseñar a los agentes *mi* proyecto | [Documentación del proyecto](./project-documentation.md) |
+
+---
+
+## Mapa de la guía
+
+| Capítulo | Qué aprenderás |
+|----------|----------------|
+| [Introducción](./introduction.md) | Problema, solución, cuándo usarlo |
+| [Primeros pasos](./getting-started.md) | `init`, verificar, walkthrough del primer flujo |
+| [Cómo funciona](./how-it-works.md) | Modo directo vs flujo, cuatro agentes, qué revisar |
+| [Referencia CLI](./cli-reference.md) | Comandos y opciones |
+| [Layout del proyecto](./project-layout.md) | Árbol tras `init`, git y equipo |
+| [Documentación del proyecto](./project-documentation.md) | Archivos en `.agents-docs/` |
+| [Adaptadores IDE](./ide-adapters.md) | Archivos por herramienta |
+| [Principios de diseño](./design-principles.md) | Reglas del flujo |
+| [Solución de problemas](./troubleshooting.md) | FAQ |
+
+---
+
+## Instalación rápida
 
 ```bash
 npx @ceatoleii/specflow init
+specflow doctor
 ```
 
-Luego di **`nueva tarea`** o **`flow on`** en tu chat de IA para iniciar el flujo.
-
----
-
-## Contenido
-
-| Guía | Descripción |
-|------|-------------|
-| [Introducción](./introduction.md) | Por qué existe SpecFlow y qué problema resuelve |
-| [Primeros pasos](./getting-started.md) | Instalación interactiva, qué se escribe en disco |
-| [Cómo funciona](./how-it-works.md) | Modo Direct vs Flow, cuatro agentes, frases de activación |
-| [Referencia CLI](./cli-reference.md) | Todos los comandos y opciones |
-| [Layout del proyecto](./project-layout.md) | Árbol de directorios tras `init` |
-| [Documentación del proyecto](./project-documentation.md) | Cómo completar `.agents-docs/` |
-| [Adaptadores IDE](./ide-adapters.md) | Herramientas soportadas y archivos generados |
-| [Principios de diseño](./design-principles.md) | Reglas que impone el flujo |
-| [Solución de problemas](./troubleshooting.md) | FAQ e incidencias comunes |
+Luego en tu chat de IA: **`nueva tarea`** o **`flow on`**.
 
 ---
 
 ## Enlaces
 
-- [Paquete npm](https://www.npmjs.com/package/@ceatoleii/specflow)
-- [Repositorio GitHub](https://github.com/ceatoleii/specflow)
-- [Changelog](../../CHANGELOG.md)
-- [Licencia MIT](../../LICENSE)
+- [npm](https://www.npmjs.com/package/@ceatoleii/specflow)
+- [GitHub](https://github.com/ceatoleii/specflow)
+- [Changelog](../../CHANGELOG.md) · [Licencia MIT](../../LICENSE)
 
 ---
 

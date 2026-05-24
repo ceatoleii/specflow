@@ -4,50 +4,79 @@
 
 ---
 
-## ¿Qué es `.agents-docs/`?
+## Por qué existe `.agents-docs/`
 
-`.agents-docs/` es el **único** directorio pensado para diferir entre proyectos. Contiene hechos sobre *tu* codebase — stack, convenciones, cómo verificar cambios.
+SpecFlow trae reglas **genéricas** en `.agents/`. Tu repo es único: stack, carpetas, comandos de test, UI.
 
-SpecFlow funciona sin él, pero los agentes tienen menos contexto y pueden hacer más preguntas o perder patrones del proyecto.
+**`.agents-docs/`** enseña a los agentes *tu* proyecto para que:
 
-Las plantillas se crean en `init` salvo que uses `--no-docs`.
+- Hagan menos preguntas repetidas al refinar
+- Diseñen planes acordes a tu arquitectura
+- Implementen y revisen con **tus** comandos reales
+
+Funciona sin esto, pero baja la calidad. Plantillas en `init` salvo `--no-docs`.
 
 ---
 
-## Archivos
+## Archivos y quién los lee
 
-| Archivo | Leído por | Contenido |
-|---------|-----------|-----------|
-| `architecture.md` | Refiner, SDD | Stack, estructura, reglas de arquitectura, servicios externos |
-| `conventions.md` | Implementer, Reviewer | Nombres, patrones, anti-patrones, estilo |
-| `verification.md` | Reviewer | Comandos test, lint, build y exit codes esperados |
-| `design-system.md` | SDD, Implementer | Tokens UI, componentes, accesibilidad (opcional) |
+| Archivo | Fase | Responde |
+|---------|------|----------|
+| `architecture.md` | Refinar, Diseñar | ¿Qué es el proyecto y cómo está organizado? |
+| `conventions.md` | Implementar, Revisar | ¿Cómo debe verse el código? |
+| `verification.md` | Revisar | ¿Cómo demostramos que está bien? |
+| `design-system.md` | Diseñar, Implementar | ¿Cómo debe verse la UI? (opcional) |
+
+```mermaid
+flowchart LR
+  ADOCS[".agents-docs/"]
+  ADOCS --> A[architecture.md]
+  ADOCS --> C[conventions.md]
+  ADOCS --> V[verification.md]
+  ADOCS --> D[design-system.md]
+  A --> R[Refiner + SDD]
+  C --> I[Implementer + Reviewer]
+  V --> RV[Reviewer]
+  D --> SDD[SDD + Implementer]
+```
+
+---
+
+## Qué escribir en cada archivo
 
 ### `architecture.md`
 
-Responde: *¿Qué es este proyecto y cómo está organizado?*
-
-Incluye nombre, tipo, lenguaje, framework, estructura de carpetas, reglas de arquitectura y servicios externos.
+- Tipo de proyecto (web, API, CLI, móvil…)
+- Lenguaje, framework, runtime
+- Estructura de carpetas que los agentes deben respetar
+- Reglas de arquitectura en lenguaje de **uso**
+- Servicios externos sin secretos ni credenciales
 
 ### `conventions.md`
 
-Responde: *¿Cómo debe verse el código en este repo?*
-
-Incluye convenciones de nombres, patrones preferidos, anti-patrones, estilo de imports y manejo de errores.
+- Nombres (archivos, funciones, componentes)
+- Patrones preferidos y anti-patrones
+- Estilo de imports y errores
+- Convención de commits/PR si aplica
 
 ### `verification.md`
 
-Responde: *¿Cómo sabemos que un cambio es correcto?*
+Comandos **en orden**:
 
-Incluye comandos en orden, exit codes esperados, umbrales de coverage y notas de CI.
+```bash
+npm ci
+npm run lint
+npm test
+npm run build
+```
 
-El agente Reviewer ejecuta estos comandos en la fase reviewing.
+Por cada uno: código de salida esperado y qué significa “pass”.
+
+El **Reviewer** los ejecuta en revisión. Comandos viejos → FAIL falsos.
 
 ### `design-system.md` (opcional)
 
-Responde: *¿Cómo debe verse y comportarse la UI?*
-
-Incluye tokens, librería de componentes, espaciado, tipografía y accesibilidad. Borra el archivo si no hay UI.
+Tokens, componentes, accesibilidad. **Bórralo** si no hay UI.
 
 ---
 
@@ -55,28 +84,36 @@ Incluye tokens, librería de componentes, espaciado, tipografía y accesibilidad
 
 | Momento | Recomendación |
 |---------|---------------|
-| En `init` | Mantén plantillas — edita al usar el flujo |
-| Antes de la primera tarea real | Mínimo `architecture.md` y `verification.md` |
-| Proyectos front-end | Añade o completa `design-system.md` |
+| Tras `init` | Conservar plantillas; leer estructura |
+| Antes del primer flujo real | Mínimo: `architecture.md` + `verification.md` |
+| Proyecto con UI | Completar `design-system.md` |
+| Cambio grande de stack | Actualizar en el mismo PR |
 
 ---
 
-## Qué no toca `sync`
+## Qué `sync` no toca
 
 ```bash
-specflow sync   # nunca sobrescribe .agents-docs/
+specflow sync
 ```
 
-Tu documentación sobrevive a actualizaciones del motor. Compara cambios upstream manualmente si hace falta.
+`.agents-docs/` sobrevive a actualizaciones del motor. Si mejoran plantillas upstream, fusiona ideas a mano.
 
 ---
 
 ## Consejos
 
-1. **Sé concreto** — “Usar React Query para server state” gana a “seguir buenas prácticas”
-2. **Mantén verification al día** — comandos obsoletos fallan la revisión
-3. **Rutas reales** — `src/features/auth/` no “el módulo auth en algún sitio”
-4. **Borra lo que no uses** — elimina `design-system.md` en proyectos solo backend
+1. **Sé específico** — mejor “TanStack Query para server state” que “buenas prácticas”
+2. **Rutas reales** — `src/features/auth/` no “el módulo auth”
+3. **Verificación al día** — comandos rotos bloquean en review
+4. **Quita ruido** — sin `design-system.md` en backends puros
+5. **Sin secretos** — nombres de variables de entorno, no API keys
+
+---
+
+## Nota de equipo
+
+Commitea `.agents-docs/` como cualquier convención compartida. Mejorar `verification.md` mejora las revisiones de todos.
 
 ---
 

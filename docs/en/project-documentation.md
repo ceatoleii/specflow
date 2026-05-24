@@ -4,66 +4,83 @@
 
 ---
 
-## What is `.agents-docs/`?
+## Why `.agents-docs/` exists
 
-`.agents-docs/` is the **only** directory meant to differ between projects. It holds facts about *your* codebase — stack, conventions, how to verify changes.
+SpecFlow ships **generic** workflow rules in `.agents/`. Your repo is unique — stack, folders, test commands, UI tokens.
 
-SpecFlow works without it, but agents have less context and may ask more questions or miss project patterns.
+**`.agents-docs/`** is where you teach agents *your* project so they:
 
-Templates are scaffolded on `init` unless you pass `--no-docs`.
+- Ask fewer redundant questions during refinement
+- Design plans that match your architecture
+- Implement and review using **your** real verification commands
+
+SpecFlow works without it, but quality drops. Templates are created at `init` unless you pass `--no-docs`.
 
 ---
 
-## Files
+## Files and who reads them
 
-| File | Read by | Contents |
-|------|---------|----------|
-| `architecture.md` | Refiner, SDD | Stack, folder structure, architecture rules, external services |
-| `conventions.md` | Implementer, Reviewer | Naming, patterns, anti-patterns, code style |
-| `verification.md` | Reviewer | Test, lint, build commands and expected exit codes |
-| `design-system.md` | SDD, Implementer | UI tokens, components, accessibility (optional) |
+| File | Read during | Answer this question |
+|------|-------------|----------------------|
+| `architecture.md` | Refine, Design | What is this project and how is it organized? |
+| `conventions.md` | Implement, Review | How should code look here? |
+| `verification.md` | Review | How do we prove a change is correct? |
+| `design-system.md` | Design, Implement | How should UI look? (optional) |
+
+```mermaid
+flowchart LR
+  ADOCS[".agents-docs/"]
+  ADOCS --> A[architecture.md]
+  ADOCS --> C[conventions.md]
+  ADOCS --> V[verification.md]
+  ADOCS --> D[design-system.md]
+  A --> R[Refiner + SDD]
+  C --> I[Implementer + Reviewer]
+  V --> RV[Reviewer]
+  D --> SDD[SDD + Implementer]
+```
+
+---
+
+## What to write in each file
 
 ### `architecture.md`
 
-Answer: *What is this project and how is it organized?*
-
 Include:
 
-- Project name, type (web app, CLI, API, …)
+- Project type (web app, API, CLI, mobile, …)
 - Language, framework, runtime
-- Folder structure with brief descriptions
-- Architecture rules agents must follow
-- External services and config locations
+- Folder structure agents should respect
+- Rules (“auth lives in `src/auth/`”, “no direct DB from UI”)
+- External services (APIs, databases) at a **usage** level — not internal ops secrets
 
 ### `conventions.md`
 
-Answer: *How should code look in this repo?*
-
 Include:
 
-- Naming conventions (files, functions, components)
-- Preferred patterns and abstractions
-- Anti-patterns to avoid
+- Naming (files, functions, components)
+- Patterns you prefer (and anti-patterns to avoid)
 - Import style, error handling expectations
+- Commit or PR conventions if relevant
 
 ### `verification.md`
 
-Answer: *How do we know a change is correct?*
+Include commands **in run order**:
 
-Include:
+```bash
+npm ci
+npm run lint
+npm test
+npm run build
+```
 
-- Commands in run order (install, lint, test, build)
-- Expected exit codes
-- Coverage thresholds if any
-- CI notes
+For each: expected exit code and what “pass” means (e.g. coverage threshold).
 
-The Reviewer agent runs these commands during the reviewing phase.
+The **Reviewer** runs these during the reviewing phase. Stale commands → false FAIL reviews.
 
 ### `design-system.md` (optional)
 
-Answer: *How should UI look and behave?*
-
-Include tokens, component library, spacing, typography, accessibility rules. Delete this file if your project has no UI.
+Tokens, components, spacing, a11y rules. **Delete the file** if the project has no UI.
 
 ---
 
@@ -71,28 +88,36 @@ Include tokens, component library, spacing, typography, accessibility rules. Del
 
 | Timing | Recommendation |
 |--------|----------------|
-| At `init` | Keep scaffold templates — edit when you start using flow |
-| Before first real task | Fill `architecture.md` and `verification.md` minimum |
-| Front-end projects | Add or complete `design-system.md` |
+| Right after `init` | Keep templates; skim structure |
+| Before first real flow task | Minimum: `architecture.md` + `verification.md` |
+| UI projects | Complete or add `design-system.md` |
+| After major stack change | Update docs in the same PR |
 
 ---
 
-## What sync does *not* touch
+## What `sync` never touches
 
 ```bash
-specflow sync   # never overwrites .agents-docs/
+specflow sync
 ```
 
-Your documentation survives engine upgrades. Compare upstream template changes manually if needed.
+Your `.agents-docs/` survives engine upgrades. If upstream templates improve, compare manually and merge ideas — SpecFlow will not overwrite your prose.
 
 ---
 
-## Tips
+## Tips for useful docs
 
-1. **Be concrete** — “Use React Query for server state” beats “follow best practices”
-2. **Keep verification current** — stale commands cause review failures
-3. **Link to real paths** — `src/features/auth/` not “the auth module somewhere”
-4. **Delete unused files** — remove `design-system.md` in backend-only projects
+1. **Be specific** — “Use TanStack Query for server state” beats “follow best practices”
+2. **Use real paths** — `src/features/auth/` not “the auth module”
+3. **Keep verification current** — broken commands block releases at review time
+4. **Delete noise** — remove `design-system.md` in backend-only repos
+5. **No secrets** — use env var *names* and doc links, not API keys or passwords
+
+---
+
+## Team note
+
+Commit `.agents-docs/` like any other team convention. When someone improves `verification.md`, everyone gets better reviews on the next task.
 
 ---
 
