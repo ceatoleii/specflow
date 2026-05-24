@@ -29,7 +29,7 @@ export default defineConfig({
   description:
     'Spec-driven multi-agent workflow for Cursor, Claude Code, Copilot, Codex, and more.',
   lang: 'en-US',
-  srcDir: '../specflow/docs',
+  srcDir: 'docs',
   base: '/specflow/',
   cleanUrls: true,
   lastUpdated: true,
@@ -72,7 +72,7 @@ export default defineConfig({
         sidebar: [{ text: 'Guide', items: guideLinksEn }],
         editLink: {
           pattern:
-            'https://github.com/ceatoleii/specflow/edit/main/packages/specflow/docs/en/:path',
+            'https://github.com/ceatoleii/specflow/edit/main/docs/en/:path',
           text: 'Edit this page on GitHub',
         },
         footer: {
@@ -93,7 +93,7 @@ export default defineConfig({
         sidebar: [{ text: 'Guía', items: guideLinksEs }],
         editLink: {
           pattern:
-            'https://github.com/ceatoleii/specflow/edit/main/packages/specflow/docs/es/:path',
+            'https://github.com/ceatoleii/specflow/edit/main/docs/es/:path',
           text: 'Editar esta página en GitHub',
         },
         footer: {

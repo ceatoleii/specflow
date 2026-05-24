@@ -1,19 +1,74 @@
 {
-  "name": "specflow-repo",
-  "private": true,
-  "description": "Monorepo for @ceatoleii/specflow",
+  "name": "@ceatoleii/specflow",
+  "version": "2.1.0",
+  "description": "Spec-driven multi-agent workflow for Cursor and AI coding tools",
+  "keywords": [
+    "cursor",
+    "agents",
+    "sdd",
+    "spec-driven",
+    "specflow",
+    "ai"
+  ],
+  "license": "MIT",
+  "author": "ceatoleii",
+  "homepage": "https://github.com/ceatoleii/specflow#readme",
+  "bugs": {
+    "url": "https://github.com/ceatoleii/specflow/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ceatoleii/specflow.git"
   },
-  "workspaces": ["packages/*"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "specflow": "bin/specflow.js"
+  },
+  "files": [
+    "bin/specflow.js",
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "assets",
+    "manifest.json",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "npm run build -w @ceatoleii/specflow",
-    "test": "npm run test -w @ceatoleii/specflow",
-    "test:coverage": "npm run test:coverage -w @ceatoleii/specflow",
-    "specflow": "npm run build -w @ceatoleii/specflow && node packages/specflow/dist/cli.js",
-    "docs:dev": "npm run dev -w @ceatoleii/specflow-docs",
-    "docs:build": "npm run build -w @ceatoleii/specflow-docs",
-    "docs:preview": "npm run preview -w @ceatoleii/specflow-docs"
+    "build": "tsc && chmod +x bin/specflow.js dist/cli.js",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "specflow": "npm run build && node dist/cli.js",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.4.0",
+    "@inquirer/prompts": "^7.5.3",
+    "commander": "^13.1.0",
+    "fs-extra": "^11.3.0",
+    "glob": "^10.4.5",
+    "semver": "^7.7.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.21",
+    "@types/semver": "^7.7.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "execa": "^9.6.0",
+    "typescript": "^5.8.3",
+    "vitepress": "^1.6.3",
+    "vitest": "^3.2.4"
   }
 }

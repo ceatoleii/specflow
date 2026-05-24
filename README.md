@@ -2,59 +2,44 @@
 
 # SpecFlow
 
-Monorepo for [`@ceatoleii/specflow`](https://www.npmjs.com/package/@ceatoleii/specflow) — spec-driven multi-agent workflow for Cursor and AI coding tools.
+**Spec-driven multi-agent workflow for Cursor, Claude Code, Copilot, Codex, and more.**
 
 [![CI](https://github.com/ceatoleii/specflow/actions/workflows/ci.yml/badge.svg)](https://github.com/ceatoleii/specflow/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@ceatoleii/specflow.svg?style=flat-square)](https://www.npmjs.com/package/@ceatoleii/specflow)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-
-**Full documentation → [packages/specflow/README.md](./packages/specflow/README.md)**
+[![Node](https://img.shields.io/node/v/@ceatoleii/specflow.svg?style=flat-square)](https://nodejs.org)
 
 ```bash
 npx @ceatoleii/specflow init
 ```
 
+**Documentation**
+
+[English](https://ceatoleii.github.io/specflow/) ·
+[Español](https://ceatoleii.github.io/specflow/es/)
+
 </div>
 
 ---
 
-## Repository structure
+Install once per project. Pick your IDE adapters interactively.
 
-```
-.
-├── packages/specflow/     # Publishable npm package (@ceatoleii/specflow)
-│   ├── assets/            # Agent rules, templates, AGENTS.md (shipped to users)
-│   ├── src/               # CLI (TypeScript)
-│   └── README.md          # npm & GitHub package documentation
-├── .github/workflows/     # CI (test + coverage)
-└── package.json           # npm workspaces root
-```
-
----
-
-## Development
+**Requirement → Plan → Tasks → Code** — Refine → design → implement → review with one code-writing agent.
 
 ```bash
-npm install
-npm run build -w @ceatoleii/specflow
-npm test
-npm run test:coverage
+specflow doctor   # verify setup after init
 ```
 
-### Publish to npm
-
-Automated via GitHub Actions (`.github/workflows/ci.yml`) on push to `main`:
-
-1. Add repo secret **`NPM_TOKEN`** (granular npm token with publish + bypass 2FA)
-2. Bump `packages/specflow/package.json` version and update `CHANGELOG.md`
-3. Push to `main` → CI runs tests, publishes to npm if the version is new, creates GitHub Release `vX.Y.Z`
-
-Manual re-run: **Actions → CI → Run workflow**
+| | |
+|---|---|
+| **npm** | [`@ceatoleii/specflow`](https://www.npmjs.com/package/@ceatoleii/specflow) |
+| **Docs (EN)** | [ceatoleii.github.io/specflow](https://ceatoleii.github.io/specflow/) |
+| **Docs (ES)** | [ceatoleii.github.io/specflow/es](https://ceatoleii.github.io/specflow/es/) |
+| **Changelog** | [CHANGELOG.md](./CHANGELOG.md) |
+| **License** | [MIT](./LICENSE) |
 
 ---
 
-## Links
+## License
 
-- [npm package](https://www.npmjs.com/package/@ceatoleii/specflow)
-- [Changelog](./packages/specflow/CHANGELOG.md)
-- [License MIT](./packages/specflow/LICENSE)
+[MIT](./LICENSE) © [ceatoleii](https://github.com/ceatoleii)

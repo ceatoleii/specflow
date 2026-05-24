@@ -4,14 +4,14 @@
 
 | Element | Convention | Example |
 |---------|------------|---------|
-| TS files | kebab-case | `tools-config.ts` |
-| Tests | `*.test.ts` co-located | `init.test.ts` |
-| Functions | camelCase | `runInit()` |
-| Types | PascalCase | `CopyResult`, `SpecflowCliError` |
-| Constants | UPPER_SNAKE | `TOOLS_FILE`, `VERSION_FILE` |
-| CLI commands | lowercase | `init`, `sync`, `tools add` |
+| TS files | kebab-case | `tools-config.ts`, `doctor.ts` |
+| Tests | `*.test.ts` co-located | `init.test.ts`, `doctor.test.ts` |
+| Functions | camelCase | `runInit()`, `runDoctor()` |
+| Types | PascalCase | `CopyResult`, `DoctorReport` |
+| Constants | UPPER_SNAKE | `TOOLS_FILE`, `FLOW_PHASE_FILE` |
+| CLI commands | lowercase | `init`, `sync`, `doctor`, `tools add` |
 | Adapter IDs | kebab-case | `claude-code`, `github-copilot` |
-| Commits | Conventional Commits (English) | `fix: bin permission on macOS` |
+| Commits | Conventional Commits (English) | `feat: add specflow doctor command` |
 
 ---
 
@@ -27,7 +27,7 @@
 ### CLI errors
 
 - Commands throw `SpecflowCliError` with `code`
-- `cli.ts` maps to exit 1 — no `process.exit()` inside command modules (except status)
+- `cli.ts` maps to exit 1 — no `process.exit()` inside command modules (except `status` / `doctor` when checks fail)
 
 ### Copy engine
 
@@ -49,13 +49,30 @@
 
 ---
 
+## SpecFlow flow artifacts (when dogfooding)
+
+When writing or reviewing flow artifacts in `.agents-state/current/`:
+
+| File | Owner | Rules |
+|------|-------|-------|
+| `task.md` | Refiner | Acceptance criteria as **AC1**, **AC2**, … |
+| `plan.md` | SDD | Technical design; map each AC to scenarios (S01…) |
+| `tasks.md` | SDD / Implementer | TDD order: `[test]` tasks before `[impl]` for same slice |
+| `review.md` | Reviewer | One row per AC with concrete evidence; FAIL if any AC missing |
+
+Do not introduce `sdd.md` in new tasks — use `plan.md`.
+
+---
+
 ## Anti-patterns
 
 - **Duplicating agent logic in adapters** — adapters only point to `orchestrator.md`
-- **Editing root `.agents/rules/` for product** — edit `packages/specflow/assets/core/.agents/` instead
-- **Shipping tests in npm** — exclude `*.test.ts` from build; verify with `npm pack --dry-run`
+- **Editing root `.agents/rules/` for product** — edit `assets/core/.agents/` instead
+- **Shipping tests in npm** — verify with `npm pack --dry-run`
 - **Hardcoding project facts in agent rules** — use `.agents-docs/`
-- **Implementing before flow approval** — use SpecFlow phases for features
+- **Implementing before `/approve`** in flow mode
+- **Vague acceptance criteria** without AC ids — breaks review traceability
+- **Impl tasks before test tasks** in `tasks.md` when the plan defines both
 
 ---
 
@@ -84,10 +101,13 @@
 
 ## Testing
 
+From repo root:
+
 ```bash
-npm run typecheck -w @ceatoleii/specflow
-npm run test:coverage -w @ceatoleii/specflow
-npm run build -w @ceatoleii/specflow
+npm run typecheck
+npm run test:coverage
+npm run build
+npm run docs:build
 ```
 
-Run from repo root unless noted.
+Smoke: `npm run specflow -- doctor`

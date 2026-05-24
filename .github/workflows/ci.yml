@@ -30,10 +30,10 @@ jobs:
         run: npm ci
 
       - name: Typecheck
-        run: npm run typecheck -w @ceatoleii/specflow
+        run: npm run typecheck
 
       - name: Test with coverage (≥80% threshold)
-        run: npm run test:coverage -w @ceatoleii/specflow
+        run: npm run test:coverage
 
   docs-build:
     name: Docs build
@@ -80,7 +80,7 @@ jobs:
       - name: Resolve package version
         id: version
         run: |
-          VERSION=$(node -p "require('./packages/specflow/package.json').version")
+          VERSION=$(node -p "require('./package.json').version")
           echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "Package version: ${VERSION}"
 
@@ -98,7 +98,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.npm.outputs.skip == 'false'
-        run: npm publish -w @ceatoleii/specflow --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -115,4 +115,4 @@ jobs:
           fi
           gh release create "${TAG}" \
             --title "${TAG}" \
-            --notes "Release ${TAG}. See packages/specflow/CHANGELOG.md."
+            --notes "Release ${TAG}. See CHANGELOG.md."
