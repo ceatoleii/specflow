@@ -41,6 +41,7 @@ export async function runInit(options: InitOptions): Promise<void> {
       includeDocs,
       dryRun,
       locale: answers.locale,
+      linearEnabled: answers.linearEnabled,
     });
   } catch (error) {
     spinner.stop("");

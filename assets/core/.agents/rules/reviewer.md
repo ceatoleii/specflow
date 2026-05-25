@@ -64,18 +64,20 @@ Complete the template before deciding PASS or FAIL.
 - No unresolved "Unspecified Items"
 
 **Actions on PASS:**
-1. Build archive id: `YYYY-MM-DD-<slug>` where slug is kebab-case from `# Task:` title in `task.md` (e.g. `2026-05-24-password-reset`)
-2. Copy `.agents-state/current/` → `.agents-state/history/<archive-id>/`
-3. Delete all files in `.agents-state/current/`
-4. Delete `.agents-state/.flow-enabled`
-5. Tell the user:
+1. If Linear is enabled and `linear.json` exists → MCP `save_issue` with `state` = `states.onReviewPass` (default **Done**). On MCP failure, warn once and continue.
+2. Build archive id: `YYYY-MM-DD-<slug>` where slug is kebab-case from `# Task:` title in `task.md` (e.g. `2026-05-24-password-reset`)
+3. Copy `.agents-state/current/` → `.agents-state/history/<archive-id>/`
+4. Delete all files in `.agents-state/current/`
+5. Delete `.agents-state/.flow-enabled`
+6. Tell the user:
    > "✓ Task [archive-id] completado y archivado. Flow desactivado."
 
 #### FAIL
 **Actions on FAIL:**
-1. Complete `review.md` with specific failures (which AC, which command)
-2. Update `phase.md` → `implementing`
-3. Tell the user review failed with a brief summary
+1. If Linear is enabled and `linear.json` exists → MCP `save_issue` with `state` = `states.onReviewFail` (default **In Progress**). On MCP failure, warn once and continue.
+2. Complete `review.md` with specific failures (which AC, which command)
+3. Update `phase.md` → `implementing`
+4. Tell the user review failed with a brief summary
 
 ---
 

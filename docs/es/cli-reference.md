@@ -85,6 +85,22 @@ Con flujo activo valida `phase.md` y archivos por fase (`task.md`, `plan.md` o `
 
 ---
 
+## `specflow linear setup`
+
+Configura la sincronización opcional con Linear (solo MCP en Cursor).
+
+```bash
+specflow linear setup
+specflow linear setup --enable
+specflow linear setup --disable
+```
+
+Escribe `.specflow-linear.json` con el mapeo de estados (por defecto: Todo → In Progress → Done). Requiere el plugin Linear en Cursor.
+
+Iniciar tarea enlazada: `nueva tarea desde TEAM-123` o pegar la URL del issue.
+
+---
+
 ## `specflow tools`
 
 Gestiona adaptadores IDE.

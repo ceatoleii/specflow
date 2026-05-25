@@ -20,9 +20,13 @@ Attempt to read `.agents-state/.flow-enabled`.
 
 If the user's message contains any of these (case-insensitive):
 `"activar flujo"` / `"nueva tarea"` / `"flow on"` / `"new task"`
+(or Linear variants: `nueva tarea desde <ID>`, `new task from <ID>`, issue URL + flow intent)
 
 → Create `.agents-state/.flow-enabled` (empty file)
 → Create `.agents-state/current/phase.md` with content: `refining`
+→ If `.specflow-linear.json` has `"enabled": true` and the message references a Linear issue (`TEAM-123` or `linear.app/.../issue/...`):
+  - Read `.agents/rules/linear.md`
+  - Write `.agents-state/current/linear.json` with `{ "identifier": "<ID>" }` (and `url` if known)
 → Continue to Step 3, treating current phase as `refining`
 
 If the user's message contains any of these:
@@ -51,6 +55,8 @@ Based on the phase, read the corresponding file and adopt it fully as your opera
 | `designing`    | `.agents/rules/sdd.md`          |
 | `implementing` | `.agents/rules/implementer.md`  |
 | `reviewing`    | `.agents/rules/reviewer.md`     |
+
+If `.specflow-linear.json` exists with `"enabled": true`, also read `.agents/rules/linear.md` once this turn (in addition to the phase agent file — Linear is not a separate phase).
 
 The loaded agent file defines your identity, permissions, process, and outputs
 for this interaction. Follow it exclusively.

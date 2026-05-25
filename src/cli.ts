@@ -4,6 +4,7 @@ import { runInit } from "./commands/init.js";
 import { runSync } from "./commands/sync.js";
 import { runStatus } from "./commands/status.js";
 import { runDoctor } from "./commands/doctor.js";
+import { runLinearSetup } from "./commands/linear.js";
 import {
   runToolsList,
   runToolsAdd,
@@ -17,7 +18,7 @@ const program = new Command();
 program
   .name("specflow")
   .description(
-    "Spec-driven multi-agent workflow for Cursor, Claude Code, Copilot, Codex, and more"
+    "Spec-driven multi-agent workflow for Cursor (Linear MCP optional)"
   )
   .version(getCliVersion());
 
@@ -109,6 +110,28 @@ tools
   .action(async (opts: { cwd: string; dryRun?: boolean }) => {
     runCommandAction(() =>
       runToolsAdd({ cwd: opts.cwd, dryRun: opts.dryRun })
+    );
+  });
+
+const linear = program
+  .command("linear")
+  .description("Linear issue sync (Cursor MCP)");
+
+linear
+  .command("setup")
+  .description("Enable or configure Linear state mapping")
+  .option("-C, --cwd <dir>", "Target directory", process.cwd())
+  .option("--enable", "Enable with default state mapping")
+  .option("--disable", "Disable Linear sync")
+  .action((opts: { cwd: string; enable?: boolean; disable?: boolean }) => {
+    runCommandAction(
+      () =>
+        runLinearSetup({
+          cwd: opts.cwd,
+          enable: opts.enable,
+          disable: opts.disable,
+        }),
+      { onCancel: () => process.exit(0) }
     );
   });
 

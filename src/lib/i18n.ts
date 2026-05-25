@@ -32,6 +32,11 @@ export interface I18nMessages {
   editDocs: string;
   activateFlow: string;
   initRequiresTty: string;
+  cursorAdapterPrompt: string;
+  linearEnablePrompt: string;
+  summaryLinear: string;
+  summaryLinearYes: string;
+  summaryLinearNo: string;
 }
 
 const es: I18nMessages = {
@@ -71,6 +76,13 @@ const es: I18nMessages = {
   activateFlow: 'Activa el flujo: "nueva tarea: [tu requerimiento]"',
   initRequiresTty:
     "specflow init requiere una terminal interactiva. Ejecutá el comando en tu terminal.",
+  cursorAdapterPrompt:
+    "¿Instalar adaptador de Cursor? (recomendado — Linear MCP requiere Cursor)",
+  linearEnablePrompt:
+    "¿Sincronizar estados con Linear vía MCP? (podés configurarlo después con specflow linear setup)",
+  summaryLinear: "Linear",
+  summaryLinearYes: "sí",
+  summaryLinearNo: "no",
 };
 
 const en: I18nMessages = {
@@ -110,6 +122,13 @@ const en: I18nMessages = {
   activateFlow: 'Start the flow: "new task: [your requirement]"',
   initRequiresTty:
     "specflow init requires an interactive terminal. Run the command in your terminal.",
+  cursorAdapterPrompt:
+    "Install Cursor adapter? (recommended — Linear MCP requires Cursor)",
+  linearEnablePrompt:
+    "Sync issue states with Linear via MCP? (configure later with specflow linear setup)",
+  summaryLinear: "Linear",
+  summaryLinearYes: "yes",
+  summaryLinearNo: "no",
 };
 
 const catalogs: Record<Locale, I18nMessages> = { es, en };

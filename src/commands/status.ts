@@ -8,6 +8,7 @@ import {
 } from "../lib/tools-config.js";
 import { loadManifest } from "../lib/manifest.js";
 import { readProjectConfig } from "../lib/project-config.js";
+import { readLinearConfig } from "../lib/linear-config.js";
 
 export type StatusResult = "ok" | "not_installed" | "outdated" | "cli_older";
 
@@ -57,6 +58,13 @@ export async function runStatus(options: StatusOptions): Promise<StatusResult> {
   const projectConfig = await readProjectConfig(targetDir);
   if (projectConfig) {
     console.log(`  Config:     locale=${projectConfig.locale}`);
+  }
+
+  const linearConfig = await readLinearConfig(targetDir);
+  if (linearConfig) {
+    console.log(
+      `  Linear:     ${linearConfig.enabled ? "activado (MCP Cursor)" : "desactivado"}`
+    );
   }
 
   if (semver.lt(installed.specflow, cliVersion)) {

@@ -18,6 +18,8 @@ export function resolveTargetDir(cwd?: string): string {
 export const VERSION_FILE = ".specflow-version";
 export const TOOLS_FILE = ".specflow-tools.json";
 export const CONFIG_FILE = ".specflow-config.json";
+export const LINEAR_CONFIG_FILE = ".specflow-linear.json";
+export const LINEAR_STATE_FILE = ".agents-state/current/linear.json";
 export const STATE_DIR = ".agents-state";
 export const STATE_CURRENT = ".agents-state/current";
 export const FLOW_FLAG = ".agents-state/.flow-enabled";

@@ -25,6 +25,11 @@ expose hidden complexity, and produce a clean, approved task definition.
 ### 1. Load context (silent)
 Read `.agents-docs/architecture.md` to understand the project structure and stack.
 Explore the codebase selectively — only the areas relevant to the requirement.
+
+If `.specflow-linear.json` has `"enabled": true`:
+- Read `.agents/rules/linear.md`
+- If `.agents-state/current/linear.json` exists or the activation message includes a Linear issue id, use MCP `get_issue` to load title/description into `task.md` (see linear.md)
+
 Do not narrate this step to the user.
 
 ### 2. Open the refinement session
@@ -96,9 +101,10 @@ When refinement is complete, write `.agents-state/current/task.md`.
 
 ### 7. Advance phase
 After writing `task.md`:
-1. Update `.agents-state/current/phase.md` → `designing`
-2. **Compact refinement:** keep `refinement-log.md` as a short summary (≤ ~2 KB)
-3. Tell the user:
+1. If Linear is enabled and `linear.json` has an identifier → MCP `save_issue` with `state` = `states.onRefiningComplete` from `.specflow-linear.json` (default **Todo**). On MCP failure, warn once and continue.
+2. Update `.agents-state/current/phase.md` → `designing`
+3. **Compact refinement:** keep `refinement-log.md` as a short summary (≤ ~2 KB)
+4. Tell the user:
    > "Refinamiento completo ✓ Pasando al SDD Agent para diseñar la solución."
 
 ---

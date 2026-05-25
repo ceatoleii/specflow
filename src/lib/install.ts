@@ -12,6 +12,7 @@ import { writeProjectTools } from "./tools-config.js";
 import { writeProjectVersion } from "./version.js";
 import { getCliVersion } from "./version.js";
 import { writeProjectConfig } from "./project-config.js";
+import { writeLinearConfig, defaultLinearConfig } from "./linear-config.js";
 import type { Locale } from "./i18n.js";
 
 export interface InstallCoreOptions {
@@ -20,6 +21,7 @@ export interface InstallCoreOptions {
   includeDocs: boolean;
   dryRun: boolean;
   locale: Locale;
+  linearEnabled?: boolean;
 }
 
 interface CopyAdaptersOptions {
@@ -62,7 +64,8 @@ export async function installCoreAndAdapters(
   options: InstallCoreOptions
 ): Promise<void> {
   const manifest = await loadManifest();
-  const { targetDir, tools, includeDocs, dryRun, locale } = options;
+  const { targetDir, tools, includeDocs, dryRun, locale, linearEnabled } =
+    options;
 
   const coreResult = await copyCoreStatic(
     targetDir,
@@ -111,6 +114,10 @@ export async function installCoreAndAdapters(
       includeDocs,
       manifestVersion: manifest.manifestVersion,
     });
+    await writeLinearConfig(
+      targetDir,
+      defaultLinearConfig(linearEnabled ?? false)
+    );
   }
 }
 

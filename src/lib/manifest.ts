@@ -41,3 +41,8 @@ export function getStableAdapterIds(manifest: SpecflowManifestV2): string[] {
     (id) => manifest.adapters[id].tier === "stable"
   );
 }
+
+/** Adapters offered during `specflow init` (v2.2+: Cursor only). */
+export function getInitAdapterIds(_manifest: SpecflowManifestV2): string[] {
+  return ["cursor"];
+}

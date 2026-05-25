@@ -34,10 +34,9 @@ function mockInitWizard(locale: "es" | "en" = "en") {
     .mockResolvedValueOnce("yes");
   vi.mocked(clack.confirm)
     .mockResolvedValueOnce(true)
-    .mockResolvedValueOnce(false)
     .mockResolvedValueOnce(true)
+    .mockResolvedValueOnce(false)
     .mockResolvedValueOnce(true);
-  vi.mocked(clack.multiselect).mockResolvedValueOnce(["cursor", "codex"]);
 }
 
 describe("runInit", () => {
@@ -85,8 +84,7 @@ describe("runInit", () => {
     expect(version.specflow).toBe(getCliVersion());
 
     const tools = await readProjectTools(dir);
-    expect(tools?.tools).toContain("cursor");
-    expect(tools?.tools).toContain("codex");
+    expect(tools?.tools).toEqual(["cursor"]);
 
     const config = await readProjectConfig(dir);
     expect(config?.locale).toBe("es");

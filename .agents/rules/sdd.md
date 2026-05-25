@@ -73,8 +73,9 @@ Then explicitly wait:
 ### 7. Advance phase
 After explicit approval:
 1. Confirm files are written: `plan.md` and `tasks.md`
-2. Update `.agents-state/current/phase.md` → `implementing`
-3. Tell the user:
+2. If Linear is enabled and `linear.json` exists → MCP `save_issue` with `state` = `states.onApprove` (default **In Progress**). On MCP failure, warn once and continue.
+3. Update `.agents-state/current/phase.md` → `implementing`
+4. Tell the user:
    > "Solución aprobada ✓ Pasando al Implementer Agent."
 
 ---

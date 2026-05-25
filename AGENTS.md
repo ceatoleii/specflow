@@ -15,6 +15,7 @@ This project uses **SpecFlow** — a spec-driven multi-agent workflow.
 3. Only the **Implementer** agent may write or edit code
 
 **Activate flow:** `nueva tarea` · `activar flujo` · `flow on`  
+**From Linear (optional):** `nueva tarea desde TEAM-123` · requires `.specflow-linear.json` + Cursor Linear MCP  
 **Direct mode:** `modo directo` · `flow off` · `desactivar flujo`
 
 Installed via `@ceatoleii/specflow`. Update engine: `specflow sync` (never overwrites `.agents-docs/`).
@@ -62,6 +63,7 @@ Rules: `.agents/rules/` · Templates: `.agents/templates/`
 AGENTS.md
 .specflow-version
 .specflow-config.json    ← locale, includeDocs (init)
+.specflow-linear.json   ← optional Linear state sync (init / specflow linear setup)
 .specflow-tools.json    ← installed IDE adapters
 .agents/
 .agents-docs/           ← you edit

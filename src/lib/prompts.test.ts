@@ -32,19 +32,19 @@ const cancelSymbol = Symbol.for("cancel");
 function mockWizardFlow(
   overrides: {
     locale?: "es" | "en";
-    tools?: string[];
+    installCursor?: boolean;
     includeDocs?: boolean;
     proceed?: boolean;
-    coreOnly?: boolean;
+    linearEnabled?: boolean;
     confirmInstall?: boolean;
   } = {}
 ) {
   const {
     locale = "en",
-    tools = ["cursor", "codex"],
+    installCursor = true,
     includeDocs = true,
     proceed = true,
-    coreOnly = false,
+    linearEnabled = false,
     confirmInstall = true,
   } = overrides;
 
@@ -53,9 +53,9 @@ function mockWizardFlow(
     .mockResolvedValueOnce(includeDocs ? "yes" : "no");
   vi.mocked(clack.confirm)
     .mockResolvedValueOnce(proceed)
-    .mockResolvedValueOnce(coreOnly)
+    .mockResolvedValueOnce(installCursor)
+    .mockResolvedValueOnce(linearEnabled)
     .mockResolvedValueOnce(confirmInstall);
-  vi.mocked(clack.multiselect).mockResolvedValueOnce(tools);
 }
 
 describe("runInitPrompts", () => {
@@ -71,12 +71,13 @@ describe("runInitPrompts", () => {
 
   it("returns answers from interactive wizard", async () => {
     const dir = await createProjectDir("prompts-interactive");
-    mockWizardFlow({ locale: "es", tools: ["cursor", "windsurf"] });
+    mockWizardFlow({ locale: "es", installCursor: true, linearEnabled: true });
 
     const result = await runInitPrompts(dir, {});
-    expect(result.tools).toEqual(["cursor", "windsurf"]);
+    expect(result.tools).toEqual(["cursor"]);
     expect(result.includeDocs).toBe(true);
     expect(result.locale).toBe("es");
+    expect(result.linearEnabled).toBe(true);
     expect(clack.intro).toHaveBeenCalled();
   });
 
@@ -100,11 +101,11 @@ describe("runInitPrompts", () => {
     );
   });
 
-  it("runToolsAddPrompts returns selected tools", async () => {
+  it("runToolsAddPrompts returns cursor when not installed", async () => {
     const dir = await createProjectDir("prompts-add");
-    vi.mocked(inquirer.checkbox).mockResolvedValueOnce(["windsurf"]);
-    const result = await runToolsAddPrompts(dir, ["cursor"]);
-    expect(result).toEqual(["windsurf"]);
+    vi.mocked(inquirer.checkbox).mockResolvedValueOnce(["cursor"]);
+    const result = await runToolsAddPrompts(dir, []);
+    expect(result).toEqual(["cursor"]);
   });
 
   it("runToolsRemovePrompts returns selected", async () => {

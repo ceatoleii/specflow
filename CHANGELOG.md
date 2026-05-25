@@ -6,6 +6,19 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-05-24
+
+### Added
+
+- **Linear integration (Cursor MCP):** start flow from `LIN-xxx` or issue URL; sync states Refining→Todo, `/approve`→In Progress, review PASS→Done
+- **`specflow linear setup`** and opt-in during `init` (`.specflow-linear.json`)
+- **`.agents/rules/linear.md`** for MCP `get_issue` / `save_issue` behavior
+
+### Changed
+
+- **`specflow init`** installs **Cursor adapter only** (other IDE adapters remain in package; use `tools add` later when re-enabled)
+- `specflow status` shows Linear enabled/disabled
+
 ## [2.1.1] - 2026-05-24
 
 ### Changed

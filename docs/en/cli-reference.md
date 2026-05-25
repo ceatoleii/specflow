@@ -85,6 +85,22 @@ When flow is active, `doctor` validates `phase.md` and phase-specific files (`ta
 
 ---
 
+## `specflow linear setup`
+
+Configure optional Linear issue sync (Cursor MCP only).
+
+```bash
+specflow linear setup
+specflow linear setup --enable
+specflow linear setup --disable
+```
+
+Writes `.specflow-linear.json` with state mapping (default: Todo → In Progress → Done). Requires the Linear plugin in Cursor.
+
+Start a linked task: `nueva tarea desde TEAM-123` or paste a Linear issue URL.
+
+---
+
 ## `specflow tools`
 
 Manage IDE adapters.
