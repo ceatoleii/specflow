@@ -1,6 +1,6 @@
 {
   "name": "@ceatoleii/specflow",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Spec-driven multi-agent workflow for Cursor and AI coding tools",
   "keywords": [
     "cursor",

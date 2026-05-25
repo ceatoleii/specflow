@@ -6,6 +6,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-05-24
+
+### Changed
+
+- **Documentation (EN/ES):** Linear Integration guide (Cursor plugin + MCP checklist), updated README, getting-started, how-it-works, ide-adapters, project-layout, and troubleshooting
+
 ## [2.2.1] - 2026-05-24
 
 ### Fixed
