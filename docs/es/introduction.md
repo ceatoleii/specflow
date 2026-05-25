@@ -22,6 +22,8 @@ SpecFlow es un CLI pequeño (`@ceatoleii/specflow`) que instala un **flujo estru
 
 **Pipeline:** Requisito → Plan → Tareas → Código
 
+**Cursor** es el IDE soportado en v2.2+ (`init` instala su adaptador). La **[integración Linear](./linear-integration.md)** (opcional) usa el plugin MCP en Cursor — no API keys en el CLI.
+
 | Fase | Quién | Tu papel |
 |------|-------|----------|
 | Refinar | Refiner | Responder preguntas; el `task.md` queda como contrato |

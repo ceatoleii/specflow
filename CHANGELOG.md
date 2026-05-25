@@ -6,6 +6,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning foll
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-05-24
+
+### Fixed
+
+- Test coverage for `specflow linear setup` (`src/commands/linear.ts`) — CI threshold ≥80% restored
+
 ## [2.2.0] - 2026-05-24
 
 ### Added

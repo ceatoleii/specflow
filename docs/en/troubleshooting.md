@@ -75,6 +75,18 @@ Check `.agents-docs/verification.md` commands. Fix failing tests/lint, then cont
 
 The wizard requires an interactive terminal. Run in a real TTY, not a non-interactive CI step.
 
+### Linear MCP {#linear-mcp}
+
+| Problem | Fix |
+|---------|-----|
+| Linear never updates | [Linear Integration checklist](./linear-integration.md#prerequisites-checklist) — plugin login + MCP in Cursor |
+| `specflow linear setup` → NO_TTY | Run in your terminal, not CI |
+| Wrong state name | Run `specflow linear setup` and enter exact labels from your Linear team settings |
+| Flow works, board unchanged | `specflow status` → enable with `specflow linear setup --enable` |
+| Agent ignores issue id | Use `nueva tarea desde TEAM-123` or full `linear.app/.../issue/...` URL |
+
+SpecFlow cannot authenticate Linear for you — that happens only inside Cursor.
+
 ---
 
 ## Getting help

@@ -8,6 +8,7 @@ const guideLinksEn = [
   { text: 'Project Layout', link: '/project-layout' },
   { text: 'Project Documentation', link: '/project-documentation' },
   { text: 'IDE Adapters', link: '/ide-adapters' },
+  { text: 'Linear Integration', link: '/linear-integration' },
   { text: 'Design Principles', link: '/design-principles' },
   { text: 'Troubleshooting', link: '/troubleshooting' },
 ]
@@ -20,6 +21,7 @@ const guideLinksEs = [
   { text: 'Layout del proyecto', link: '/es/project-layout' },
   { text: 'Documentación del proyecto', link: '/es/project-documentation' },
   { text: 'Adaptadores IDE', link: '/es/ide-adapters' },
+  { text: 'Integración Linear', link: '/es/linear-integration' },
   { text: 'Principios de diseño', link: '/es/design-principles' },
   { text: 'Solución de problemas', link: '/es/troubleshooting' },
 ]
@@ -27,7 +29,7 @@ const guideLinksEs = [
 export default defineConfig({
   title: 'SpecFlow',
   description:
-    'Spec-driven multi-agent workflow for Cursor, Claude Code, Copilot, Codex, and more.',
+    'Spec-driven multi-agent workflow for Cursor with optional Linear issue sync via MCP.',
   lang: 'en-US',
   srcDir: 'docs',
   base: '/specflow/',
@@ -66,7 +68,7 @@ export default defineConfig({
       link: '/',
       themeConfig: {
         nav: [
-          { text: 'Guide', link: '/introduction', activeMatch: '/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|design-principles|troubleshooting)' },
+          { text: 'Guide', link: '/introduction', activeMatch: '/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|linear-integration|design-principles|troubleshooting)' },
           { text: 'npm', link: 'https://www.npmjs.com/package/@ceatoleii/specflow' },
         ],
         sidebar: [{ text: 'Guide', items: guideLinksEn }],
@@ -87,7 +89,7 @@ export default defineConfig({
       link: '/es/',
       themeConfig: {
         nav: [
-          { text: 'Guía', link: '/es/introduction', activeMatch: '/es/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|design-principles|troubleshooting)' },
+          { text: 'Guía', link: '/es/introduction', activeMatch: '/es/(introduction|getting-started|how-it-works|cli-reference|project-layout|project-documentation|ide-adapters|linear-integration|design-principles|troubleshooting)' },
           { text: 'npm', link: 'https://www.npmjs.com/package/@ceatoleii/specflow' },
         ],
         sidebar: [{ text: 'Guía', items: guideLinksEs }],

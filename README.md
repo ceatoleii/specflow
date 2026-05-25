@@ -30,7 +30,9 @@ SpecFlow installs a **four-phase pipeline** into your repo so your AI assistant:
 
 Until you start a task, nothing changes — your assistant works as usual (**Direct mode**). When you say **`nueva tarea`** or **`flow on`**, **Flow mode** routes each message to the right phase agent.
 
-Works with **Cursor**, Claude Code, GitHub Copilot, Codex, Windsurf, and any tool that reads [`AGENTS.md`](https://agents.md/).
+**v2.2+** installs the **Cursor** adapter by default. Optional **Linear** sync moves issue states (Todo → In Progress → Done) via the **Linear MCP plugin in Cursor** — not via CLI API keys.
+
+Full Linear setup: [Linear Integration](https://ceatoleii.github.io/specflow/linear-integration.html) · [ES](https://ceatoleii.github.io/specflow/es/linear-integration.html)
 
 ---
 
@@ -42,7 +44,7 @@ From your **project root** (Node.js ≥ 18, interactive terminal):
 npx @ceatoleii/specflow init
 ```
 
-The wizard asks for language, IDE adapters, and whether to scaffold `.agents-docs/` templates. Then:
+The wizard asks for language, **Cursor** adapter, optional **Linear** sync, and `.agents-docs/` templates. Then:
 
 ```bash
 specflow doctor          # verify install
@@ -60,7 +62,7 @@ Add to `.gitignore`:
 
 | Step | You say | You get |
 |------|---------|---------|
-| Start | `nueva tarea` or `flow on` | Refiner asks clarifying questions |
+| Start | `nueva tarea` or `flow on` (or `nueva tarea desde LIN-123`) | Refiner asks clarifying questions |
 | Refine | Answer questions | `.agents-state/current/task.md` |
 | Design | Wait, then review plan | `plan.md`, `tasks.md` |
 | Approve | `/approve` | Implementer writes code |
@@ -79,9 +81,9 @@ Stop anytime: `flow off` or `modo directo`.
 | `specflow init` | First-time install in a project |
 | `specflow doctor` | Check files, adapters, flow state |
 | `specflow doctor --run` | Same + run your `verification.md` commands |
-| `specflow status` | Installed version vs latest on npm |
+| `specflow status` | Version, adapters, Linear on/off, update available |
 | `specflow sync` | Update engine & adapters (keeps `.agents-docs/`) |
-| `specflow tools list` | See installed IDE adapters |
+| `specflow linear setup` | Enable Linear state sync (Cursor MCP) |
 
 ---
 

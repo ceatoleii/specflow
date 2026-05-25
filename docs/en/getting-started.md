@@ -11,6 +11,8 @@
 | **Node.js ≥ 18** | Runs the `specflow` CLI via `npx` |
 | **Interactive terminal** | `init` uses a guided wizard (prompts) |
 | **Git repo** (recommended) | Commit installed files; ignore per-task state |
+| **Cursor** (recommended) | SpecFlow `init` installs the Cursor adapter; Linear MCP runs in Cursor |
+| **Linear** (optional) | [Linear plugin in Cursor](./linear-integration.md) + `specflow linear setup` |
 
 ---
 
@@ -30,11 +32,14 @@ No global install required — `npx` downloads the package and runs the wizard o
 |------|------------|----------------|
 | Language | Español or English | CLI prompts only; agent rules stay English |
 | Directory | Confirm project root | Where files are written |
-| AI tools | Cursor, Claude Code, Copilot, … | Installs thin adapter stubs per IDE |
+| Cursor adapter | Install Cursor rules? (default: yes) | `.cursor/rules/_specflow.mdc` → orchestrator |
+| Linear sync | Enable state mapping? | Writes `.specflow-linear.json` — [needs Cursor MCP](./linear-integration.md) |
 | Project docs | Scaffold `.agents-docs/`? | Templates for architecture, conventions, verification |
 | Summary | Confirm | Review before writing |
 
-There is no `--yes` for `init` — the wizard is always interactive so you pick adapters deliberately.
+There is no `--yes` for `init` — the wizard is always interactive.
+
+**Already installed?** Run `specflow linear setup` anytime to enable or change Linear mapping.
 
 ### Useful flags
 
@@ -55,7 +60,8 @@ specflow init -C ./my-app     # install into another directory
 | `.specflow-version` | `init` / `sync` | Shows installed engine version |
 | `.specflow-config.json` | `init` | Your `locale`, whether docs were scaffolded |
 | `.specflow-tools.json` | `init` / `sync` | Which IDE adapters are installed |
-| Adapter files | per tool | e.g. `.cursor/rules/_specflow.mdc` |
+| `.specflow-linear.json` | `init` / `linear setup` | Optional Linear state mapping |
+| `.cursor/rules/_specflow.mdc` | `init` / `sync` | Cursor adapter (if selected) |
 | `.agents-docs/` | **You** | Fill with *your* project facts |
 | `.agents-state/` | Runtime | Per-task files — **gitignore** |
 
@@ -67,6 +73,7 @@ specflow init -C ./my-app     # install into another directory
 2. Run **`specflow doctor`** — fix anything marked as error
 3. Skim **[Project Layout](./project-layout.md)** so you know where artifacts appear
 4. When ready, fill **[`.agents-docs/`](./project-documentation.md)** (at least `architecture.md` and `verification.md`)
+5. If using Linear: follow **[Linear Integration](./linear-integration.md)** (plugin in Cursor → `specflow linear setup`)
 
 ### Verify install
 

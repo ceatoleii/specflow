@@ -116,8 +116,23 @@ Maps every **AC** to evidence, runs `.agents-docs/verification.md`, writes `revi
 | Start flow | End flow |
 |------------|----------|
 | `nueva tarea` · `activar flujo` · `flow on` · `new task` | `modo directo` · `flow off` · `desactivar flujo` · `direct mode` |
+| `nueva tarea desde TEAM-123` · Linear issue URL | (same end phrases) |
 
 The orchestrator reads `phase.md` on each message to decide which agent rules apply.
+
+---
+
+## Linear sync (optional)
+
+When `.specflow-linear.json` has `"enabled": true` and you start from an issue id, the agent in **Cursor** uses Linear MCP to load the ticket and update board states.
+
+| SpecFlow event | Default Linear state |
+|----------------|----------------------|
+| Refining complete | **Todo** |
+| `/approve` | **In Progress** |
+| Review PASS | **Done** |
+
+Setup is **not** in the CLI API — see **[Linear Integration](./linear-integration.md)** for the Cursor plugin checklist.
 
 ---
 
@@ -131,6 +146,7 @@ The orchestrator reads `phase.md` on each message to decide which agent rules ap
 | `plan.md` | Designing+ | Approved design (legacy: `sdd.md`) |
 | `tasks.md` | Implementing+ | Checklist for Implementer |
 | `review.md` | Reviewing | Result + verification output |
+| `linear.json` | Linear tasks | Active issue identifier (optional) |
 
 When flow is inactive, `current/` may be empty — that is normal.
 

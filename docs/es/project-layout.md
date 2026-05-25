@@ -37,6 +37,7 @@ tu-proyecto/
 ├── AGENTS.md
 ├── .specflow-version
 ├── .specflow-config.json
+├── .specflow-linear.json     # mapeo opcional Linear
 ├── .specflow-tools.json
 │
 ├── .agents/                  # Motor — orquestador + 4 agentes
@@ -51,7 +52,7 @@ tu-proyecto/
 │
 ├── .agents-state/            # Runtime — en .gitignore
 │   ├── .flow-enabled
-│   ├── current/
+│   ├── current/              # phase.md, task.md, linear.json, …
 │   └── history/
 │
 └── .cursor/                  # Ejemplo con adaptador Cursor

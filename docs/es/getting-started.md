@@ -11,6 +11,8 @@
 | **Node.js ≥ 18** | Ejecuta el CLI con `npx` |
 | **Terminal interactiva** | `init` usa un asistente con prompts |
 | **Repo git** (recomendado) | Commitear instalación; ignorar estado por tarea |
+| **Cursor** (recomendado) | `init` instala adaptador Cursor; MCP Linear corre en Cursor |
+| **Linear** (opcional) | [Plugin Linear en Cursor](./linear-integration.md) + `specflow linear setup` |
 
 ---
 
@@ -30,11 +32,12 @@ No hace falta instalación global — `npx` descarga el paquete y lanza el asist
 |------|--------|----------|
 | Idioma | Español o English | Solo prompts del CLI |
 | Directorio | Confirmar raíz | Dónde se escriben archivos |
-| Herramientas IA | Cursor, Claude Code, Copilot… | Stubs por IDE |
+| Adaptador Cursor | ¿Instalar reglas Cursor? (default: sí) | `.cursor/rules/_specflow.mdc` |
+| Sync Linear | ¿Mapear estados? | `.specflow-linear.json` — [requiere MCP en Cursor](./linear-integration.md) |
 | Docs del proyecto | ¿Plantillas `.agents-docs/`? | architecture, conventions, verification |
 | Resumen | Confirmar | Revisar antes de escribir |
 
-No hay `--yes` en `init` — el asistente es siempre interactivo.
+No hay `--yes` en `init`. Proyectos ya instalados: `specflow linear setup`.
 
 ### Opciones útiles
 
@@ -55,7 +58,8 @@ specflow init -C ./my-app     # otro directorio destino
 | `.specflow-version` | `init` / `sync` | Versión del motor instalada |
 | `.specflow-config.json` | `init` | `locale`, si hubo scaffold de docs |
 | `.specflow-tools.json` | `init` / `sync` | Adaptadores instalados |
-| Archivos adapter | por herramienta | ej. `.cursor/rules/_specflow.mdc` |
+| `.specflow-linear.json` | `init` / `linear setup` | Mapeo opcional Linear |
+| `.cursor/rules/_specflow.mdc` | `init` / `sync` | Adaptador Cursor |
 | `.agents-docs/` | **Tú** | Hechos de tu proyecto |
 | `.agents-state/` | Runtime | Por tarea — **gitignore** |
 
@@ -66,7 +70,8 @@ specflow init -C ./my-app     # otro directorio destino
 1. Añade `.agents-state/` al `.gitignore`
 2. Ejecuta **`specflow doctor`**
 3. Lee **[Layout del proyecto](./project-layout.md)**
-4. Completa **[`.agents-docs/`](./project-documentation.md)** cuando vayas en serio (mínimo `architecture.md` y `verification.md`)
+4. Completa **[`.agents-docs/`](./project-documentation.md)** cuando vayas en serio
+5. Si usás Linear: **[Integración Linear](./linear-integration.md)** (plugin en Cursor → `specflow linear setup`)
 
 ### Verificar
 

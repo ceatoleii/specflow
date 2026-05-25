@@ -4,48 +4,57 @@
 
 ---
 
-## ¿Qué son los adaptadores?
+## Qué son los adaptadores
 
-Archivos delgados que indican a tu IDE o herramienta IA cargar las reglas SpecFlow en cada interacción. El motor vive en `.agents/`; los adaptadores apuntan a él.
+Archivos finos que indican a tu IDE que cargue las reglas SpecFlow en cada interacción. El motor vive en `.agents/`; los adaptadores apuntan al orquestador.
 
-Eliges adaptadores en `init`. Añade o quita después con `specflow tools add` / `specflow tools remove`.
+**`specflow init` (v2.2+)** pregunta si instalar el adaptador **Cursor** — camino recomendado, sobre todo con [integración Linear](./linear-integration.md).
 
-Los instalados quedan en `.specflow-tools.json`.
+Otros adaptadores siguen en el paquete; `specflow tools add` en v2.2.x ofrece solo **Cursor**.
+
+Instalados quedan en `.specflow-tools.json`.
 
 ---
 
-## Matriz de soporte
+## Cursor (por defecto)
 
-| Herramienta | Tier | Archivos adapter |
-|-------------|------|------------------|
-| Cursor | stable | `.cursor/rules/_specflow.mdc` |
+| | |
+|---|---|
+| **Tier** | stable |
+| **Archivo** | `.cursor/rules/_specflow.mdc` |
+| **Linear MCP** | Sí — plugin Linear en Cursor por separado |
+
+---
+
+## Otras herramientas (en el paquete, no en `init`)
+
+| Herramienta | Tier | Archivos |
+|-------------|------|----------|
 | Claude Code | stable | `CLAUDE.md` |
 | GitHub Copilot | stable | `.github/copilot-instructions.md` |
-| OpenAI Codex | stable | Solo `AGENTS.md` (sin archivo extra) |
+| OpenAI Codex | stable | solo `AGENTS.md` |
 | Windsurf | experimental | `.windsurf/rules/specflow.md` |
 | Opencode | experimental | `.opencode/rules/specflow.md` |
 | Antigravity | experimental | `.antigravity/rules/specflow.md` |
 
-**Stable** — probado con releases actuales.  
-**Experimental** — puede ir retrasado o requerir ajustes manuales.
+Por ahora el camino soportado es **Cursor + SpecFlow**.
 
 ---
 
 ## Cómo funcionan
 
-Cada adapter contiene una instrucción breve: *leer y ejecutar `.agents/rules/orchestrator.md` en cada tarea.*
+Cada adaptador manda a leer `.agents/rules/orchestrator.md`. El orquestador:
 
-El orquestador entonces:
+1. Comprueba si el flujo está activo
+2. Lee `phase.md`
+3. Carga el agente de fase
+4. Si Linear está activo, aplica `.agents/rules/linear.md`
 
-1. Comprueba si el flujo está activo (`.agents-state/.flow-enabled`)
-2. Lee la fase desde `phase.md`
-3. Carga las reglas del agente de fase correspondiente
-
-Sin activación de flujo → Modo Direct (comportamiento normal del asistente).
+Sin activación → modo directo.
 
 ---
 
-## Añadir adaptadores después
+## Añadir Cursor después
 
 ```bash
 specflow tools list
@@ -53,14 +62,6 @@ specflow tools add
 specflow tools remove
 ```
 
-Usa `--dry-run` para vista previa sin escribir.
-
 ---
 
-## Configuración multi-herramienta
-
-Puedes instalar varios adaptadores (ej. Cursor + Copilot). Todos apuntan al mismo motor `.agents/`. Una sola fuente de verdad — edita hechos del proyecto en `.agents-docs/`, no en archivos adapter.
-
----
-
-[← Documentación del proyecto](./project-documentation.md) · [Principios de diseño →](./design-principles.md)
+[← Documentación del proyecto](./project-documentation.md) · [Integración Linear →](./linear-integration.md)

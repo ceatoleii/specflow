@@ -116,8 +116,23 @@ Evidencia por **AC**, ejecuta `verification.md`, escribe `review.md`. En **PASS*
 | Iniciar flujo | Terminar flujo |
 |---------------|----------------|
 | `nueva tarea` · `activar flujo` · `flow on` | `modo directo` · `flow off` · `desactivar flujo` |
+| `nueva tarea desde TEAM-123` · URL del issue | (mismas frases de cierre) |
 
 El orquestador lee `phase.md` en cada mensaje.
+
+---
+
+## Sync con Linear (opcional)
+
+Con `.specflow-linear.json` `"enabled": true`, el agente en **Cursor** usa MCP para cargar el ticket y actualizar estados.
+
+| Evento SpecFlow | Estado Linear por defecto |
+|-----------------|---------------------------|
+| Refining terminado | **Todo** |
+| `/approve` | **In Progress** |
+| Review PASS | **Done** |
+
+La conexión real es Cursor ↔ Linear — ver **[Integración Linear](./linear-integration.md)**.
 
 ---
 
@@ -131,6 +146,7 @@ El orquestador lee `phase.md` en cada mensaje.
 | `plan.md` | Designing+ | Diseño (legacy: `sdd.md`) |
 | `tasks.md` | Implementing+ | Checklist |
 | `review.md` | Reviewing | Resultado |
+| `linear.json` | Tareas Linear | Id del issue activo (opcional) |
 
 Sin flujo activo, `current/` puede estar vacío — es normal.
 

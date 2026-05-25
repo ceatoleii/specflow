@@ -37,6 +37,7 @@ your-project/
 ├── AGENTS.md                 # Universal entry ([agents.md](https://agents.md/))
 ├── .specflow-version         # Installed engine version
 ├── .specflow-config.json     # locale, includeDocs from init
+├── .specflow-linear.json     # optional Linear state mapping
 ├── .specflow-tools.json      # Installed IDE adapters
 │
 ├── .agents/                  # Engine — orchestrator + 4 phase agents
@@ -56,7 +57,8 @@ your-project/
 │   │   ├── task.md
 │   │   ├── plan.md
 │   │   ├── tasks.md
-│   │   └── review.md
+│   │   ├── review.md
+│   │   └── linear.json       # optional — active Linear issue id
 │   └── history/              # Completed tasks (YYYY-MM-DD-slug/)
 │
 └── .cursor/                  # Example if Cursor adapter selected

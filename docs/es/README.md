@@ -1,8 +1,8 @@
 # Guía SpecFlow
 
-**Flujo multi-agente spec-driven** para Cursor, Claude Code, Copilot, Codex y más.
+**Flujo multi-agente spec-driven para Cursor**, con sincronización opcional con **Linear**.
 
-Instálalo una vez por proyecto. Actívalo cuando la tarea merezca estructura. Un solo agente escribe código; el resto especifica, diseña y verifica.
+Instálalo una vez por proyecto. Actívalo cuando la tarea merezca estructura.
 
 **Other language:** [English](../en/README.md)
 
@@ -14,24 +14,27 @@ Instálalo una vez por proyecto. Actívalo cuando la tarea merezca estructura. U
 |---------|------|
 | Entender por qué existe SpecFlow | [Introducción](./introduction.md) |
 | Instalarlo en mi repo | [Primeros pasos](./getting-started.md) |
-| Hacer mi primera tarea completa | [Primeros pasos → Tu primer flujo](./getting-started.md#tu-primer-flujo) |
-| Ver fases, archivos y frases | [Cómo funciona](./how-it-works.md) |
-| Saber para qué sirve cada carpeta | [Layout del proyecto](./project-layout.md) |
-| Enseñar a los agentes *mi* proyecto | [Documentación del proyecto](./project-documentation.md) |
+| Conectar Cursor ↔ Linear (MCP) | [Integración Linear](./linear-integration.md) |
+| Mi primera tarea completa | [Tu primer flujo](./getting-started.md#tu-primer-flujo) |
+| Arrancar desde un issue Linear | [Integración Linear](./linear-integration.md#empezar-desde-un-issue) |
+| Fases, archivos y frases | [Cómo funciona](./how-it-works.md) |
+| Carpetas del proyecto | [Layout del proyecto](./project-layout.md) |
+| Contexto de *mi* proyecto | [Documentación del proyecto](./project-documentation.md) |
 
 ---
 
 ## Mapa de la guía
 
-| Capítulo | Qué aprenderás |
-|----------|----------------|
+| Capítulo | Contenido |
+|----------|-----------|
 | [Introducción](./introduction.md) | Problema, solución, cuándo usarlo |
-| [Primeros pasos](./getting-started.md) | `init`, verificar, walkthrough del primer flujo |
-| [Cómo funciona](./how-it-works.md) | Modo directo vs flujo, cuatro agentes, qué revisar |
-| [Referencia CLI](./cli-reference.md) | Comandos y opciones |
-| [Layout del proyecto](./project-layout.md) | Árbol tras `init`, git y equipo |
-| [Documentación del proyecto](./project-documentation.md) | Archivos en `.agents-docs/` |
-| [Adaptadores IDE](./ide-adapters.md) | Archivos por herramienta |
+| [Primeros pasos](./getting-started.md) | `init`, verificar, primer flujo |
+| [Cómo funciona](./how-it-works.md) | Modo directo vs flujo |
+| [Referencia CLI](./cli-reference.md) | Comandos |
+| [Layout del proyecto](./project-layout.md) | Árbol tras `init` |
+| [Documentación del proyecto](./project-documentation.md) | `.agents-docs/` |
+| [Adaptadores IDE](./ide-adapters.md) | Adaptador Cursor |
+| [Integración Linear](./linear-integration.md) | Plugin, MCP, estados |
 | [Principios de diseño](./design-principles.md) | Reglas del flujo |
 | [Solución de problemas](./troubleshooting.md) | FAQ |
 
@@ -42,17 +45,10 @@ Instálalo una vez por proyecto. Actívalo cuando la tarea merezca estructura. U
 ```bash
 npx @ceatoleii/specflow init
 specflow doctor
+specflow linear setup    # opcional — tras plugin Linear en Cursor
 ```
 
-Luego en tu chat de IA: **`nueva tarea`** o **`flow on`**.
-
----
-
-## Enlaces
-
-- [npm](https://www.npmjs.com/package/@ceatoleii/specflow)
-- [GitHub](https://github.com/ceatoleii/specflow)
-- [Changelog](../../CHANGELOG.md) · [Licencia MIT](../../LICENSE)
+Luego: **`nueva tarea`** o **`nueva tarea desde TEAM-123`**.
 
 ---
 

@@ -75,6 +75,18 @@ Revisa comandos en `.agents-docs/verification.md`. Corrige tests/lint y continú
 
 El asistente requiere terminal interactiva. Ejecuta en TTY real, no en CI no interactivo.
 
+### Linear MCP {#linear-mcp}
+
+| Problema | Solución |
+|----------|----------|
+| Linear no se actualiza | [Checklist](./linear-integration.md#checklist-de-requisitos) — plugin + MCP en Cursor |
+| `specflow linear setup` → NO_TTY | Terminal real, no CI |
+| Estado incorrecto | `specflow linear setup` con nombres exactos del team |
+| Tablero sin cambios | `specflow linear setup --enable` |
+| Ignora el issue | `nueva tarea desde TEAM-123` o URL completa |
+
+La autenticación con Linear es solo en Cursor.
+
 ---
 
 ## Ayuda

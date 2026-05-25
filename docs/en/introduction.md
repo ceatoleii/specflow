@@ -22,6 +22,8 @@ SpecFlow is a small CLI (`@ceatoleii/specflow`) that installs a **structured wor
 
 **Pipeline:** Requirement → Plan → Tasks → Code
 
+**Cursor** is the supported IDE in v2.2+ (`init` installs its adapter). Optional **[Linear](./linear-integration.md)** sync uses the Linear MCP plugin inside Cursor — not API keys in the CLI.
+
 | Phase | Who | Your involvement |
 |-------|-----|------------------|
 | Refine | Refiner | Answer questions; approve `task.md` implicitly by moving on |
