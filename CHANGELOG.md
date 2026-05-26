@@ -4,7 +4,15 @@ All notable changes to `@ceatoleii/specflow` are documented here.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/). Versioning follows [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [2.3.0] - 2026-05-25
+
+### Added
+
+- **TDD evidence** — Implementer records `RED` / `GREEN` lines in `tasks.md` Task Notes per `[test]` / `[impl]`
+- **Slice review** — optional `[review]` tasks + `## Slice Reviews` table; checklist in `reviewer.md`
+- **Verification gate** — Reviewer must complete checklist before PASS (`review-template.md`)
+- **Granular tasks** — SDD requires **Files**, **Verify**, **Done when** on every task (~2–5 min)
+- **Pre-approve checklist** — SDD validates AC/Sxx coverage before `/approve`
 
 ## [2.2.2] - 2026-05-24
 

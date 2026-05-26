@@ -68,7 +68,7 @@ You do not need to edit the file yourself — reply in chat and the Refiner upda
 | Check | Good sign | Red flag |
 |-------|-----------|----------|
 | **plan.md** | Lists files and approach you agree with | Surprise refactors |
-| **tasks.md** | Small, ordered steps | Giant vague tasks |
+| **tasks.md** | Steps with Files / Verify / Done when | Vague tasks without verify command |
 | Traceability | ACs mapped to scenarios | ACs with no plan |
 
 Approve only when you would be comfortable seeing the diff described in the plan.
@@ -77,8 +77,9 @@ Approve only when you would be comfortable seeing the diff described in the plan
 
 | Check | Good sign | Red flag |
 |-------|-----------|----------|
-| Task order | `[test]` before `[impl]` when both exist | Skipped tests |
-| Scope | Matches plan | Unrelated files changed |
+| Task order | `[test]` before `[impl]`; RED/GREEN in Task Notes | Skipped tests or missing RED evidence |
+| Slices | `[review]` with PASS in Slice Reviews | Skipped slice review on large tasks |
+| Scope | Matches task **Files** | Unrelated files changed |
 | Blockers | Agent asks you | Silent assumptions |
 
 ### Reviewing — read `review.md`
@@ -86,7 +87,8 @@ Approve only when you would be comfortable seeing the diff described in the plan
 | Check | Good sign | Red flag |
 |-------|-----------|----------|
 | Each **AC** | Row with evidence | Missing AC row |
-| Verification | Commands ran, exit 0 | Failed tests ignored |
+| Verification | Gate complete + pasted output | Summary without real output |
+| TDD | RED/GREEN per TXX in Task Notes | PASS without prior failing test |
 | Decision | Clear PASS or FAIL | Ambiguous summary |
 
 ---

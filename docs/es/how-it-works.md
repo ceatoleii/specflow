@@ -68,7 +68,7 @@ No hace falta editar el archivo — responde en el chat.
 | Revisa | Buena señal | Alerta |
 |--------|-------------|--------|
 | **plan.md** | Archivos y enfoque acordados | Refactors sorpresa |
-| **tasks.md** | Pasos pequeños y ordenados | Tareas gigantes vagas |
+| **tasks.md** | Pasos con Files / Verify / Done when | Tareas vagas sin comando de verificación |
 | Trazabilidad | ACs ligados a escenarios | ACs sin plan |
 
 Aprueba solo si el diff descrito te parece aceptable.
@@ -77,8 +77,9 @@ Aprueba solo si el diff descrito te parece aceptable.
 
 | Revisa | Buena señal | Alerta |
 |--------|-------------|--------|
-| Orden | `[test]` antes de `[impl]` | Tests saltados |
-| Alcance | Coincide con el plan | Archivos ajenos |
+| Orden | `[test]` antes de `[impl]`; RED/GREEN en Task Notes | Tests saltados o sin evidencia RED |
+| Slices | `[review]` con PASS en Slice Reviews | Saltar review intermedia en tareas grandes |
+| Alcance | Coincide con **Files** del task | Archivos ajenos |
 | Bloqueos | Pregunta a ti | Suposiciones silenciosas |
 
 ### Reviewing — lee `review.md`
@@ -86,7 +87,8 @@ Aprueba solo si el diff descrito te parece aceptable.
 | Revisa | Buena señal | Alerta |
 |--------|-------------|--------|
 | Cada **AC** | Fila con evidencia | AC sin fila |
-| Verificación | Comandos exit 0 | Tests fallidos ignorados |
+| Verificación | Gate completo + salida pegada | Resumen sin output real |
+| TDD | RED/GREEN por TXX en Task Notes | PASS sin evidencia de fallo previo |
 | Decisión | PASS o FAIL claro | Resumen ambiguo |
 
 ---

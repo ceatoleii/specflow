@@ -6,19 +6,53 @@ _Date: YYYY-MM-DD | Phase: implementing_
 ## Implementation Tasks
 
 <!-- Status: [ ] pending | [~] in-progress | [x] done -->
-<!-- Order: [test] tasks before [impl] for the same AC / scenario (TDD) -->
+<!-- Types: [test] [impl] [verify] [review] — TDD: [test] before [impl] per AC/Sxx -->
+<!-- Each task needs Files + Verify + Done when (see examples below) -->
 
-- [ ] **T01** — [test] Unit test for S01 / AC1: [description]
-- [ ] **T02** — [impl] Implement S01 / AC1: [description]
-- [ ] **T03** — [test] Unit test for S02 / AC2: [description]
-- [ ] **T04** — [impl] Implement S02 / AC2: [description]
-- [ ] **T05** — [verify] Run project verification (if not covered by Reviewer)
+- [ ] **T01** — [test] S01 / AC1: [one-line action]
+  - **Files:** `tests/example.test.ts`
+  - **Verify:** `npm test -- example.test.ts`
+  - **Done when:** test fails asserting [expected behavior]
+
+- [ ] **T02** — [impl] S01 / AC1: [one-line action]
+  - **Files:** `src/example.ts`
+  - **Verify:** `npm test -- example.test.ts`
+  - **Done when:** same test passes; minimal implementation only
+
+- [ ] **T03** — [review] Slice: AC1 (S01, T01–T02)
+  - **Scope:** AC1, S01, T01–T02
+  - **Done when:** Slice Reviews row shows PASS
+
+- [ ] **T04** — [test] S02 / AC2: [one-line action]
+  - **Files:** `tests/other.test.ts`
+  - **Verify:** `npm test -- other.test.ts`
+  - **Done when:** test fails for [behavior]
+
+- [ ] **T05** — [impl] S02 / AC2: [one-line action]
+  - **Files:** `src/other.ts`
+  - **Verify:** `npm test -- other.test.ts`
+  - **Done when:** test passes
+
+- [ ] **T06** — [verify] Project verification (if not fully covered by Reviewer)
+  - **Files:** _(none — run only)_
+  - **Verify:** `[command from verification.md]`
+  - **Done when:** exit 0; output noted in Task Notes
+
+---
+
+## Slice Reviews
+
+<!-- Implementer fills after each [review] task — Reviewer checks on final review -->
+
+| Task | Scope | Result | Notes |
+|------|-------|--------|-------|
+| | | | |
 
 ---
 
 ## Task Notes
 
-<!-- Implementer adds notes here during execution — decisions made, gotchas found -->
+<!-- Implementer: TDD evidence — **T01 RED:** `cmd` → failure; **T02 GREEN:** `cmd` → pass -->
 
 ---
 

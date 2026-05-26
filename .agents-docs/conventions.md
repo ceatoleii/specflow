@@ -57,8 +57,9 @@ When writing or reviewing flow artifacts in `.agents-state/current/`:
 |------|-------|-------|
 | `task.md` | Refiner | Acceptance criteria as **AC1**, **AC2**, … |
 | `plan.md` | SDD | Technical design; map each AC to scenarios (S01…) |
-| `tasks.md` | SDD / Implementer | TDD order: `[test]` tasks before `[impl]` for same slice |
-| `review.md` | Reviewer | One row per AC with concrete evidence; FAIL if any AC missing |
+| `tasks.md` | SDD / Implementer | Each task: **Files**, **Verify**, **Done when**; TDD: `[test]` before `[impl]`; optional `[review]` slices |
+| `tasks.md` | Implementer | Record `**TXX RED:**` / `**TXX GREEN:**` in Task Notes; slice results in Slice Reviews |
+| `review.md` | Reviewer | Verification gate checklist + one row per AC; full command output; FAIL if any AC missing |
 
 Do not introduce `sdd.md` in new tasks — use `plan.md`.
 

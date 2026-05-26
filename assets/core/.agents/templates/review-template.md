@@ -3,10 +3,34 @@ _Date: YYYY-MM-DD | Result: **PASS** | **FAIL**_
 
 ---
 
+## Verification-before-completion gate
+
+All must be checked before **PASS**. Any unchecked → **FAIL**.
+
+- [ ] All tasks in `tasks.md` marked `[x]`
+- [ ] No unresolved items in `## Unspecified Items`
+- [ ] Every `[review]` slice (if any) is **PASS** in `## Slice Reviews`
+- [ ] Every AC has a row below with ✅ and concrete evidence
+- [ ] Every Sxx has a passing test
+- [ ] Every `[test]` has **RED** and every `[impl]` has **GREEN** in Task Notes (or waiver in `task.md`)
+- [ ] Every `verification.md` command run; full output pasted below; exit 0
+- [ ] No ✅ without evidence observed this review
+
+---
+
 ## Task Completeness
 
 - [ ] All tasks in tasks.md marked `[x]`
 - [ ] No unresolved items in "Unspecified Items"
+
+---
+
+## TDD Evidence (from tasks.md → Task Notes)
+
+| Task | Type | RED / GREEN recorded? | Valid? |
+|------|------|----------------------|--------|
+| T01 | test | RED | ✅ / ❌ |
+| T02 | impl | GREEN | ✅ / ❌ |
 
 ---
 
